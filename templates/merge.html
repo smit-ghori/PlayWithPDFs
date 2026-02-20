@@ -1,0 +1,58 @@
+<link rel="stylesheet" href="/static/css/card_style.css" />
+
+<!-- extending base -->
+{% extends 'Base.html' %}
+
+<!-- Main title -->
+{% block main_title %} Merge PDF {% endblock %}
+
+<!-- Implementing container -->
+{% block main_content %}
+
+<section class="merge-page">
+  <div class="merge-card">
+    <h2>Merge PDF Files</h2>
+    <p class="muted">Select multiple PDF files and merge them into one.</p>
+
+    <form
+      class="merge-form"
+      action="/merge"
+      method="POST"
+      enctype="multipart/form-data"
+      id="mergeForm"
+    >
+      <div class="drop-zone" id="dropZone">
+        <input
+          type="file"
+          name="pdfs"
+          accept="application/pdf"
+          multiple
+          id="pdfInput"
+          hidden
+        />
+
+        <p class="drop-text">
+          Drag & Drop PDF files here <br />
+          <span>or click to browse</span>
+        </p>
+
+        <ul class="file-list" id="fileList"></ul>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn primary">Upload & Merge</button>
+        <button type="button" class="btn ghost" onclick="clearAll()">
+          Clear All
+        </button>
+      </div>
+    </form>
+
+    <div class="upload-note">
+      <span class="note-icon">📄</span>
+      Only PDF files are allowed.
+    </div>
+  </div>
+</section>
+
+<script src="/static/scripts/card.js"></script>
+{% endblock %}

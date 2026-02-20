@@ -1,0 +1,199 @@
+/* =========================================
+   MERGE PAGE - COMPONENT SCOPED
+   ========================================= */
+
+.merge-page {
+  display: flex;
+  justify-content: center;
+  padding: 60px 16px;
+}
+
+/* Card */
+.merge-page .merge-card {
+  width: 100%;
+  max-width: 550px;
+    background: linear-gradient(
+      180deg,
+      rgba(10, 16, 24, 0.96),
+      rgba(15, 24, 36, 0.96)
+    );
+  border: 1px solid rgba(125, 211, 252, 0.08);
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow:
+    0 25px 60px rgba(2, 6, 23, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  color: #e6eef8;
+}
+
+/* Titles */
+.merge-page h2 {
+  margin-bottom: 10px;
+  color: #f1fbff;
+}
+
+.merge-page .muted {
+  margin-bottom: 20px;
+  color: rgba(230, 238, 248, 0.6);
+}
+
+/* Form */
+.merge-page .merge-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* =========================================
+   Drop Zone
+   ========================================= */
+
+.merge-page .drop-zone {
+  border: 2px dashed rgba(125, 211, 252, 0.2);
+  background: rgba(125, 211, 252, 0.05);
+  padding: 30px;
+  border-radius: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 120px;
+}
+
+.merge-page .drop-zone:hover {
+  background: rgba(125, 211, 252, 0.08);
+}
+
+.merge-page .drop-zone.drag-over {
+  border-color: #7dd3fc;
+  background: rgba(125, 211, 252, 0.12);
+}
+
+.merge-page .drop-text {
+  font-size: 14px;
+  color: rgba(230, 238, 248, 0.8);
+}
+
+.merge-page .drop-text span {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* =========================================
+   File List
+   ========================================= */
+
+.merge-page .file-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 15px;
+  max-height: 180px;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.merge-page .file-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #dff6ff;
+}
+
+.merge-page .file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 80%;
+}
+
+/* Remove Button */
+.merge-page .remove-btn {
+  background: none;
+  border: none;
+  color: #ff6b6b;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.merge-page .remove-btn:hover {
+  transform: scale(1.2);
+  color: #ff3b3b;
+}
+
+/* =========================================
+   Buttons
+   ========================================= */
+
+.merge-page .actions {
+  display: flex;
+  gap: 12px;
+}
+
+.merge-page .btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 12px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: 0.3s ease;
+}
+
+.merge-page .btn.primary {
+  background: linear-gradient(90deg, #60c9e8, #7dd3fc);
+  color: #04202a;
+}
+
+.merge-page .btn.primary:hover {
+  transform: translateY(-2px);
+}
+
+.merge-page .btn.ghost {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(230, 238, 248, 0.7);
+}
+
+.merge-page .btn.ghost:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 520px) {
+  .merge-page .actions {
+    flex-direction: column;
+  }
+}
+
+/* =========================================
+   Upload Note Styling
+   ========================================= */
+
+.merge-page .upload-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  margin-top: 18px;
+  padding: 10px 14px;
+
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 10px;
+
+  color: rgba(230, 238, 248, 0.85);
+
+  backdrop-filter: blur(6px);
+  transition: all 0.3s ease;
+}
+
+.merge-page .note-icon {
+  font-size: 14px;
+  opacity: 0.9;
+}
