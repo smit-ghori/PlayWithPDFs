@@ -6,16 +6,18 @@ from pypdf import PdfWriter
 app = Flask(__name__)
 
 UPLOAD_FOLDER = "uploads"
-app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB limit
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 
-# 🔹 Save Uploaded Files
+# 🔹 Save uploaded PDFs
 def save_uploaded_files(files):
+
     unique_id = str(uuid.uuid4())
     user_folder = os.path.join(UPLOAD_FOLDER, unique_id)
+
     os.makedirs(user_folder, exist_ok=True)
 
     saved_files = []
@@ -29,26 +31,29 @@ def save_uploaded_files(files):
     return unique_id, saved_files
 
 
-# 🔹 Home Page
+# 🔹 Home page
 @app.route('/')
 def home():
-    return render_template("home.html")
+    return render_template("index.html")
 
 
 # 🔹 Merge PDFs
 @app.route('/merge', methods=['GET', 'POST'])
 def merge():
+    
     if request.method == "POST":
 
         files = request.files.getlist('pdfs')
+
         folder_id, saved_files = save_uploaded_files(files)
 
+        # main logic
         writer = PdfWriter()
 
-        # Merge PDFs
         for pdf in saved_files:
             writer.append(pdf)
 
+        # saving system
         result_folder = os.path.join(UPLOAD_FOLDER, folder_id, "result")
         os.makedirs(result_folder, exist_ok=True)
 
@@ -62,22 +67,7 @@ def merge():
     return render_template("merge.html")
 
 
-# 🔹 Compress Page (logic can be added later)
-@app.route('/compress', methods=['GET', 'POST'])
-def compress():
-    if request.method == "POST":
-
-        files = request.files.getlist('pdfs')
-        folder_id, saved_files = save_uploaded_files(files)
-
-        # Compression logic can go here
-
-        return redirect(url_for("download", folder_id=folder_id))
-
-    return render_template("compress.html")
-
-
-# 🔹 Download Page
+# 🔹 Download page
 @app.route('/download/<folder_id>')
 def download(folder_id):
 
@@ -98,14 +88,15 @@ def download(folder_id):
     return render_template("download.html", files=files, folder_id=folder_id)
 
 
-# 🔹 Download File
+# 🔹 Download result file 
 @app.route('/download-file/<folder_id>/<path:filename>')
 def download_file(folder_id, filename):
 
     folder_path = os.path.join(UPLOAD_FOLDER, folder_id)
+
     return send_from_directory(folder_path, filename, as_attachment=True)
 
 
-# 🔹 Run Flask App
+# 🔹 Run app
 if __name__ == '__main__':
     app.run(debug=True)
