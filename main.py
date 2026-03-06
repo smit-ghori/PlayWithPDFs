@@ -1,15 +1,18 @@
 import os
 import uuid
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory
+import shutil
+import time
+import threading
+from flask import Flask, render_template, request, redirect, url_for, send_file
 from pypdf import PdfWriter
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
 UPLOAD_FOLDER = "uploads"
-app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB
+app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50MB
 
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 # 🔹 Save uploaded PDFs
@@ -24,7 +27,9 @@ def save_uploaded_files(files):
 
     for file in files:
         if file and file.filename != "":
-            file_path = os.path.join(user_folder, file.filename)
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(user_folder, filename)
+
             file.save(file_path)
             saved_files.append(file_path)
 
@@ -32,28 +37,27 @@ def save_uploaded_files(files):
 
 
 # 🔹 Home page
-@app.route('/')
+@app.route("/")
 def home():
     return render_template("index.html")
 
 
 # 🔹 Merge PDFs
-@app.route('/merge', methods=['GET', 'POST'])
+@app.route("/merge", methods=["GET", "POST"])
 def merge():
-    
+
     if request.method == "POST":
 
-        files = request.files.getlist('pdfs')
+        files = request.files.getlist("pdfs")
 
         folder_id, saved_files = save_uploaded_files(files)
 
-        # main logic
         writer = PdfWriter()
 
         for pdf in saved_files:
             writer.append(pdf)
 
-        # saving system
+        # result folder
         result_folder = os.path.join(UPLOAD_FOLDER, folder_id, "result")
         os.makedirs(result_folder, exist_ok=True)
 
@@ -62,41 +66,54 @@ def merge():
         writer.write(output_path)
         writer.close()
 
-        return redirect(url_for("download", folder_id=folder_id))
+        return redirect(
+            url_for(
+                "download_file",
+                folder_id=folder_id,
+                filename="result/merged.pdf",
+            )
+        )
 
     return render_template("merge.html")
 
 
-# 🔹 Download page
-@app.route('/download/<folder_id>')
-def download(folder_id):
-
-    folder_path = os.path.join(UPLOAD_FOLDER, folder_id)
-    result_path = os.path.join(folder_path, "result")
-
-    files = []
-
-    if os.path.exists(folder_path):
-        for file in os.listdir(folder_path):
-            if os.path.isfile(os.path.join(folder_path, file)):
-                files.append(file)
-
-    if os.path.exists(result_path):
-        for file in os.listdir(result_path):
-            files.append(f"result/{file}")
-
-    return render_template("download.html", files=files, folder_id=folder_id)
-
-
-# 🔹 Download result file 
-@app.route('/download-file/<folder_id>/<path:filename>')
+# 🔹 Download result file
+@app.route("/download/<folder_id>/<path:filename>")
 def download_file(folder_id, filename):
 
     folder_path = os.path.join(UPLOAD_FOLDER, folder_id)
+    file_path = os.path.join(folder_path, filename)
 
-    return send_from_directory(folder_path, filename, as_attachment=True)
+    return send_file(file_path, as_attachment=True)
+
+
+# 🔹 Background deleting system
+def cleanup_worker():
+
+    while True:
+
+        now = time.time()
+
+        for folder in os.listdir(UPLOAD_FOLDER):
+
+            folder_path = os.path.join(UPLOAD_FOLDER, folder)
+
+            if os.path.isdir(folder_path):
+
+                folder_age = now - os.path.getmtime(folder_path)
+
+                # delete folders older than 10 minutes
+                if folder_age > 600:
+                    shutil.rmtree(folder_path, ignore_errors=True)
+                    print("Deleted old folder:", folder_path)
+
+        time.sleep(300)  # run every 5 minutes
+
+
+# 🔹 Start cleanup thread
+threading.Thread(target=cleanup_worker, daemon=True).start()
 
 
 # 🔹 Run app
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
