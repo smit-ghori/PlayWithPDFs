@@ -1,4 +1,7 @@
-<link rel="stylesheet" href="/static/css/card_style.css" />
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/card_style.css') }}"
+/>
 
 <!-- extending base -->
 {% extends 'base.html' %}
@@ -15,7 +18,7 @@
 
     <form
       class="merge-form"
-      action="/merge"
+      action="{{ url_for('merge') }}"
       method="POST"
       enctype="multipart/form-data"
       id="mergeForm"
@@ -52,5 +55,5 @@
     </div>
   </div>
 </section>
-<script src="/static/scripts/card.js"></script>
+<script src="{{ url_for('static', filename='scripts/card.js') }}"></script>
 {% endblock %}

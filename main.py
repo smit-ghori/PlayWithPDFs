@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = "uploads"
+UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "uploads")
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50MB
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -116,4 +116,5 @@ threading.Thread(target=cleanup_worker, daemon=True).start()
 
 # 🔹 Run app
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)

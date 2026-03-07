@@ -4,9 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block main_title %}{% endblock %}</title>
-    <link rel="stylesheet" href="/static/css/navbar.css" />
-    <link rel="stylesheet" href="/static/css/footer.css" />
-    <link rel="stylesheet" href="/static/css/merge.css" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/navbar.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/footer.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/merge.css') }}"
+    />
     {% block extra_css %}{% endblock %}
     <style>
       body {
@@ -18,9 +27,9 @@
     <nav class="navbar">
       <div class="logo">PlayWithPDFs</div>
       <ul class="nav-links">
-        <li><a href="/">HOME</a></li>
-        <li><a href="/merge">MERGE PDF</a></li>
-        <li><a href="/compress">COMPRESS PDF</a></li>
+        <li><a href="{{ url_for('home') }}">HOME</a></li>
+        <li><a href="{{ url_for('merge') }}">MERGE PDF</a></li>
+        <li><a href="{{ url_for('compress') }}">COMPRESS PDF</a></li>
 
         <li class="dropdown">
           <a href="#">CONVERT PDF ▾</a>
@@ -125,7 +134,7 @@
       <div class="footer-content">
         <div class="footer-logo">PlayWithPDFs</div>
         <ul class="footer-links">
-          <li><a href="#">Home</a></li>
+          <li><a href="{{ url_for('home') }}">Home</a></li>
           <li><a href="#">About</a></li>
           <li><a href="#">Services</a></li>
           <li><a href="#">Contact</a></li>
