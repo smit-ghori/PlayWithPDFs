@@ -1,4 +1,4 @@
-import os
+import os, zipfile
 import uuid
 import shutil
 import time
@@ -36,6 +36,16 @@ def save_uploaded_files(files):
     return unique_id, saved_files
 
 
+# Zipping file 
+def zip_folder(folder_path, zip_path):
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+        for root, dirs, files in os.walk(folder_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                arcname = os.path.relpath(file_path, folder_path)
+                zipf.write(file_path, arcname)
+
+
 # 🔹 Home page
 @app.route("/")
 def home():
@@ -47,8 +57,7 @@ def home():
 def compress():
     # this view exists primarily so url_for('compress') works in templates
     if request.method == "POST":
-        # TODO: implement compression logic
-        return "Compression feature coming soon", 501
+        pass
     return render_template("compress.html")
 
 
@@ -76,26 +85,37 @@ def merge():
         writer.write(output_path)
         writer.close()
 
-        return redirect(
-            url_for(
-                "download_file",
-                folder_id=folder_id,
-                filename="result/merged.pdf",
-            )
-        )
+        return redirect(url_for("download_file", folder_id=folder_id))
 
     return render_template("merge.html")
 
 
 # 🔹 Download result file
-@app.route("/download/<folder_id>/<path:filename>")
-def download_file(folder_id, filename):
+@app.route("/download/<folder_id>")
+def download_file(folder_id):
 
-    folder_path = os.path.join(UPLOAD_FOLDER, folder_id)
-    file_path = os.path.join(folder_path, filename)
+    result_folder = os.path.join(UPLOAD_FOLDER, folder_id, "result")
 
-    return send_file(file_path, as_attachment=True)
+    if not os.path.exists(result_folder):
+        return "Result not found", 404
 
+    files = os.listdir(result_folder)
+
+    if not files:
+        return "No output generated", 400
+
+    # Single file
+    if len(files) == 1:
+        file_path = os.path.join(result_folder, files[0])
+        return send_file(file_path, as_attachment=True)
+
+    # Multiple files → zip
+    zip_path = os.path.join(UPLOAD_FOLDER, folder_id, "download.zip")
+
+    if not os.path.exists(zip_path):
+        zip_folder(result_folder, zip_path)
+
+    return send_file(zip_path, as_attachment=True)
 
 # 🔹 Background deleting system
 def cleanup_worker():

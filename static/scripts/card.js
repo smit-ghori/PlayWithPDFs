@@ -29,6 +29,19 @@ dropZone.addEventListener("drop", (e) => {
     addFiles(e.dataTransfer.files);
 });
 
+// Allow scrolling in file list without triggering drop zone
+fileListUI.addEventListener("wheel", (e) => {
+    e.stopPropagation();
+});
+
+fileListUI.addEventListener("touchstart", (e) => {
+    // Allow touch scrolling
+});
+
+fileListUI.addEventListener("touchmove", (e) => {
+    // Allow touch scrolling
+});
+
 function addFiles(files) {
     for (let file of files) {
         if (file.type === "application/pdf") {
@@ -46,14 +59,15 @@ function renderFileList() {
 
         li.innerHTML = `
         <span class="file-name">${file.name}</span>
-        <button type="button" class="remove-btn" onclick="removeFile(${index})">✕</button>
+        <button type="button" class="remove-btn" onclick="removeFile(event, ${index})">✕</button>
       `;
 
         fileListUI.appendChild(li);
     });
 }
 
-function removeFile(index) {
+function removeFile(event, index) {
+    event.stopPropagation(); // Prevent click from bubbling to drop zone
     selectedFiles.splice(index, 1);
     renderFileList();
 }

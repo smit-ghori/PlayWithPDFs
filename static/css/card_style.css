@@ -12,11 +12,11 @@
 .merge-page .merge-card {
   width: 100%;
   max-width: 550px;
-    background: linear-gradient(
-      180deg,
-      rgba(10, 16, 24, 0.96),
-      rgba(15, 24, 36, 0.96)
-    );
+  background: linear-gradient(
+    180deg,
+    rgba(10, 16, 24, 0.96),
+    rgba(15, 24, 36, 0.96)
+  );
   border: 1px solid rgba(125, 211, 252, 0.08);
   padding: 30px;
   border-radius: 18px;
@@ -89,6 +89,16 @@
   max-height: 180px;
   overflow-y: auto;
   text-align: left;
+}
+
+/* Hide scrollbar but keep scrolling functionality */
+.merge-page .file-list::-webkit-scrollbar {
+  display: none;
+}
+
+.merge-page .file-list {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .merge-page .file-list li {
