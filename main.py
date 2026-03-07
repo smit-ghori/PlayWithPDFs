@@ -42,6 +42,16 @@ def home():
     return render_template("index.html")
 
 
+# 🔹 Compress PDFs (placeholder)
+@app.route("/compress", methods=["GET", "POST"])
+def compress():
+    # this view exists primarily so url_for('compress') works in templates
+    if request.method == "POST":
+        # TODO: implement compression logic
+        return "Compression feature coming soon", 501
+    return render_template("compress.html")
+
+
 # 🔹 Merge PDFs
 @app.route("/merge", methods=["GET", "POST"])
 def merge():
