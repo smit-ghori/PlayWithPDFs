@@ -27,9 +27,10 @@
     <nav class="navbar">
       <div class="logo">PlayWithPDFs</div>
       <ul class="nav-links">
-        <li><a href="{{ url_for('home') }}">HOME</a></li>
-        <li><a href="{{ url_for('merge') }}">MERGE PDF</a></li>
-        <li><a href="{{ url_for('compress') }}">COMPRESS PDF</a></li>
+        <!-- url_for("blueprint_name.function_name") -->
+        <li><a href="{{ url_for('home.home') }}">HOME</a></li>
+        <li><a href="{{ url_for('merge.merge') }}">MERGE PDF</a></li>
+        <li><a href="{{ url_for('compress.compress') }}">COMPRESS PDF</a></li>
 
         <li class="dropdown">
           <a href="#">CONVERT PDF ▾</a>
@@ -37,6 +38,7 @@
             <div class="mega-column">
               <h4>CONVERT TO PDF</h4>
               <ul>
+                <!-- url_for("blueprint_name.function_name") -->
                 <li><a href="#">JPG to PDF</a></li>
                 <li><a href="#">WORD to PDF</a></li>
                 <li><a href="#">POWERPOINT to PDF</a></li>
@@ -47,6 +49,7 @@
             <div class="mega-column">
               <h4>CONVERT FROM PDF</h4>
               <ul>
+                <!-- url_for("blueprint_name.function_name") -->
                 <li><a href="#">PDF to JPG</a></li>
                 <li><a href="#">PDF to WORD</a></li>
                 <li><a href="#">PDF to POWERPOINT</a></li>
@@ -63,6 +66,7 @@
             <div class="more-column">
               <h4>ORGANIZE PDF</h4>
               <ul>
+                <!-- url_for("blueprint_name.function_name") -->
                 <li><a href="#">Merge PDF</a></li>
                 <li><a href="#">Split PDF</a></li>
                 <li><a href="#">Remove pages</a></li>
@@ -78,6 +82,7 @@
             <div class="more-column">
               <h4>OPTIMIZE PDF</h4>
               <ul>
+                <!-- url_for("blueprint_name.function_name") -->
                 <li><a href="#">Compress PDF</a></li>
                 <li><a href="#">Repair PDF</a></li>
                 <li><a href="#">OCR PDF</a></li>
@@ -134,7 +139,7 @@
       <div class="footer-content">
         <div class="footer-logo">PlayWithPDFs</div>
         <ul class="footer-links">
-          <li><a href="{{ url_for('home') }}">Home</a></li>
+          <li><a href="{{ url_for('home.home') }}">Home</a></li>
           <li><a href="#">About</a></li>
           <li><a href="#">Services</a></li>
           <li><a href="#">Contact</a></li>
