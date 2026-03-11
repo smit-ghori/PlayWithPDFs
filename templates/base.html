@@ -16,12 +16,11 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/merge.css') }}"
     />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/loader.css') }}"
+    />
     {% block extra_css %}{% endblock %}
-    <style>
-      body {
-        background-color: #cfc2e4;
-      }
-    </style>
   </head>
   <body>
     <nav class="navbar">
@@ -147,5 +146,13 @@
         <p class="copyright">© 2026 YourCompany. All rights reserved.</p>
       </div>
     </footer>
+
+    <!-- loader overlay (hidden by default) -->
+    <div id="loader-overlay" class="loader-overlay" style="display: none">
+      <div class="loader-spinner"></div>
+    </div>
+
+    <!-- scripts -->
+    <script src="{{ url_for('static', filename='scripts/loader.js') }}"></script>
   </body>
 </html>

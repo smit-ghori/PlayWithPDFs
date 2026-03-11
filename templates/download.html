@@ -1,20 +1,21 @@
-{% extends "base.html" %}
-
-{% block main_content %}
+{% extends "base.html" %} {% block main_content %}
 
 <h1>Download section</h1>
 
 <ul>
-{% for file in files %}
+  {% for file in files %}
 
-<li>
+  <li>
     {{ file }}
-    <a href="{{ url_for('download_file', folder_id=folder_id, filename=file) }}">
-        Download
+    <a
+      class="download-link"
+      href="{{ url_for('download_file', folder_id=folder_id, filename=file) }}"
+    >
+      Download
     </a>
-</li>
+  </li>
 
-{% endfor %}
+  {% endfor %}
 </ul>
 
 {% endblock %}
