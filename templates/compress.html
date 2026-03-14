@@ -2,6 +2,10 @@
   rel="stylesheet"
   href="{{ url_for('static', filename='css/card_style.css') }}"
 />
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/compress.css') }}?v=2"
+/>
 
 <!-- extending base -->
 {% extends 'base.html' %}
@@ -39,6 +43,35 @@
         </p>
 
         <ul class="file-list" id="fileList"></ul>
+      </div>
+
+      <div class="compression-options">
+        <label for="extream_action" class="compression-option extreme">
+          <input
+            type="radio"
+            name="compression"
+            id="extream_action"
+            value="extreme"
+          />
+          <span class="checkmark"></span>
+          Extreme Compression
+        </label>
+        <label for="recommended_action" class="compression-option recommended">
+          <input
+            type="radio"
+            name="compression"
+            id="recommended_action"
+            value="recommended"
+            checked
+          />
+          <span class="checkmark"></span>
+          Recommended Compression
+        </label>
+        <label for="low_action" class="compression-option low">
+          <input type="radio" name="compression" id="low_action" value="low" />
+          <span class="checkmark"></span>
+          Low Compression
+        </label>
       </div>
 
       <div class="actions">

@@ -1,0 +1,78 @@
+/* Minimal Compression Option Styling */
+.compression-options {
+  display: grid;
+  gap: 16px;
+  margin: 25px 0;
+  padding: 20px;
+  /* background: #121826; */
+  background: transparent;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Each option */
+.compression-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease;
+  font-size: 15px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.compression-option:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Hide default radio */
+.compression-option input[type="radio"] {
+  display: none;
+}
+
+/* Custom checkmark */
+.checkmark {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 2px solid #aaa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+
+.compression-option input[type="radio"]:checked + .checkmark {
+  background: #3de68e; /* default green for checked */
+  border-color: #3de68e;
+}
+
+.compression-option input[type="radio"]:checked + .checkmark::after {
+  content: "✔";
+  color: #fff;
+  font-size: 14px;
+}
+
+/* Color themes */
+.extreme input[type="radio"]:checked + .checkmark {
+  background: #ff4f6e;
+  border-color: #ff4f6e;
+}
+
+.recommended input[type="radio"]:checked + .checkmark {
+  background: #3de68e;
+  border-color: #3de68e;
+}
+
+.low input[type="radio"]:checked + .checkmark {
+  background: #ffb547;
+  border-color: #ffb547;
+}

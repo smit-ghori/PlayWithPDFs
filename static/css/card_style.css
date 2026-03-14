@@ -95,11 +95,11 @@
 .merge-page .file-list::-webkit-scrollbar {
   display: none;
 }
-
 .merge-page .file-list {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
 
 .merge-page .file-list li {
   display: flex;
