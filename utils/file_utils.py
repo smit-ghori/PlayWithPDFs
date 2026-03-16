@@ -39,9 +39,16 @@ def zip_folder(folder_path, zip_path):
             for file in files:
 
                 file_path = os.path.join(root, file)
-                arcname = os.path.relpath(file_path, folder_path)
 
-                zipf.write(file_path, arcname)
+                # skip zip file itself
+                if os.path.abspath(file_path) == os.path.abspath(zip_path):
+                    continue
+
+                # skip empty files
+                if os.path.getsize(file_path) == 0:
+                    continue
+
+                zipf.write(file_path, arcname=file)
 
 
 def cleanup_worker():

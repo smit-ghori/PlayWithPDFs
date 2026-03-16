@@ -32,6 +32,27 @@ async function downloadFromResponse(resp) {
     URL.revokeObjectURL(downloadUrl);
 }
 
+// function resetUploader() {
+//     const form = document.getElementById("mergeForm");
+//     if (form) form.reset();
+
+//     const fileList = document.getElementById("fileList");
+//     if (fileList) fileList.innerHTML = "";
+
+//     const input = document.getElementById("pdfInput");
+//     if (input) input.value = "";
+
+//     // if card.js has a selectedFiles array, clear it
+//     if (window.selectedFiles && Array.isArray(window.selectedFiles)) {
+//         window.selectedFiles.length = 0;
+//     }
+
+//     // also call the helper from card.js if available
+//     if (typeof window.resetUploadForm === "function") {
+//         window.resetUploadForm();
+//     }
+// }
+
 // when DOM ready, wire up interactions
 document.addEventListener("DOMContentLoaded", () => {
     // show loader on any form submit so user sees something while server works
@@ -66,33 +87,22 @@ document.addEventListener("DOMContentLoaded", () => {
                     contentType.includes("application/octet-stream")
                 ) {
                     await downloadFromResponse(resp);
+
+                    // reset the upload form so the user can upload again without refreshing
+                    resetUploader();
                 } else {
-                    // assume it's HTML or text; update only the <body> so head/script tags remain
+                    // Non-download responses (HTML/text/etc)
+                    // We do not replace the page body because that would remove our event listeners.
+                    // Instead, just reset the upload form for another attempt.
+                    resetUploader();
+
+                    // Optional: show a simple message in the console for debugging.
                     const text = await resp.text();
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(text, "text/html");
-                    if (doc && doc.body) {
-                        // replace body content
-                        document.body.innerHTML = doc.body.innerHTML;
-                        // re-execute any scripts included in the new body
-                        const scripts = doc.body.querySelectorAll("script");
-                        scripts.forEach((oldScript) => {
-                            const newScript = document.createElement("script");
-                            if (oldScript.src) {
-                                newScript.src = oldScript.src;
-                                // preserve async/defer attributes if necessary
-                                if (oldScript.async) newScript.async = true;
-                                if (oldScript.defer) newScript.defer = true;
-                            } else {
-                                newScript.textContent = oldScript.textContent;
-                            }
-                            document.body.appendChild(newScript);
-                        });
-                    }
+                    console.log("Upload response:", text);
                 }
             } catch (err) {
                 console.error(err);
-                alert("Request failed");
+                // alert("Request failed");
             } finally {
                 hideLoader();
             }

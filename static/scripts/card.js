@@ -75,7 +75,13 @@ function removeFile(event, index) {
 function clearAll() {
     selectedFiles = [];
     renderFileList();
+    // if (input) input.value = "";
 }
+
+// // Allow external scripts (like the AJAX loader) to reset the form state after an upload
+// window.resetUploadForm = function () {
+//     clearAll();
+// };
 
 // Before submit, rebuild input files
 document.getElementById("mergeForm").addEventListener("submit", function (e) {
