@@ -10,7 +10,7 @@ UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "uploads")
 
 def compress_pdf(input_path, output_path, quality="screen"):
 
-    gs_path = r"C:\Program Files (x86)\gs\gs10.07.0\bin\gswin32c.exe"
+    gs_path = "gs"  # ✅ Linux compatible
 
     result = subprocess.run([
         gs_path,
@@ -24,15 +24,12 @@ def compress_pdf(input_path, output_path, quality="screen"):
         input_path
     ])
 
-    # Ghostscript failed
     if result.returncode != 0:
         raise RuntimeError("Ghostscript compression failed")
 
-    # File not created
     if not os.path.exists(output_path):
         raise RuntimeError("Output PDF not created")
 
-    # Empty file
     if os.path.getsize(output_path) == 0:
         os.remove(output_path)
         raise RuntimeError("Compressed file is empty")
