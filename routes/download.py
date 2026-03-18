@@ -47,5 +47,5 @@ def download_file(folder_id):
         zip_path,
         as_attachment=True,
         mimetype="application/zip",
-        download_name="compressed_pdfs.zip"
+        download_name= f"result.zip"
     )

@@ -10,8 +10,9 @@ UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "uploads")
 
 def compress_pdf(input_path, output_path, quality="screen"):
 
-    gs_path = "C:\\Program Files (x86)\\gs\gs10.07.0\\bin\\gswin32"  # ✅ Linux compatible
+    # gs_path = "C:\\Program Files (x86)\\gs\gs10.07.0\\bin\\gswin32"  # ✅ Linux compatible
 
+    gs_path = "gs"
     result = subprocess.run([
         gs_path,
         "-sDEVICE=pdfwrite",
