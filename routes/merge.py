@@ -7,7 +7,6 @@ merge_bp = Blueprint("merge", __name__)
 
 UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "uploads")
 
-
 @merge_bp.route("/merge", methods=["GET", "POST"])
 def merge():
 

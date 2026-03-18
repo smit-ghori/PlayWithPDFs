@@ -14,10 +14,6 @@
     />
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='css/merge.css') }}"
-    />
-    <link
-      rel="stylesheet"
       href="{{ url_for('static', filename='css/loader.css') }}"
     />
     {% block extra_css %}{% endblock %}
@@ -67,7 +63,7 @@
               <ul>
                 <!-- url_for("blueprint_name.function_name") -->
                 <li><a href="#">Merge PDF</a></li>
-                <li><a href="#">Split PDF</a></li>
+                <li><a href="{{ url_for('split.split') }}">Split PDF</a></li>
                 <li><a href="#">Remove pages</a></li>
                 <li><a href="#">Extract pages</a></li>
                 <li><a href="#">Organize PDF</a></li>
