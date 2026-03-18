@@ -68,46 +68,41 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("form.ajax-upload-form").forEach((form) => {
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
-
-            const fileInput = form.querySelector('input[type="file"]');
-
-            // ✅ VALIDATION FIRST
-            if (!window.selectedFiles || window.selectedFiles.length === 0) {
-                return;
-            }
-
-            // ✅ NOW show loader
             showLoader();
-
             const url = form.action;
             const method = form.method || "POST";
             const formData = new FormData(form);
-
             try {
                 const resp = await fetch(url, {
                     method,
                     body: formData,
                     credentials: "same-origin",
                 });
-
                 if (!resp.ok) throw new Error("Network response was not ok");
 
                 const contentType = resp.headers.get("Content-Type") || "";
-
                 if (
                     contentType.includes("application/pdf") ||
                     contentType.includes("application/zip") ||
                     contentType.includes("application/octet-stream")
                 ) {
                     await downloadFromResponse(resp);
+
+                    // reset the upload form so the user can upload again without refreshing
                     resetUploader();
                 } else {
+                    // Non-download responses (HTML/text/etc)
+                    // We do not replace the page body because that would remove our event listeners.
+                    // Instead, just reset the upload form for another attempt.
                     resetUploader();
+
+                    // Optional: show a simple message in the console for debugging.
                     const text = await resp.text();
                     console.log("Upload response:", text);
                 }
             } catch (err) {
                 console.error(err);
+                // alert("Request failed");
             } finally {
                 hideLoader();
             }
