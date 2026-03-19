@@ -62,9 +62,9 @@
               <h4>ORGANIZE PDF</h4>
               <ul>
                 <!-- url_for("blueprint_name.function_name") -->
-                <li><a href="#">Merge PDF</a></li>
+                <li><a href="{{ url_for('merge.merge') }}">Merge PDF</a></li>
                 <li><a href="{{ url_for('split.split') }}">Split PDF</a></li>
-                <li><a href="#">Remove pages</a></li>
+                <li><a href="{{url_for('remove_pages.remove_pages')}}">Remove pages</a></li>
                 <li><a href="#">Extract pages</a></li>
                 <li><a href="#">Organize PDF</a></li>
                 <li><a href="#">Scan to PDF</a></li>
@@ -78,7 +78,7 @@
               <h4>OPTIMIZE PDF</h4>
               <ul>
                 <!-- url_for("blueprint_name.function_name") -->
-                <li><a href="#">Compress PDF</a></li>
+                <li><a href="{{ url_for('compress.compress') }}">Compress PDF</a></li>
                 <li><a href="#">Repair PDF</a></li>
                 <li><a href="#">OCR PDF</a></li>
               </ul>

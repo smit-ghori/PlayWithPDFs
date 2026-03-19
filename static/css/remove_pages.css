@@ -1,0 +1,232 @@
+/* =========================================
+   REMOVE PAGE - FULL LAYOUT
+========================================= */
+
+.remove-page {
+  display: flex;
+  justify-content: center;
+  padding: 60px 16px;
+}
+
+/* =========================================
+   CARD (WIDER FOR PREVIEW)
+========================================= */
+
+.remove-page .merge-card {
+  width: 100%;
+  max-width: 900px; /* 🔥 INCREASED WIDTH */
+  background: linear-gradient(
+    180deg,
+    rgba(10, 16, 24, 0.96),
+    rgba(15, 24, 36, 0.96)
+  );
+  border: 1px solid rgba(125, 211, 252, 0.08);
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow:
+    0 25px 60px rgba(2, 6, 23, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  color: #e6eef8;
+}
+
+/* Titles */
+.remove-page h2 {
+  margin-bottom: 10px;
+  color: #f1fbff;
+}
+
+.remove-page .muted {
+  margin-bottom: 20px;
+  color: rgba(230, 238, 248, 0.6);
+}
+
+/* Form */
+.remove-page .merge-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* =========================================
+   DROP ZONE
+========================================= */
+
+.remove-page .drop-zone {
+  border: 2px dashed rgba(125, 211, 252, 0.2);
+  background: rgba(125, 211, 252, 0.05);
+  padding: 30px;
+  border-radius: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 120px;
+}
+
+.remove-page .drop-zone:hover {
+  background: rgba(125, 211, 252, 0.08);
+}
+
+.remove-page .drop-zone.drag-over {
+  border-color: #7dd3fc;
+  background: rgba(125, 211, 252, 0.12);
+}
+
+/* =========================================
+   FILE LIST
+========================================= */
+
+.remove-page .file-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 15px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+/* =========================================
+   PDF PREVIEW GRID
+========================================= */
+
+#preview_section {
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 6px; /* 🔥 gives breathing space */
+}
+
+/* GRID FIX (IMPORTANT) */
+.pdf-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
+}
+
+/* =========================================
+   PAGE CARD (MODERN)
+========================================= */
+
+.pdf-page {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.pdf-page:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  -webkit-transform: translateY(-6px) scale(1.02);
+  -moz-transform: translateY(-6px) scale(1.02);
+  -ms-transform: translateY(-6px) scale(1.02);
+  -o-transform: translateY(-6px) scale(1.02);
+}
+
+/* =========================================
+   CANVAS FIX SIZE
+========================================= */
+
+.pdf-page canvas {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+  display: block;
+  background: white;
+}
+
+/* =========================================
+   PAGE NUMBER BADGE
+========================================= */
+
+.pdf-page p {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  font-size: 11px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+}
+
+/* Hide default checkbox */
+.page-checkbox {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  opacity: 0; /* 🔥 hide checkbox */
+  pointer-events: none; /* disable click */
+}
+
+/* =========================================
+   SELECTED STYLE
+========================================= */
+
+.pdf-page.selected {
+  border: 2px solid #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+}
+
+.pdf-page.selected::after {
+  content: "✓";
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: #38bdf8;
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+.remove-page .actions {
+  display: flex;
+  gap: 12px;
+}
+
+.remove-page .btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 12px;
+}
+
+/* =========================================
+   CUSTOM SCROLLBAR (VISIBLE & CLEAN)
+========================================= */
+
+#preview_section {
+  max-height: 420px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px;
+}
+
+/* Chrome, Edge, Safari */
+#preview_section::-webkit-scrollbar {
+  width: 8px;
+}
+
+#preview_section::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#preview_section::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #38bdf8, #0ea5e9);
+  border-radius: 10px;
+}
+
+#preview_section::-webkit-scrollbar-thumb:hover {
+  background: #0ea5e9;
+}
+
+/* Firefox */
+#preview_section {
+  scrollbar-width: thin;
+  scrollbar-color: #38bdf8 transparent;
+}

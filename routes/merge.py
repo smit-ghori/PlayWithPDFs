@@ -33,6 +33,4 @@ def merge():
         writer.write(output_path)
         writer.close()
 
-        return redirect(url_for("download.download_file", folder_id=folder_id))
-
-    return render_template("merge.html")
+    return render_template("remove_pages.html")

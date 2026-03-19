@@ -6,6 +6,7 @@ from routes.merge import merge_bp
 from routes.download import download_bp
 from routes.compress import compress_bp
 from routes.split import split_bp
+from routes.remove_pages import remove_pages_bp
 from utils.file_utils import cleanup_worker
 
 app = Flask(__name__)
@@ -19,16 +20,17 @@ app.register_blueprint(merge_bp)
 app.register_blueprint(download_bp)
 app.register_blueprint(compress_bp)
 app.register_blueprint(split_bp)
+app.register_blueprint(remove_pages_bp)
 
 # start cleanup thread
 threading.Thread(target=cleanup_worker, daemon=True).start()
 
 
-# if __name__ == "__main__":
-#     port = int(os.environ.get("PORT", 5000))
-#     app.run(host="0.0.0.0", port=port, debug=True)
-    
-# edited for compress
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=False)
+    app.run(host="0.0.0.0", port=port, debug=True)
+    
+# edited for compress
+# if __name__ == "__main__":
+#     port = int(os.environ.get("PORT", 5000))
+#     app.run(host="0.0.0.0", port=port, debug=True, use_reloader=False)
