@@ -11,24 +11,22 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 def save_uploaded_files(files):
+    if not isinstance(files, (list, tuple)):
+        files = [files]   # normalize to list
 
     unique_id = str(uuid.uuid4())
     user_folder = os.path.join(UPLOAD_FOLDER, unique_id)
-
     os.makedirs(user_folder, exist_ok=True)
 
     saved_files = []
-
     for file in files:
         if file and file.filename != "":
             filename = secure_filename(file.filename)
             file_path = os.path.join(user_folder, filename)
-
             file.save(file_path)
             saved_files.append(file_path)
 
     return unique_id, saved_files
-
 
 def zip_folder(folder_path, zip_path):
 
