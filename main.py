@@ -6,6 +6,7 @@ from routes.merge import merge_bp
 from routes.download import download_bp
 from routes.compress import compress_bp
 from routes.split import split_bp
+from routes.extract_pages import extract_pages_bp
 from routes.remove_pages import remove_pages_bp
 from utils.file_utils import cleanup_worker
 
@@ -21,6 +22,7 @@ app.register_blueprint(download_bp)
 app.register_blueprint(compress_bp)
 app.register_blueprint(split_bp)
 app.register_blueprint(remove_pages_bp)
+app.register_blueprint(extract_pages_bp)
 
 # start cleanup thread
 threading.Thread(target=cleanup_worker, daemon=True).start()

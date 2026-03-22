@@ -6,25 +6,19 @@
   rel="stylesheet"
   href="{{ url_for('static', filename='css/remove_pages.css') }}"
 />
-<!-- <link
-  rel="stylesheet"
-  href="{{ url_for('static', filename='css/compress.css') }}?v=2"
-/> -->
 {% extends 'base.html' %}
 
-<!-- initilizing title -->
-{% block main_title %} Remove pages {% endblock %}
+{% block main_title %} Extract pages {% endblock %}
 
-<!-- implementing main container -->
 {% block main_content %}
 <section class="merge-page">
   <div class="merge-card">
-    <h2>Remove pages</h2>
-    <p class="muted">Select PDF file and remove pages.</p>
+    <h2>Extract pages</h2>
+    <p class="muted">Select PDF file and extract pages.</p>
 
     <form
       class="merge-form ajax-upload-form"
-      action="{{ url_for('remove_pages.remove_pages') }}"
+      action="{{ url_for('extract_pages.extract_pages') }}"
       method="POST"
       enctype="multipart/form-data"
       id="mergeForm"
@@ -49,7 +43,7 @@
       <div id="preview_section" class="pdf-preview"></div>
 
       <div class="actions">
-        <button type="submit" class="btn primary">Upload & Remove Pages</button>
+        <button type="submit" class="btn primary">Upload & Extract</button>
         <button type="button" class="btn ghost" onclick="clearAll()">
           Clear All
         </button>
@@ -58,7 +52,7 @@
 
     <div class="upload-note">
       <span class="note-icon">📄</span>
-      Only PDF files are allowed.
+      Only PDF file is allowed.
     </div>
   </div>
 </section>
