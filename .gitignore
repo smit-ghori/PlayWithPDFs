@@ -1,3 +1,7 @@
+# Ignore folders
 backup/
 __pycache__/
 uploads/
+
+# Ignore temp file
+tempcoderunner.py

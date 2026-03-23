@@ -1,0 +1,147 @@
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/card_style.css') }}"
+/>
+
+{% extends 'base.html' %} {% block main_title %} Translate PDF {% endblock %} {%
+block main_content %}
+
+<style>
+  /* Container */
+  .custom-dropdown {
+    position: relative;
+    width: 100%;
+    margin-top: 10px;
+    font-family: "Segoe UI", sans-serif;
+  }
+
+  /* Search input */
+  #searchLang {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #2c3e50;
+    background: linear-gradient(145deg, #0f172a, #1e293b);
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: 0.3s;
+  }
+
+  #searchLang::placeholder {
+    color: #aaa;
+  }
+
+  #searchLang:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 6px rgba(56, 189, 248, 0.5);
+  }
+
+  /* Dropdown list */
+  #langList {
+    position: absolute;
+    top: 105%;
+    left: 0;
+    width: 100%;
+    max-height: 220px;
+    overflow-y: auto;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #0f172a, #1e293b);
+    border: 1px solid #2c3e50;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+  }
+
+  /* Scrollbar */
+  #langList::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  #langList::-webkit-scrollbar-thumb {
+    background: #38bdf8;
+    border-radius: 10px;
+  }
+
+  /* List items */
+  #langList li {
+    padding: 10px 14px;
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  /* Hover effect */
+  #langList li:hover {
+    background: #1e40af;
+    color: #fff;
+  }
+
+  /* Active selected */
+  #langList li.active {
+    background: #38bdf8;
+    color: #000;
+    font-weight: 500;
+  }
+</style>
+
+<section class="merge-page">
+  <div class="merge-card">
+    <h2>Translate PDF Files</h2>
+    <p class="muted">Select a PDF file and translate</p>
+
+    <form
+      class="merge-form ajax-upload-form"
+      action="{{ url_for('translate.translate') }}"
+      method="POST"
+      enctype="multipart/form-data"
+      id="mergeForm"
+    >
+      <div class="drop-zone" id="dropZone">
+        <input
+          type="file"
+          name="pdfs"
+          accept="application/pdf"
+          id="pdfInput"
+          hidden
+        />
+
+        <p class="drop-text">
+          Drag & Drop PDF files here <br />
+          <span>or click to browse</span>
+        </p>
+
+        <ul class="file-list" id="fileList"></ul>
+      </div>
+      <input type="hidden" name="lang" id="selectedLang">
+      <div class="custom-dropdown">
+        <input
+          type="text"
+          readonly
+          placeholder="Search language..."
+          id="searchLang"
+        />
+        <ul id="langList">
+          {% for code, name in languages.items() %}
+          <li data-value="{{ code }}">{{ name|capitalize }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn primary">Translate & Download</button>
+        <button type="button" class="btn ghost" onclick="clearAll()">
+          Clear All
+        </button>
+      </div>
+    </form>
+
+    <div class="upload-note">
+      <span class="note-icon">📄</span>
+      Only PDF files are allowed.
+    </div>
+  </div>
+</section>
+
+<script src="{{ url_for('static', filename='scripts/translate.js') }}"></script>
+{% endblock %}

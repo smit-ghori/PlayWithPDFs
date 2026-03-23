@@ -64,21 +64,33 @@
                 <!-- url_for("blueprint_name.function_name") -->
                 <li><a href="{{ url_for('merge.merge') }}">Merge PDF</a></li>
                 <li><a href="{{ url_for('split.split') }}">Split PDF</a></li>
-                <li><a href="{{url_for('remove_pages.remove_pages')}}">Remove pages</a></li>
-                <li><a href="{{url_for('extract_pages.extract_pages')}}">Extract pages</a></li>
+                <li>
+                  <a href="{{url_for('remove_pages.remove_pages')}}"
+                    >Remove pages</a
+                  >
+                </li>
+                <li>
+                  <a href="{{url_for('extract_pages.extract_pages')}}"
+                    >Extract pages</a
+                  >
+                </li>
                 <li><a href="#">Organize PDF</a></li>
                 <li><a href="#">Scan to PDF</a></li>
               </ul>
               <h4 style="margin-top: 18px">PDF INTELLIGENCE</h4>
               <ul>
-                <li><a href="#">Translate PDF</a></li>
+                <li>
+                  <a href="{{url_for('translate.translate')}}">Translate PDF</a>
+                </li>
               </ul>
             </div>
             <div class="more-column">
               <h4>OPTIMIZE PDF</h4>
               <ul>
                 <!-- url_for("blueprint_name.function_name") -->
-                <li><a href="{{ url_for('compress.compress') }}">Compress PDF</a></li>
+                <li>
+                  <a href="{{ url_for('compress.compress') }}">Compress PDF</a>
+                </li>
                 <li><a href="{{ url_for('repair.repair') }}">Repair PDF</a></li>
                 <li><a href="#">OCR PDF</a></li>
               </ul>
