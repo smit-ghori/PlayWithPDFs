@@ -7,6 +7,4 @@ pdf2docx
 googletrans==4.0.0-rc1
 python-docx
 lxml
-
-docx2pdf    
-pywin32
+pypandoc
