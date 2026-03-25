@@ -2,7 +2,13 @@ services:
   - type: web
     name: pdf-tools
     runtime: python
+
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9   # 🔥 IMPORTANT FIX
+
     buildCommand: |
       pip install -r requirements.txt
-      apt-get update && apt-get install -y ghostscript
-    startCommand: gunicorn app:app
+      apt-get update && apt-get install -y ghostscript pandoc
+
+    startCommand: gunicorn main:app
