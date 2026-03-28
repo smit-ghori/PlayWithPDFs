@@ -2,9 +2,9 @@ Flask==3.0.0
 Werkzeug==3.0.1
 Gunicorn==21.2.0
 
+deep-translator==1.12.1
 pypdf==4.0.1
 pdf2docx
-googletrans==4.0.0-rc1
 python-docx
 lxml
 pypandoc

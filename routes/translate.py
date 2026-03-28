@@ -1,7 +1,7 @@
 import os
 from flask import Blueprint, render_template, request, redirect, url_for
 from utils.file_utils import save_uploaded_files
-from googletrans import LANGUAGES, Translator
+from deep_translator import GoogleTranslator
 from pdf2docx import Converter
 from docx import Document
 import pypandoc
@@ -21,14 +21,14 @@ def translate_pdf(input_pdf, output_pdf, target_lang="hi"):
     cv.close()
 
     doc = Document(docx_file)
-    translator = Translator()
+    translator = GoogleTranslator(source='auto', target=target_lang)
 
     # 🔥 FAST translation (paragraph-wise)
     for para in doc.paragraphs:
         text = para.text.strip()
         if text:
             try:
-                para.text = translator.translate(text, dest=target_lang).text
+                para.text = translator.translate(text)
             except Exception as e:
                 print("Para translate failed:", e)
 
@@ -39,7 +39,7 @@ def translate_pdf(input_pdf, output_pdf, target_lang="hi"):
                 text = cell.text.strip()
                 if text:
                     try:
-                        cell.text = translator.translate(text, dest=target_lang).text
+                        cell.text = translator.translate(text)
                     except Exception as e:
                         print("Cell translate failed:", e)
 
@@ -102,4 +102,5 @@ def translate():
 
         return redirect(url_for("download.download_file", folder_id=folder_id))
 
-    return render_template("translate.html", languages=LANGUAGES)
+    langs = GoogleTranslator(source='auto', target='en').get_supported_languages(as_dict=True)
+    return render_template("translate.html", languages=langs)
