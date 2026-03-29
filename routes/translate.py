@@ -8,6 +8,7 @@ translate_bp = Blueprint("translate", __name__)
 UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "uploads")
 
 @translate_bp.route("/translate", methods=["GET", "POST"])
+@translate_bp.route("/translate/", methods=["GET", "POST"])
 def translate():
     if request.method == "POST":
         print("Hitted successfully")
