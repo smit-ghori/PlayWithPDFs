@@ -2,5 +2,4 @@ Flask==3.0.0
 pypdf==4.0.1
 Werkzeug==3.0.1
 gunicorn==21.2.0
-googletrans==4.0.0-rc1
-httpx==0.13.3
+deep-translator
