@@ -109,8 +109,9 @@ if (form) {
 document.addEventListener("DOMContentLoaded", function () {
     const input = document.getElementById("searchLang");
     const list = document.getElementById("langList");
+    const form = document.getElementById("mergeForm");
 
-    if (!input || !list) return; // prevent error on other pages
+    if (!input || !list || !form) return; // prevent error on other pages
 
     const items = list.getElementsByTagName("li");
 
@@ -160,25 +161,14 @@ document.addEventListener("DOMContentLoaded", function () {
             list.style.display = "none";
         }
     });
-});
 
-form.addEventListener("submit", function (e) {
-    const selected = document.getElementById("selectedLang");
+    // Form submit validation
+    form.addEventListener("submit", function (e) {
+        const selected = document.getElementById("selectedLang");
 
-    if (!selected || !selected.value) {
-        e.preventDefault();
-        alert("Please select a language from the list.");
-    }
-});
-
-item.addEventListener("click", () => {
-    input.value = item.textContent;
-    list.style.display = "none";
-
-    // set selected language
-    document.getElementById("selectedLang").value = item.getAttribute("data-value");
-
-    // highlight active
-    document.querySelectorAll("#langList li").forEach(li => li.classList.remove("active"));
-    item.classList.add("active");
+        if (!selected || !selected.value) {
+            e.preventDefault();
+            alert("Please select a language from the list.");
+        }
+    });
 });

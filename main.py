@@ -14,7 +14,7 @@ from utils.file_utils import cleanup_worker
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "uploads")
+UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "uploads"   )
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # register routes
