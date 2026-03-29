@@ -33,4 +33,4 @@ def merge():
         writer.write(output_path)
         writer.close()
 
-    return render_template("remove_pages.html")
+    return render_template("merge.html")
