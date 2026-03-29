@@ -2,6 +2,7 @@ services:
   - type: web
     name: pdf-tools
     runtime: python
+    pythonVersion: 3.13
     buildCommand: |
       pip install -r requirements.txt
       apt-get update && apt-get install -y ghostscript
