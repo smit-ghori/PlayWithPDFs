@@ -10,6 +10,7 @@ from routes.extract_pages import extract_pages_bp
 from routes.remove_pages import remove_pages_bp
 from routes.repair import repair_bp
 from routes.translate import translate_bp
+from routes.jpg_to_pdf import jpg_to_pdf_bp
 from utils.file_utils import cleanup_worker
 
 app = Flask(__name__)
@@ -27,6 +28,7 @@ app.register_blueprint(remove_pages_bp)
 app.register_blueprint(extract_pages_bp)
 app.register_blueprint(repair_bp)
 app.register_blueprint(translate_bp)
+app.register_blueprint(jpg_to_pdf_bp)
 
 # start cleanup thread
 threading.Thread(target=cleanup_worker, daemon=True).start()

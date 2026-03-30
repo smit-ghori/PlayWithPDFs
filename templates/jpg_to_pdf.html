@@ -1,0 +1,89 @@
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/card_style.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/jpg_to_pdf.css') }}"
+/>
+
+{% extends 'base.html' %} {% block main_title %} Image to PDF {% endblock %} {%
+block main_content %}
+<section class="merge-page">
+  <div class="merge-card">
+    <h2>Image to PDF</h2>
+    <p class="muted">Select Images and convert them into PDF.</p>
+
+    <form
+      class="merge-form ajax-upload-form"
+      action="{{ url_for('jpg_to_pdf.jpg_to_pdf') }}"
+      method="POST"
+      enctype="multipart/form-data"
+      id="mergeForm"
+    >
+      <!-- DROP ZONE -->
+      <div class="drop-zone" id="dropZone">
+        <input
+          type="file"
+          name="images"
+          accept="image/*"
+          id="imageInput"
+          multiple
+          hidden
+        />
+
+        <p class="drop-text">
+          Drag & Drop Images here <br />
+          <span>or click to browse</span>
+        </p>
+      </div>
+
+      <!-- ✅ PREVIEW OUTSIDE -->
+      <div id="preview_section" class="image-preview"></div>
+
+      <div class="options">
+        <!-- LEFT -->
+        <div class="option-group">
+          <label>Margin:</label>
+
+          <div class="custom-dropdown" id="marginDropdown">
+            <div class="dropdown-selected">No Margin</div>
+
+            <div class="dropdown-options">
+              <div data-value="none">No Margin</div>
+              <div data-value="small">Small Margin</div>
+              <div data-value="large">Large Margin</div>
+            </div>
+          </div>
+
+          <!-- hidden input for backend -->
+          <input type="hidden" name="margin" id="marginInput" value="none" />
+        </div>
+
+        <!-- RIGHT -->
+        <label class="toggle">
+          <input type="checkbox" name="merge" checked />
+          <span class="slider"></span>
+          Merge all images into one PDF
+        </label>
+      </div>
+
+      <!-- BUTTONS -->
+      <div class="actions">
+        <button type="submit" class="btn primary">Convert & Download</button>
+        <button type="button" class="btn ghost" onclick="clearAll()">
+          Clear All
+        </button>
+      </div>
+    </form>
+
+    <div class="upload-note">
+      <span class="note-icon">🖼️</span>
+      Only Images are allowed
+    </div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="{{ url_for('static', filename='scripts/jpg_to_pdf.js') }}"></script>
+{% endblock %}
