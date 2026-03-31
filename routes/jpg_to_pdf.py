@@ -1,7 +1,5 @@
 import os
-from flask import Blueprint, render_template, request, redirect, url_for, send_file
-from pypdf import PdfWriter
-from utils.file_utils import save_uploaded_files
+from flask import Blueprint, render_template, request, send_file
 from flask import send_file
 from PIL import Image
 from io import BytesIO
@@ -9,6 +7,102 @@ from io import BytesIO
 jpg_to_pdf_bp = Blueprint("jpg_to_pdf", __name__)
 
 UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "uploads")
+
+
+def prepare_image_for_pdf(img, margin):
+    # A4 size in pixels (approx at 72 DPI)
+    A4_WIDTH = 595
+    A4_HEIGHT = 842
+
+    # margin sizes
+    if margin == "none":
+        m = 0
+    elif margin == "small":
+        m = 20
+    else:
+        m = 50
+
+    # available area
+    max_width = A4_WIDTH - 2 * m
+    max_height = A4_HEIGHT - 2 * m
+
+    # resize image (keep aspect ratio)
+    img.thumbnail((max_width, max_height))
+
+    # create A4 canvas
+    new_img = Image.new("RGB", (A4_WIDTH, A4_HEIGHT), "white")
+
+    # center image
+    x = (A4_WIDTH - img.width) // 2
+    y = (A4_HEIGHT - img.height) // 2
+
+    new_img.paste(img, (x, y))
+
+    return new_img
+
+
+def add_margin(img, margin):
+    if margin == "none":
+        return img
+
+    size = 20 if margin == "small" else 50
+
+    new_img = Image.new("RGB", (img.width + size * 2, img.height + size * 2), "white")
+
+    new_img.paste(img, (size, size))
+    return new_img
+
+
+def merge_all(ordered_files, margin):
+    images = []
+
+    for file in ordered_files:
+        img = Image.open(file).convert("RGB")
+        img = add_margin(img, margin)
+        images.append(img)
+
+    pdf_bytes = BytesIO()
+
+    images[0].save(pdf_bytes, format="PDF", save_all=True, append_images=images[1:])
+
+    pdf_bytes.seek(0)
+
+    return send_file(
+        pdf_bytes,
+        as_attachment=True,
+        download_name="output.pdf",
+        mimetype="application/pdf",
+    )
+
+
+import zipfile
+
+
+def all_in_zip(ordered_files, margin):
+    zip_buffer = BytesIO()
+
+    with zipfile.ZipFile(zip_buffer, "w") as zf:
+
+        for i, file in enumerate(ordered_files):
+            img = Image.open(file).convert("RGB")
+            img = prepare_image_for_pdf(img, margin)
+
+            pdf_bytes = BytesIO()
+            img.save(pdf_bytes, format="PDF")
+            pdf_bytes.seek(0)
+
+            # 🔥 add to zip
+            zf.writestr(f"image_{i+1}.pdf", pdf_bytes.read())
+
+    zip_buffer.seek(0)
+
+    return send_file(
+        zip_buffer,
+        as_attachment=True,
+        download_name="images.zip",
+        mimetype="application/zip",
+    )
+
 
 @jpg_to_pdf_bp.route("/jpg_to_pdf", methods=["GET", "POST"])
 def jpg_to_pdf():
@@ -18,33 +112,14 @@ def jpg_to_pdf():
 
         order_list = list(map(int, order.split(",")))
 
-        # 🔥 reorder safely
-        file_map = {i: file for i, file in enumerate(files)}
-        ordered_files = [file_map[i] for i in order_list]
+        ordered_files = [files[i] for i in order_list]
 
-        images = []
+        margin = request.form.get("margin")
+        merge = request.form.get("merge")
 
-        for file in ordered_files:
-            img = Image.open(file).convert("RGB")
-            images.append(img)
-
-        # 🔥 CREATE PDF IN MEMORY
-        pdf_bytes = BytesIO()
-
-        images[0].save(
-            pdf_bytes,
-            format="PDF",
-            save_all=True,
-            append_images=images[1:]
-        )
-
-        pdf_bytes.seek(0)  # move cursor to start
-
-        return send_file(
-            pdf_bytes,
-            as_attachment=True,
-            download_name="output.pdf",
-            mimetype="application/pdf"
-        )
+        if merge == "on":
+            return merge_all(ordered_files, margin)
+        else:
+            return all_in_zip(ordered_files, margin)
 
     return render_template("jpg_to_pdf.html")

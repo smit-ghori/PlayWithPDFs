@@ -1,6 +1,9 @@
 Flask==3.0.0
-pypdf==4.0.1
 Werkzeug==3.0.1
 gunicorn==21.2.0
-deep-translator
-pymupdf
+
+Pillow==10.3.0
+pypdf==4.0.1
+pymupdf==1.23.26
+
+deep-translator==1.11.4

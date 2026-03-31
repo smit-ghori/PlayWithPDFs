@@ -114,8 +114,8 @@ form.addEventListener("submit", (e) => {
   const boxes = document.querySelectorAll(".img-box");
   const order = [];
 
-  boxes.forEach(box => {
-    order.push(box.getAttribute("data-index"));
+  boxes.forEach((box, index) => {
+    order.push(index);  // 🔥 correct
   });
 
   console.log("FINAL ORDER:", order);
