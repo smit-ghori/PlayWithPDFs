@@ -1,8 +1,7 @@
 import os
-from flask import Blueprint, render_template, request, send_file
-from flask import send_file
-from PIL import Image
 from io import BytesIO
+from flask import Blueprint, render_template, request, send_file
+from PIL import Image
 
 jpg_to_pdf_bp = Blueprint("jpg_to_pdf", __name__)
 
@@ -70,7 +69,7 @@ def merge_all(ordered_files, margin):
     return send_file(
         pdf_bytes,
         as_attachment=True,
-        download_name="output.pdf",
+        download_name="PlayWithPdfs_output.pdf",
         mimetype="application/pdf",
     )
 
@@ -99,7 +98,7 @@ def all_in_zip(ordered_files, margin):
     return send_file(
         zip_buffer,
         as_attachment=True,
-        download_name="images.zip",
+        download_name="PlayWithPdfs_images.zip",
         mimetype="application/zip",
     )
 
@@ -108,18 +107,26 @@ def all_in_zip(ordered_files, margin):
 def jpg_to_pdf():
     if request.method == "POST":
         files = request.files.getlist("images")
-        order = request.form.get("image_order")
+        if not files:
+            return "No images uploaded", 400
 
-        order_list = list(map(int, order.split(",")))
+        order = request.form.get("image_order", "").strip()
+        ordered_files = files
 
-        ordered_files = [files[i] for i in order_list]
+        if order:
+            try:
+                order_list = [int(i) for i in order.split(",") if i.strip()]
+                reordered = [files[i] for i in order_list if 0 <= i < len(files)]
+                if reordered:
+                    ordered_files = reordered
+            except ValueError:
+                ordered_files = files
 
-        margin = request.form.get("margin")
+        margin = request.form.get("margin", "none")
         merge = request.form.get("merge")
 
         if merge == "on":
             return merge_all(ordered_files, margin)
-        else:
-            return all_in_zip(ordered_files, margin)
+        return all_in_zip(ordered_files, margin)
 
     return render_template("jpg_to_pdf.html")

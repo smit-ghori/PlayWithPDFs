@@ -104,23 +104,32 @@ function clearAll() {
    FORM SUBMIT
 ========================================= */
 form.addEventListener("submit", (e) => {
-  if (selectedFiles.length === 0) {
+  const boxes = document.querySelectorAll(".img-box");
+
+  if (boxes.length === 0) {
     e.preventDefault();
     alert("Please select images.");
     return;
   }
 
-  // 🔥 GET ORDER FROM DOM
-  const boxes = document.querySelectorAll(".img-box");
-  const order = [];
+  // Read the ORIGINAL file indexes in the exact order the user arranged them
+  const orderedIndexes = Array.from(boxes).map((box) =>
+    parseInt(box.getAttribute("data-index"), 10)
+  );
 
-  boxes.forEach((box, index) => {
-    order.push(index);  // 🔥 correct
+  console.log("FINAL ORDER:", orderedIndexes);
+
+  // Rebuild the file input in the same visual order shown in the UI
+  const dataTransfer = new DataTransfer();
+  orderedIndexes.forEach((fileIndex) => {
+    const file = selectedFiles[fileIndex];
+    if (file) {
+      dataTransfer.items.add(file);
+    }
   });
+  input.files = dataTransfer.files;
 
-  console.log("FINAL ORDER:", order);
-
-  // 🔥 SEND ORDER TO BACKEND
+  // Send sequential indexes because `input.files` is already reordered above
   let hidden = document.getElementById("orderInput");
 
   if (!hidden) {
@@ -131,18 +140,7 @@ form.addEventListener("submit", (e) => {
     form.appendChild(hidden);
   }
 
-  hidden.value = order.join(",");
-
-  // 🔥 SEND ONLY VALID FILES
-  const dataTransfer = new DataTransfer();
-
-  selectedFiles.forEach(file => {
-    if (file !== null) {
-      dataTransfer.items.add(file);
-    }
-  });
-
-  input.files = dataTransfer.files;
+  hidden.value = Array.from({ length: input.files.length }, (_, index) => index).join(",");
 });
 
 /* =========================================
