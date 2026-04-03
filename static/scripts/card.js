@@ -42,12 +42,26 @@ fileListUI.addEventListener("touchmove", (e) => {
     // Allow touch scrolling
 });
 
+const fileTypes = {
+    pdf: ["application/pdf"],
+    word: [
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ]
+};
+
 function addFiles(files) {
+    const type = dropZone.dataset.type;
+    const allowed = fileTypes[type] || [];
+
     for (let file of files) {
-        if (file.type === "application/pdf") {
+        if (allowed.includes(file.type)) {
             selectedFiles.push(file);
+        } else {
+            alert(`Invalid file type! Allowed: ${type}`);
         }
     }
+
     renderFileList();
 }
 
