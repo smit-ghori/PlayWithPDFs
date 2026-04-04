@@ -2,6 +2,7 @@ import os
 import zipfile
 import subprocess
 import platform
+import shutil
 from io import BytesIO
 from flask import Blueprint, render_template, request, send_file
 
@@ -32,10 +33,27 @@ def convert_word_to_pdf_libreoffice(input_path, pdf_path, temp_dir):
     Convert using LibreOffice (works on Linux and Windows).
     """
     try:
+        soffice_path = None
+
         if platform.system() == "Windows":
-            soffice_path = r"C:\Program Files\LibreOffice\program\soffice.exe"
+            candidates = [
+                r"C:\Program Files\LibreOffice\program\soffice.exe",
+                r"C:\Program Files (x86)\LibreOffice\program\soffice.exe",
+            ]
+            soffice_path = next((path for path in candidates if os.path.exists(path)), None)
         else:
-            soffice_path = "libreoffice"
+            candidates = [
+                shutil.which("libreoffice"),
+                shutil.which("soffice"),
+                "/usr/bin/libreoffice",
+                "/usr/bin/soffice",
+            ]
+            soffice_path = next((path for path in candidates if path and os.path.exists(path)), None)
+
+        if not soffice_path:
+            raise FileNotFoundError(
+                "LibreOffice executable not found. Checked: libreoffice, soffice"
+            )
 
         subprocess.run(
             [
@@ -54,6 +72,10 @@ def convert_word_to_pdf_libreoffice(input_path, pdf_path, temp_dir):
             check=True,
             timeout=120,
         )
+
+        if not os.path.exists(pdf_path):
+            raise FileNotFoundError(f"Expected output PDF was not created: {pdf_path}")
+
         return True
     except Exception as e:
         print(f"LibreOffice conversion failed: {e}")
@@ -88,7 +110,10 @@ def convert_word_to_pdf(input_stream, filename):
         success = convert_word_to_pdf_libreoffice(input_path, pdf_path, temp_dir)
 
     if not success:
-        raise Exception(f"Failed to convert {filename} to PDF")
+        raise Exception(
+            f"Failed to convert {filename} to PDF. "
+            "Make sure LibreOffice is installed and available on the server."
+        )
 
     # Read back the PDF
     pdf_stream = BytesIO()
