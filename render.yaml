@@ -5,5 +5,5 @@ services:
     pythonVersion: "3.11.9"
     buildCommand: |
       pip install -r requirements.txt
-      apt-get update && apt-get install -y ghostscript
+      apt-get update && apt-get install -y libreoffice ghostscript
     startCommand: gunicorn main:app
