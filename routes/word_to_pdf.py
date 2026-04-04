@@ -1,133 +1,169 @@
 import os
+import uuid
 import zipfile
-import subprocess
-import platform
-import shutil
 from io import BytesIO
 from flask import Blueprint, render_template, request, send_file
+from docx import Document
+from docx.oxml.ns import qn
+from PIL import Image as PILImage
+from reportlab.lib.pagesizes import letter
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    Table,
+    TableStyle,
+    Image,
+)
+from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 
 word_to_pdf_bp = Blueprint("word_to_pdf", __name__)
 
 
-def convert_word_to_pdf_windows(input_path, pdf_path):
-    """
-    Convert using Windows COM (Microsoft Word).
-    """
-    try:
-        import win32com.client
+def extract_images_from_run(run, temp_dir):
+    images = []
 
-        word = win32com.client.Dispatch("Word.Application")
-        word.Visible = False
-        doc = word.Documents.Open(os.path.abspath(input_path))
-        doc.SaveAs2(os.path.abspath(pdf_path), FileFormat=17)
-        doc.Close()
-        word.Quit()
-        return True
-    except Exception as e:
-        print(f"Windows COM conversion failed: {e}")
-        return False
+    for blip in run._element.xpath('.//*[local-name() = "blip"]'):
+        embed_id = blip.get(qn("r:embed"))
+        if not embed_id:
+            continue
+
+        try:
+            image_part = run.part.related_part(embed_id)
+            image_bytes = image_part.blob
+            format_name = PILImage.open(BytesIO(image_bytes)).format.lower()
+            image_name = f"image_{uuid.uuid4().hex}.{format_name}"
+            image_path = os.path.join(temp_dir, image_name)
+            with open(image_path, "wb") as image_file:
+                image_file.write(image_bytes)
+            images.append(image_path)
+        except Exception as e:
+            print(f"Image extraction failed: {e}")
+
+    return images
 
 
-def convert_word_to_pdf_libreoffice(input_path, pdf_path, temp_dir):
-    """
-    Convert using LibreOffice (works on Linux and Windows).
-    """
-    try:
-        soffice_path = None
+def paragraph_to_flowables(paragraph, styles, temp_dir):
+    flowables = []
+    text_buffer = ""
+    alignment = TA_LEFT
 
-        if platform.system() == "Windows":
-            candidates = [
-                r"C:\Program Files\LibreOffice\program\soffice.exe",
-                r"C:\Program Files (x86)\LibreOffice\program\soffice.exe",
-            ]
-            soffice_path = next((path for path in candidates if os.path.exists(path)), None)
-        else:
-            candidates = [
-                shutil.which("libreoffice"),
-                shutil.which("soffice"),
-                "/usr/bin/libreoffice",
-                "/usr/bin/soffice",
-            ]
-            soffice_path = next((path for path in candidates if path and os.path.exists(path)), None)
+    if paragraph.alignment:
+        if paragraph.alignment == 1:
+            alignment = TA_CENTER
+        elif paragraph.alignment == 2:
+            alignment = TA_RIGHT
+        elif paragraph.alignment == 3:
+            alignment = TA_JUSTIFY
 
-        if not soffice_path:
-            raise FileNotFoundError(
-                "LibreOffice executable not found. Checked: libreoffice, soffice"
+    style = styles["Normal"]
+    if paragraph.runs:
+        first_run = paragraph.runs[0]
+        if first_run.bold:
+            style = ParagraphStyle(
+                "BoldStyle",
+                parent=styles["Normal"],
+                fontSize=11,
+                fontName="Helvetica-Bold",
+                alignment=alignment,
+            )
+        elif first_run.italic:
+            style = ParagraphStyle(
+                "ItalicStyle",
+                parent=styles["Normal"],
+                fontSize=11,
+                fontName="Helvetica-Oblique",
+                alignment=alignment,
             )
 
-        subprocess.run(
-            [
-                soffice_path,
-                "--headless",
-                "--nologo",
-                "--nofirststartwizard",
-                "--invisible",
-                "--norestore",
-                "--convert-to",
-                "pdf:writer_pdf_Export",
-                "--outdir",
-                temp_dir,
-                input_path,
-            ],
-            check=True,
-            timeout=120,
-        )
+    for run in paragraph.runs:
+        image_paths = extract_images_from_run(run, temp_dir)
+        if image_paths:
+            if text_buffer.strip():
+                flowables.append(Paragraph(text_buffer, style))
+                text_buffer = ""
 
-        if not os.path.exists(pdf_path):
-            raise FileNotFoundError(f"Expected output PDF was not created: {pdf_path}")
+            for image_path in image_paths:
+                try:
+                    img = PILImage.open(image_path)
+                    aspect = img.height / img.width if img.width else 1
+                    max_width = 6 * inch
+                    img_width = max_width
+                    img_height = img_width * aspect
+                    flowables.append(
+                        Image(image_path, width=img_width, height=img_height)
+                    )
+                    flowables.append(Spacer(1, 0.2 * inch))
+                except Exception as e:
+                    print(f"Failed to render image {image_path}: {e}")
 
-        return True
-    except Exception as e:
-        print(f"LibreOffice conversion failed: {e}")
-        return False
+        if run.text:
+            text_buffer += run.text
+
+    if text_buffer.strip():
+        flowables.append(Paragraph(text_buffer, style))
+    elif not flowables:
+        flowables.append(Spacer(1, 0.2 * inch))
+
+    return flowables
 
 
 def convert_word_to_pdf(input_stream, filename):
     """
-    Convert a Word file to PDF using the best available method.
-    On Windows: tries Windows COM first, then LibreOffice
-    On Linux: uses LibreOffice
-    Returns BytesIO containing the PDF.
+    Convert Word to PDF using python-docx and reportlab.
+    Pure Python solution that works on any platform.
     """
-    temp_dir = os.path.abspath("temp_convert")
-    os.makedirs(temp_dir, exist_ok=True)
+    try:
+        temp_dir = os.path.abspath("temp_convert")
+        os.makedirs(temp_dir, exist_ok=True)
 
-    input_path = os.path.join(temp_dir, filename)
-    with open(input_path, "wb") as f:
-        f.write(input_stream.read())
+        doc = Document(input_stream)
 
-    pdf_filename = os.path.splitext(filename)[0] + ".pdf"
-    pdf_path = os.path.join(temp_dir, pdf_filename)
+        pdf_buffer = BytesIO()
+        pdf_doc = SimpleDocTemplate(pdf_buffer, pagesize=letter)
+        story = []
+        styles = getSampleStyleSheet()
 
-    # Try appropriate conversion method
-    success = False
-    if platform.system() == "Windows":
-        # Try Windows COM first
-        success = convert_word_to_pdf_windows(input_path, pdf_path)
+        for paragraph in doc.paragraphs:
+            story.extend(paragraph_to_flowables(paragraph, styles, temp_dir))
 
-    # Fallback to LibreOffice
-    if not success:
-        success = convert_word_to_pdf_libreoffice(input_path, pdf_path, temp_dir)
+        for table in doc.tables:
+            data = []
+            for row in table.rows:
+                row_data = [cell.text for cell in row.cells]
+                data.append(row_data)
 
-    if not success:
-        raise Exception(
-            f"Failed to convert {filename} to PDF. "
-            "Make sure LibreOffice is installed and available on the server."
-        )
+            if data:
+                t = Table(data, colWidths=[1.5 * inch] * len(data[0]) if data else [])
+                t.setStyle(
+                    TableStyle(
+                        [
+                            ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+                            ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                            ("FONTSIZE", (0, 0), (-1, 0), 10),
+                            ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+                            ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
+                            ("GRID", (0, 0), (-1, -1), 1, colors.black),
+                        ]
+                    )
+                )
+                story.append(t)
+                story.append(Spacer(1, 0.3 * inch))
 
-    # Read back the PDF
-    pdf_stream = BytesIO()
-    with open(pdf_path, "rb") as f:
-        pdf_stream.write(f.read())
-    pdf_stream.seek(0)
+        pdf_doc.build(story)
+        pdf_buffer.seek(0)
 
-    # Clean up temp files
-    if os.path.exists(input_path):
-        os.remove(input_path)
-    if os.path.exists(pdf_path):
-        os.remove(pdf_path)
+        pdf_filename = os.path.splitext(filename)[0] + ".pdf"
 
-    return pdf_stream, pdf_filename
+        return pdf_buffer, pdf_filename
+    except Exception as e:
+        print(f"Conversion failed: {e}")
+        raise Exception(f"Failed to convert {filename} to PDF: {str(e)}")
 
 
 @word_to_pdf_bp.route("/word_to_pdf", methods=["GET", "POST"])
@@ -138,7 +174,15 @@ def word_to_pdf():
         if not files:
             return "No files uploaded", 400
 
-        # Case 1: Single file → return PDF directly
+        allowed_extensions = {".docx"}
+        for file in files:
+            file_ext = os.path.splitext(file.filename)[1].lower()
+            if file_ext not in allowed_extensions:
+                return (
+                    f"Invalid file type: {file.filename}. Only .docx files are supported.",
+                    400,
+                )
+
         if len(files) == 1:
             file = files[0]
             pdf_stream, pdf_filename = convert_word_to_pdf(file.stream, file.filename)
@@ -149,7 +193,6 @@ def word_to_pdf():
                 mimetype="application/pdf",
             )
 
-        # Case 2: Multiple files → return ZIP of PDFs
         else:
             zip_stream = BytesIO()
             with zipfile.ZipFile(zip_stream, "w", zipfile.ZIP_DEFLATED) as zipf:

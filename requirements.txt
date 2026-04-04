@@ -5,6 +5,8 @@ gunicorn==21.2.0
 Pillow==12.1.1
 pypdf==4.0.1
 pymupdf==1.26.0
+python-docx==0.8.11
+reportlab==4.0.9
 pywin32==306;sys_platform=="win32"
 
 deep-translator==1.11.4

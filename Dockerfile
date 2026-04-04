@@ -12,6 +12,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 
+# Ensure LibreOffice is in PATH
+ENV PATH="/usr/lib/libreoffice/program:${PATH}"
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
