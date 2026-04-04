@@ -1,9 +1,5 @@
 services:
   - type: web
     name: pdf-tools
-    runtime: python
-    pythonVersion: "3.11.9"
-    buildCommand: |
-      apt-get update && apt-get install -y libreoffice ghostscript
-      pip install -r requirements.txt
-    startCommand: gunicorn main:app
+    runtime: docker
+    dockerfilePath: ./Dockerfile
