@@ -11,18 +11,18 @@
 {% extends 'base.html' %}
 
 <!-- initilizing title -->
-{% block main_title %} Repair {% endblock %}
+{% block main_title %} PDF to JPG {% endblock %}
 
 <!-- implementing main container -->
 {% block main_content %}
 <section class="merge-page">
   <div class="merge-card">
-    <h2>Repair</h2>
-    <p class="muted">Select multiple PDF files and repair them.</p>
+    <h2>PDF to JPG</h2>
+    <p class="muted">Select pdf and convert into JPG.</p>
 
     <form
       class="merge-form ajax-upload-form"
-      action="{{ url_for('repair.repair') }}"
+      action="{{ url_for('pdf_to_jpg.pdf_to_jpg') }}"
       method="POST"
       enctype="multipart/form-data"
       id="mergeForm"
@@ -32,13 +32,13 @@
           type="file"
           name="pdfs"
           accept="application/pdf"
-          multiple
           id="pdfInput"
+          multiple
           hidden
         />
 
         <p class="drop-text">
-          Drag & Drop PDF files here <br />
+          Drag & Drop PDF file here <br />
           <span>or click to browse</span>
         </p>
 
@@ -46,7 +46,7 @@
       </div>
 
       <div class="actions">
-        <button type="submit" class="btn primary">Upload & Repair</button>
+        <button type="submit" class="btn primary">Convert and Download</button>
         <button type="button" class="btn ghost" onclick="clearAll()">
           Clear All
         </button>
@@ -54,8 +54,8 @@
     </form>
 
     <div class="upload-note">
-      <span class="note-icon">🛠️</span>
-      Fixes and restores damaged PDF files for reliable use.
+      <span class="note-icon">🔎</span>
+      Transform PDF documents into clear, high-resolution images in seconds.
     </div>
   </div>
 </section>

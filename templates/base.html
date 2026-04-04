@@ -45,8 +45,16 @@
               <h4>CONVERT FROM PDF</h4>
               <ul>
                 <!-- url_for("blueprint_name.function_name") -->
-                <li><a href="{{ url_for('jpg_to_pdf.jpg_to_pdf') }}">PDF to JPG</a></li>
-                <li><a href="{{ url_for('word_to_pdf.word_to_pdf') }}">PDF to WORD</a></li>
+                <li>
+                  <a href="{{ url_for('jpg_to_pdf.jpg_to_pdf') }}"
+                    >PDF to JPG</a
+                  >
+                </li>
+                <li>
+                  <a href="{{ url_for('word_to_pdf.word_to_pdf') }}"
+                    >PDF to WORD</a
+                  >
+                </li>
                 <li><a href="#">PDF to POWERPOINT</a></li>
                 <li><a href="#">PDF to EXCEL</a></li>
                 <li><a href="#">PDF to PDF/A</a></li>
@@ -98,8 +106,16 @@
             <div class="more-column">
               <h4>CONVERT TO PDF</h4>
               <ul>
-                <li><a href="{{ url_for('jpg_to_pdf.jpg_to_pdf') }}">JPG to PDF</a></li>
-                <li><a href="{{ url_for('word_to_pdf.word_to_pdf') }}">WORD to PDF</a></li>
+                <li>
+                  <a href="{{ url_for('jpg_to_pdf.jpg_to_pdf') }}"
+                    >JPG to PDF</a
+                  >
+                </li>
+                <li>
+                  <a href="{{ url_for('word_to_pdf.word_to_pdf') }}"
+                    >WORD to PDF</a
+                  >
+                </li>
                 <li><a href="#">POWERPOINT to PDF</a></li>
                 <li><a href="#">EXCEL to PDF</a></li>
                 <li><a href="#">HTML to PDF</a></li>
@@ -108,7 +124,11 @@
             <div class="more-column">
               <h4>CONVERT FROM PDF</h4>
               <ul>
-                <li><a href="#">PDF to JPG</a></li>
+                <li>
+                  <a href="{{ url_for('pdf_to_jpg.pdf_to_jpg') }}"
+                    >PDF to JPG</a
+                  >
+                </li>
                 <li><a href="#">PDF to WORD</a></li>
                 <li><a href="#">PDF to POWERPOINT</a></li>
                 <li><a href="#">PDF to EXCEL</a></li>
