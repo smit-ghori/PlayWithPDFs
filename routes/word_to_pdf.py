@@ -16,7 +16,14 @@ from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.platypus import (
+    Image,
+    Paragraph,
+    SimpleDocTemplate,
+    Spacer,
+    Table,
+    TableStyle,
+)
 
 word_to_pdf_bp = Blueprint("word_to_pdf", __name__)
 
@@ -109,7 +116,9 @@ def paragraph_to_flowables(paragraph, styles, temp_dir):
                     max_width = 6 * inch
                     img_width = max_width
                     img_height = img_width * aspect
-                    flowables.append(Image(image_path, width=img_width, height=img_height))
+                    flowables.append(
+                        Image(image_path, width=img_width, height=img_height)
+                    )
                     flowables.append(Spacer(1, 0.2 * inch))
                 except Exception:
                     continue

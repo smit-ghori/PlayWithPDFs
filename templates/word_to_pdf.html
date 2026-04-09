@@ -1,11 +1,13 @@
-{% extends 'base.html' %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/card_style.css') }}" />
-<link rel="stylesheet" href="{{ url_for('static', filename='css/compress.css') }}?v=2" />
-{% endblock %}
-
-{% block main_title %} Word to PDF {% endblock %}
+{% extends 'base.html' %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/card_style.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/compress.css') }}?v=2"
+/>
+{% endblock %} {% block main_title %} Word to PDF {% endblock %}
 
 <!-- implementing main container -->
 {% block main_content %}
