@@ -2,7 +2,7 @@ services:
   - type: web
     name: pdf-tools
     runtime: python
-    pythonVersion: "3.11.9"
+    pythonVersion: "3.12.0"
     buildCommand: |
       apt-get update && apt-get install -y libreoffice ghostscript
       pip install -r requirements.txt
