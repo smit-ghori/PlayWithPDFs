@@ -69,6 +69,27 @@ def extract_images_from_run(run, temp_dir):
     return images
 
 
+def extract_images_from_paragraph(paragraph, temp_dir):
+    images = []
+
+    for blip in paragraph._element.xpath('.//w:drawing//a:blip'):
+        embed_id = blip.get(qn('r:embed'))
+        if embed_id:
+            try:
+                image_part = paragraph.part.related_part(embed_id)
+                image_bytes = image_part.blob
+                format_name = PILImage.open(BytesIO(image_bytes)).format.lower()
+                image_name = f"image_{uuid.uuid4().hex}.{format_name}"
+                image_path = os.path.join(temp_dir, image_name)
+                with open(image_path, "wb") as image_file:
+                    image_file.write(image_bytes)
+                images.append(image_path)
+            except Exception:
+                pass
+
+    return images
+
+
 def paragraph_to_flowables(paragraph, styles, temp_dir):
     flowables = []
     text_buffer = ""
@@ -102,6 +123,8 @@ def paragraph_to_flowables(paragraph, styles, temp_dir):
                 alignment=alignment,
             )
 
+    paragraph_images = extract_images_from_paragraph(paragraph, temp_dir)
+
     for run in paragraph.runs:
         image_paths = extract_images_from_run(run, temp_dir)
         if image_paths:
@@ -131,6 +154,19 @@ def paragraph_to_flowables(paragraph, styles, temp_dir):
     elif not flowables:
         flowables.append(Spacer(1, 0.2 * inch))
 
+    # Add floating images after the text
+    for image_path in paragraph_images:
+        try:
+            img = PILImage.open(image_path)
+            aspect = img.height / img.width if img.width else 1
+            max_width = 6 * inch
+            img_width = max_width
+            img_height = img_width * aspect
+            flowables.append(Image(image_path, width=img_width, height=img_height))
+            flowables.append(Spacer(1, 0.2 * inch))
+        except Exception:
+            pass
+
     return flowables
 
 
@@ -149,6 +185,11 @@ def convert_word_to_pdf(input_file, output_dir=None):
         doc = Document(input_file)
         story = []
         styles = getSampleStyleSheet()
+
+        for section in doc.sections:
+            if section.header:
+                for paragraph in section.header.paragraphs:
+                    story.extend(paragraph_to_flowables(paragraph, styles, temp_dir))
 
         for paragraph in doc.paragraphs:
             story.extend(paragraph_to_flowables(paragraph, styles, temp_dir))
@@ -177,6 +218,11 @@ def convert_word_to_pdf(input_file, output_dir=None):
                 )
                 story.append(t)
                 story.append(Spacer(1, 0.3 * inch))
+
+        for section in doc.sections:
+            if section.footer:
+                for paragraph in section.footer.paragraphs:
+                    story.extend(paragraph_to_flowables(paragraph, styles, temp_dir))
 
         pdf_doc = SimpleDocTemplate(pdf_path, pagesize=letter)
         pdf_doc.build(story)
