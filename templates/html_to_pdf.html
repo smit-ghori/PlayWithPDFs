@@ -1,0 +1,53 @@
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/card_style.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/html_to_pdf.css') }}"
+/>
+
+{% extends 'base.html' %} {% block main_title %} Merge PDF {% endblock %} {%
+block main_content %}
+
+<section class="merge-page">
+  <div class="merge-card">
+    <h2>HTML to PDF</h2>
+    <p class="muted">Upload URL and convert into PDF.</p>
+
+    <form
+      class="merge-form ajax-upload-form"
+      action="{{ url_for('html_to_pdf.html_to_pdf') }}"
+      method="POST"
+      id="mergeForm"
+    >
+      <!-- Replaced Drop Zone with URL Input -->
+      <div class="urlInput">
+        <input
+          type="url"
+          name="url"
+          id="urlInput"
+          class="url-input"
+          placeholder="Enter website URL (https://example.com)"
+          class="url-input"
+          required
+        />
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn primary">Convert & Download</button>
+        <button type="button" class="btn ghost" onclick="clearAll()">
+          Clear All
+        </button>
+      </div>
+    </form>
+
+    <div class="upload-note">
+      <span class="note-icon">🌐</span>
+      Enter a valid URL to convert into PDF.
+    </div>
+  </div>
+</section>
+
+<script src="{{ url_for('static', filename='scripts/html_to_pdf.js') }}"></script>
+{% endblock %}

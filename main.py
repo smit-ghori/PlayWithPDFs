@@ -13,6 +13,7 @@ from routes.translate import translate_bp
 from routes.jpg_to_pdf import jpg_to_pdf_bp
 from routes.word_to_pdf import word_to_pdf_bp
 from routes.pdf_to_jpg import pdf_to_jpg_bp
+from routes.html_to_pdf import html_to_pdf_bp
 from utils.file_utils import cleanup_worker
 
 app = Flask(__name__)
@@ -33,6 +34,7 @@ app.register_blueprint(translate_bp)
 app.register_blueprint(jpg_to_pdf_bp)
 app.register_blueprint(word_to_pdf_bp)
 app.register_blueprint(pdf_to_jpg_bp)
+app.register_blueprint(html_to_pdf_bp)
 
 # start cleanup thread
 threading.Thread(target=cleanup_worker, daemon=True).start()
