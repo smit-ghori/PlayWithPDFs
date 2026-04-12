@@ -2,15 +2,7 @@ services:
   - type: web
     name: pdf-tools
     runtime: python
-    pythonVersion: "3.12.0"
 
-    buildCommand: |
-      apt-get update && apt-get install -y libreoffice libreoffice-writer ghostscript fonts-dejavu-core
-      pip install -r requirements.txt
-
-      echo "🔥 Installing Playwright browsers..."
-      python -m playwright install chromium
-
-      echo "✅ Install finished"
+    buildCommand: bash build.sh
 
     startCommand: gunicorn --bind 0.0.0.0:$PORT main:app
