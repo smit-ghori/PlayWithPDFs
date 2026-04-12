@@ -3,11 +3,14 @@ services:
     name: pdf-tools
     runtime: python
     pythonVersion: "3.12.0"
+
     envVars:
       - key: PLAYWRIGHT_BROWSERS_PATH
-        value: /opt/render/project/.cache/ms-playwright
+        value: /opt/render/.cache/ms-playwright
+
     buildCommand: |
       apt-get update && apt-get install -y libreoffice libreoffice-writer ghostscript fonts-dejavu-core
       pip install -r requirements.txt
-      PLAYWRIGHT_BROWSERS_PATH=/opt/render/project/.cache/ms-playwright python -m playwright install --with-deps chromium
+      python -m playwright install --with-deps chromium
+
     startCommand: gunicorn --bind 0.0.0.0:$PORT main:app
