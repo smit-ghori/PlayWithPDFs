@@ -7,13 +7,17 @@
   href="{{ url_for('static', filename='css/html_to_pdf.css') }}"
 />
 
-{% extends 'base.html' %} {% block main_title %} Merge PDF {% endblock %} {%
+{% extends 'base.html' %} {% block main_title %} HTML to PDF {% endblock %} {%
 block main_content %}
 
 <section class="merge-page">
   <div class="merge-card">
     <h2>HTML to PDF</h2>
     <p class="muted">Upload URL and convert into PDF.</p>
+
+    {% if error %}
+    <p class="muted" style="color: #c62828">{{ error }}</p>
+    {% endif %}
 
     <form
       class="merge-form ajax-upload-form"
@@ -29,7 +33,7 @@ block main_content %}
           id="urlInput"
           class="url-input"
           placeholder="Enter website URL (https://example.com)"
-          class="url-input"
+          value="{{ url or '' }}"
           required
         />
       </div>

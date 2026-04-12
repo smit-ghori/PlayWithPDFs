@@ -6,4 +6,5 @@ services:
     buildCommand: |
       apt-get update && apt-get install -y libreoffice ghostscript
       pip install -r requirements.txt
+      python -m playwright install chromium
     startCommand: gunicorn main:app
