@@ -2,7 +2,7 @@
 
 set -e
 
-export PLAYWRIGHT_BROWSERS_PATH=/opt/render/.cache/ms-playwright
+export PLAYWRIGHT_BROWSERS_PATH=/opt/render/project/src/.playwright
 
 apt-get update && apt-get install -y libreoffice libreoffice-writer ghostscript fonts-dejavu-core
 
