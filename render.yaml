@@ -6,11 +6,12 @@ services:
 
     envVars:
       - key: PLAYWRIGHT_BROWSERS_PATH
-        value: /opt/render/.cache/ms-playwright
+        value: /opt/render/project/.cache/ms-playwright # ✅ persistent path
 
     buildCommand: |
       apt-get update && apt-get install -y libreoffice libreoffice-writer ghostscript fonts-dejavu-core
       pip install -r requirements.txt
-      python -m playwright install --with-deps chromium
+      mkdir -p /opt/render/project/.cache/ms-playwright
+      PLAYWRIGHT_BROWSERS_PATH=/opt/render/project/.cache/ms-playwright python -m playwright install chromium
 
     startCommand: gunicorn --bind 0.0.0.0:$PORT main:app
