@@ -29,7 +29,7 @@ def generate_pdf(url):
     except ImportError as exc:
         raise RuntimeError(
             "Playwright is not installed. Add it to requirements and run "
-            "'python -m playwright install chromium'."
+            "'python -m playwright install --with-deps chromium'."
         ) from exc
 
     try:
