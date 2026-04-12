@@ -2,6 +2,9 @@ services:
   - type: web
     name: pdf-tools
     runtime: python
+    envVars:
+      - key: PLAYWRIGHT_BROWSERS_PATH
+        value: /opt/render/.cache/ms-playwright
 
     buildCommand: bash build.sh
 
