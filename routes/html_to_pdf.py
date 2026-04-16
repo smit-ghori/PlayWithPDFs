@@ -1,93 +1,120 @@
 from io import BytesIO
 from urllib.parse import urlparse
-from flask import Blueprint, render_template, request, send_file
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    send_file,
+    flash,
+    redirect,
+    url_for,
+    make_response,
+)
+import asyncio
+from playwright.async_api import async_playwright
 
 html_to_pdf_bp = Blueprint("html_to_pdf", __name__)
 
 
-def normalize_url(url):
-    cleaned_url = (url or "").strip()
-    if not cleaned_url:
-        raise ValueError("Please enter a website URL.")
+# ✅ Async function (safe + timeout handled)
+async def generate_pdf_from_url(url: str) -> bytes:
+    import os
 
-    if not cleaned_url.startswith(("http://", "https://")):
-        cleaned_url = f"https://{cleaned_url}"
+    os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "/opt/render/project/src/.playwright"
 
-    parsed_url = urlparse(cleaned_url)
-    if not parsed_url.scheme or not parsed_url.netloc:
-        raise ValueError("Please enter a valid website URL.")
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(
+            headless=True,
+            args=[
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-gpu",
+                "--single-process",
+            ],
+        )
 
-    return cleaned_url
+        page = await browser.new_page(viewport={"width": 1280, "height": 1600})
 
+        await page.emulate_media(media="screen")
 
-def generate_pdf(url):
-    normalized_url = normalize_url(url)
+        try:
+            # Load page safely
+            await page.goto(url, wait_until="domcontentloaded", timeout=60000)
 
-    try:
-        from playwright.sync_api import Error as PlaywrightError
-        from playwright.sync_api import sync_playwright
-    except ImportError as exc:
-        raise RuntimeError(
-            "Playwright is not installed. Add it to requirements and run "
-            "'python -m playwright install --with-deps chromium'."
-        ) from exc
-
-    try:
-        with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(
-                headless=True,
-                args=["--no-sandbox", "--disable-dev-shm-usage"],
-            )
-
+            # Some sites never become "networkidle"
             try:
-                page = browser.new_page(viewport={"width": 1440, "height": 2000})
-                page.emulate_media(media="screen")
-                page.goto(normalized_url, wait_until="domcontentloaded", timeout=60000)
+                await page.wait_for_load_state("networkidle", timeout=15000)
+            except:
+                pass
 
-                try:
-                    page.wait_for_load_state("networkidle", timeout=15000)
-                except PlaywrightError:
-                    # Some sites keep background requests open, so don't block PDF creation.
-                    pass
+        except Exception as e:
+            await browser.close()
+            raise Exception("Failed to load webpage")
 
-                page.wait_for_timeout(1000)
+        # Generate PDF
+        pdf_bytes = await page.pdf(
+            format="A4",
+            print_background=True,
+            scale=0.9,
+            margin={
+                "top": "10mm",
+                "bottom": "10mm",
+                "left": "10mm",
+                "right": "10mm",
+            },
+        )
 
-                return page.pdf(
-                    format="A4",
-                    print_background=True,
-                    prefer_css_page_size=True,
-                )
-            finally:
-                browser.close()
-    except PlaywrightError as exc:
-        raise RuntimeError(
-            f"Failed to open the page for PDF conversion: {exc}"
-        ) from exc
+        await browser.close()
+        return pdf_bytes
 
 
+# ✅ Route
 @html_to_pdf_bp.route("/html_to_pdf", methods=["GET", "POST"])
 def html_to_pdf():
     if request.method == "POST":
         url = request.form.get("url", "").strip()
-        # print("--------------------------------------------")
-        # print(url)
-        # print("--------------------------------------------")
+
+        # ❌ Validation
+        if not url:
+            flash("Please provide a valid URL", "error")
+            return redirect(url_for("html_to_pdf.html_to_pdf"))
+
+        parsed = urlparse(url)
+        if not parsed.scheme or not parsed.netloc:
+            flash("Invalid URL. Please include http:// or https://", "error")
+            return redirect(url_for("html_to_pdf.html_to_pdf"))
 
         try:
-            pdf_bytes = generate_pdf(url)
-        except ValueError as exc:
-            return render_template("html_to_pdf.html", error=str(exc), url=url), 400
-        except RuntimeError as exc:
-            return render_template("html_to_pdf.html", error=str(exc), url=url), 500
+            # ✅ SAFE async execution
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            pdf_bytes = loop.run_until_complete(generate_pdf_from_url(url))
+            loop.close()
 
-        pdf_buffer = BytesIO(pdf_bytes)
-        pdf_buffer.seek(0)
+            # ✅ Prepare PDF
+            pdf_io = BytesIO(pdf_bytes)
+            pdf_io.seek(0)
 
-        return send_file(
-            pdf_buffer,
-            as_attachment=True,
-            download_name="converted.pdf",
-            mimetype="application/pdf",
-        )
+            domain = parsed.netloc.replace("www.", "").replace(".", "_")
+            filename = f"{domain}.pdf"
+
+            # ✅ Proper response (important fix)
+            response = make_response(
+                send_file(
+                    pdf_io,
+                    as_attachment=True,
+                    download_name=filename,
+                    mimetype="application/pdf",
+                )
+            )
+
+            response.headers["Content-Disposition"] = f"attachment; filename={filename}"
+            response.headers["Cache-Control"] = "no-cache"
+
+            return response
+
+        except Exception as e:
+            flash(f"Error generating PDF: {str(e)}", "error")
+            return redirect(url_for("html_to_pdf.html_to_pdf"))
 
     return render_template("html_to_pdf.html")

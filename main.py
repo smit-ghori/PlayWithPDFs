@@ -17,8 +17,9 @@ from routes.html_to_pdf import html_to_pdf_bp
 from utils.file_utils import cleanup_worker
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "fallback-secret")
 
-UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "uploads"   )
+UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # register routes
@@ -43,7 +44,7 @@ threading.Thread(target=cleanup_worker, daemon=True).start()
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
-    
+
 # edited for compress
 # if __name__ == "__main__":
 #     port = int(os.environ.get("PORT", 5000))

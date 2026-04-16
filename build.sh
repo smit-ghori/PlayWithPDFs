@@ -1,12 +1,24 @@
 #!/usr/bin/env bash
-
 set -e
 
-export PLAYWRIGHT_BROWSERS_PATH=/opt/render/project/src/.playwright
+echo "📦 Installing system dependencies..."
+apt-get update && apt-get install -y \
+    libreoffice \
+    libreoffice-writer \
+    ghostscript \
+    fonts-dejavu-core \
+    wget \
+    ca-certificates
 
-apt-get update && apt-get install -y libreoffice libreoffice-writer ghostscript fonts-dejavu-core
-
+echo "📦 Installing Python dependencies..."
 pip install -r requirements.txt
 
-echo "Installing Playwright Chromium..."
-python -m playwright install --with-deps chromium
+echo "📦 Installing Playwright Chromium (FIXED PATH)..."
+
+# ✅ VERY IMPORTANT: consistent path
+export PLAYWRIGHT_BROWSERS_PATH=/opt/render/project/src/.playwright
+
+# Install browser
+playwright install chromium
+
+echo "✅ Build completed successfully"

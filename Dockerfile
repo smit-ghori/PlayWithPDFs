@@ -2,7 +2,9 @@ FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+
+# ✅ SAME PATH (important)
+ENV PLAYWRIGHT_BROWSERS_PATH=/opt/render/project/src/.playwright
 
 WORKDIR /app
 
@@ -13,12 +15,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 
-# Ensure LibreOffice is in PATH
+# LibreOffice path
 ENV PATH="/usr/lib/libreoffice/program:${PATH}"
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-RUN python -m playwright install --with-deps chromium
+
+# ✅ Install browser in SAME PATH
+RUN playwright install chromium
 
 COPY . .
 
