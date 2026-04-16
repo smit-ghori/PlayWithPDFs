@@ -16,42 +16,44 @@ async function downloadFromResponse(resp) {
     const blob = await resp.blob();
     let filename = "download";
     const disposition = resp.headers.get("Content-Disposition");
-    if (disposition && disposition.indexOf("filename=") !== -1) {
-        filename = disposition
-            .split("filename=")[1]
-            .replace(/"/g, "");
+    if (disposition) {
+        const utf8Match = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+        const asciiMatch = disposition.match(/filename="?([^";]+)"?/i);
+        if (utf8Match) {
+            filename = decodeURIComponent(utf8Match[1]);
+        } else if (asciiMatch) {
+            filename = asciiMatch[1];
+        }
     }
 
     const downloadUrl = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = downloadUrl;
     a.download = filename;
+    a.style.display = "none";
     document.body.appendChild(a);
     a.click();
     a.remove();
-    URL.revokeObjectURL(downloadUrl);
+    setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
 }
 
-// function resetUploader() {
-//     const form = document.getElementById("mergeForm");
-//     if (form) form.reset();
+function resetUploader(form) {
+    if (form) form.reset();
 
-//     const fileList = document.getElementById("fileList");
-//     if (fileList) fileList.innerHTML = "";
+    const fileList = document.getElementById("fileList");
+    if (fileList) fileList.innerHTML = "";
 
-//     const input = document.getElementById("pdfInput");
-//     if (input) input.value = "";
+    const pdfInput = document.getElementById("pdfInput");
+    if (pdfInput) pdfInput.value = "";
 
-//     // if card.js has a selectedFiles array, clear it
-//     if (window.selectedFiles && Array.isArray(window.selectedFiles)) {
-//         window.selectedFiles.length = 0;
-//     }
+    if (window.selectedFiles && Array.isArray(window.selectedFiles)) {
+        window.selectedFiles.length = 0;
+    }
 
-//     // also call the helper from card.js if available
-//     if (typeof window.resetUploadForm === "function") {
-//         window.resetUploadForm();
-//     }
-// }
+    if (typeof window.resetUploadForm === "function") {
+        window.resetUploadForm();
+    }
+}
 
 // when DOM ready, wire up interactions
 document.addEventListener("DOMContentLoaded", () => {
@@ -87,16 +89,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     contentType.includes("application/octet-stream")
                 ) {
                     await downloadFromResponse(resp);
-
-                    // reset the upload form so the user can upload again without refreshing
-                    resetUploader();
+                    resetUploader(form);
                 } else {
-                    // Non-download responses (HTML/text/etc)
-                    // We do not replace the page body because that would remove our event listeners.
-                    // Instead, just reset the upload form for another attempt.
-                    resetUploader();
+                    if (resp.redirected && resp.url) {
+                        window.location.href = resp.url;
+                        return;
+                    }
 
-                    // Optional: show a simple message in the console for debugging.
+                    resetUploader(form);
                     const text = await resp.text();
                     console.log("Upload response:", text);
                 }
