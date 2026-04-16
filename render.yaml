@@ -1,7 +1,8 @@
 services:
   - type: web
     name: pdf-tools
-    runtime: python
+    runtime: docker
+    dockerfilePath: ./Dockerfile
 
     envVars:
       - key: PLAYWRIGHT_BROWSERS_PATH
@@ -9,7 +10,3 @@ services:
 
       - key: SECRET_KEY
         value: your-secret-key
-
-    buildCommand: bash build.sh
-
-    startCommand: gunicorn main:app --bind 0.0.0.0:$PORT --timeout 120

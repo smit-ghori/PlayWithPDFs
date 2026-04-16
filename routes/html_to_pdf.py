@@ -28,8 +28,8 @@ async def generate_pdf_from_url(url: str) -> bytes:
             )
         except PlaywrightError as exc:
             raise RuntimeError(
-                "Chromium could not start. Install it with 'playwright install chromium' "
-                "or ensure the server image includes Playwright browsers."
+                "Chromium could not start on the server. "
+                f"Playwright error: {exc}"
             ) from exc
 
         try:
