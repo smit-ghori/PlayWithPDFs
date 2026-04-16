@@ -23,4 +23,4 @@ ENV PYTHONUNBUFFERED=1
 RUN python -m playwright install --with-deps chromium
 
 # Start app
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "main:app"]
+CMD gunicorn --bind 0.0.0.0:$PORT main:app
