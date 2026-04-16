@@ -19,6 +19,6 @@ echo "📦 Installing Playwright Chromium (FIXED PATH)..."
 export PLAYWRIGHT_BROWSERS_PATH=/opt/render/project/src/.playwright
 
 # Install browser
-playwright install chromium
+python -m playwright install --with-deps chromium
 
 echo "✅ Build completed successfully"

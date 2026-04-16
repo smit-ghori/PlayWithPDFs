@@ -22,7 +22,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # ✅ Install browser in SAME PATH
-RUN playwright install chromium
+RUN python -m playwright install --with-deps chromium
 
 COPY . .
 
