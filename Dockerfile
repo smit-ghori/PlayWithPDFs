@@ -1,29 +1,26 @@
-FROM python:3.12-slim
-
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# ✅ SAME PATH (important)
-ENV PLAYWRIGHT_BROWSERS_PATH=/opt/render/project/src/.playwright
+FROM python:3.12
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+COPY . .
+
+# System dependencies
+RUN apt-get update && apt-get install -y \
     libreoffice \
     libreoffice-writer \
     ghostscript \
     fonts-dejavu-core \
-    && rm -rf /var/lib/apt/lists/*
+    wget \
+    ca-certificates
 
-# LibreOffice path
-ENV PATH="/usr/lib/libreoffice/program:${PATH}"
-
-COPY requirements.txt .
+# Python
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-# ✅ Install browser in SAME PATH
+# Playwright
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+ENV PYTHONUNBUFFERED=1
 RUN python -m playwright install --with-deps chromium
 
-COPY . .
-
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-10000} main:app"]
+# Start app
+CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "main:app"]

@@ -12,9 +12,6 @@ html_to_pdf_bp = Blueprint("html_to_pdf", __name__)
 
 
 async def generate_pdf_from_url(url: str) -> bytes:
-    if os.environ.get("RENDER"):
-        os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "/opt/render/project/src/.playwright"
-
     async with async_playwright() as p:
         try:
             browser = await p.chromium.launch(
