@@ -3,12 +3,20 @@ import os
 from io import BytesIO
 from urllib.parse import urlparse
 
-from flask import Blueprint, flash, redirect, render_template, request, send_file, url_for
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, send_file, url_for
 from playwright.async_api import Error as PlaywrightError
 from playwright.async_api import TimeoutError as PlaywrightTimeoutError
 from playwright.async_api import async_playwright
 
 html_to_pdf_bp = Blueprint("html_to_pdf", __name__)
+
+
+def conversion_error(message: str, status_code: int = 400):
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return jsonify({"error": message}), status_code
+
+    flash(message, "error")
+    return redirect(url_for("html_to_pdf.html_to_pdf"))
 
 
 async def generate_pdf_from_url(url: str) -> bytes:
@@ -64,13 +72,11 @@ def html_to_pdf():
         url = request.form.get("url", "").strip()
 
         if not url:
-            flash("Please provide a valid URL.", "error")
-            return redirect(url_for("html_to_pdf.html_to_pdf"))
+            return conversion_error("Please provide a valid URL.")
 
         parsed = urlparse(url)
         if not parsed.scheme or not parsed.netloc:
-            flash("Invalid URL. Please include http:// or https://.", "error")
-            return redirect(url_for("html_to_pdf.html_to_pdf"))
+            return conversion_error("Invalid URL. Please include http:// or https://.")
 
         try:
             pdf_bytes = asyncio.run(generate_pdf_from_url(url))
@@ -88,10 +94,8 @@ def html_to_pdf():
                 max_age=0,
             )
         except RuntimeError as exc:
-            flash(f"Error generating PDF: {exc}", "error")
-            return redirect(url_for("html_to_pdf.html_to_pdf"))
+            return conversion_error(f"Error generating PDF: {exc}", 500)
         except Exception:
-            flash("Error generating PDF: unexpected server error.", "error")
-            return redirect(url_for("html_to_pdf.html_to_pdf"))
+            return conversion_error("Error generating PDF: unexpected server error.", 500)
 
     return render_template("html_to_pdf.html")

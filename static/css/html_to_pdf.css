@@ -42,3 +42,12 @@
 .url-input:focus {
   letter-spacing: 0.5px;
 }
+
+.html-to-pdf-message {
+  color: #c62828;
+  margin-top: 10px;
+}
+
+.html-to-pdf-message.success {
+  color: #2e7d32;
+}

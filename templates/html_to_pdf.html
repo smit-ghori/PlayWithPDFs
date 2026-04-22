@@ -18,9 +18,10 @@ block main_content %}
     {% if error %}
     <p class="muted" style="color: #c62828">{{ error }}</p>
     {% endif %}
+    <p id="htmlToPdfMessage" class="muted html-to-pdf-message" hidden></p>
 
     <form
-      class="merge-form"
+      class="merge-form ajax-upload-form"
       action="{{ url_for('html_to_pdf.html_to_pdf') }}"
       method="POST"
       id="mergeForm"
