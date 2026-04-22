@@ -5,8 +5,5 @@ services:
     dockerfilePath: ./Dockerfile
 
     envVars:
-      - key: PLAYWRIGHT_BROWSERS_PATH
-        value: /ms-playwright
-
       - key: SECRET_KEY
         value: your-secret-key

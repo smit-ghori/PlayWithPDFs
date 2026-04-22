@@ -4,24 +4,14 @@ set -o errexit
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 
-python -m playwright install chromium
-
 python - <<'PY'
 import os
 from pathlib import Path
 
-root = Path(os.environ.get("PLAYWRIGHT_BROWSERS_PATH", "")).expanduser()
-if not root:
-    root = Path.home() / ".cache" / "ms-playwright"
+path = Path(os.environ.get("CHROMIUM_EXECUTABLE_PATH", "/usr/bin/chromium"))
 
-matches = (
-    list(root.glob("chromium*/**/chrome"))
-    + list(root.glob("chromium*/**/headless_shell"))
-    + list(root.glob("chromium*/**/chrome-headless-shell"))
-)
+if not path.is_file():
+    raise SystemExit(f"System Chromium was not found at {path}")
 
-if not matches:
-    raise SystemExit(f"Chromium was not installed under {root}")
-
-print(f"Chromium installed: {matches[0]}")
+print(f"System Chromium found: {path}")
 PY

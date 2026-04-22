@@ -1,14 +1,33 @@
 import asyncio
 import os
 from io import BytesIO
+from pathlib import Path
 from urllib.parse import urlparse
 
 from flask import Blueprint, flash, jsonify, redirect, render_template, request, send_file, url_for
+
+
 from playwright.async_api import Error as PlaywrightError
 from playwright.async_api import TimeoutError as PlaywrightTimeoutError
 from playwright.async_api import async_playwright
 
 html_to_pdf_bp = Blueprint("html_to_pdf", __name__)
+
+
+def chromium_executable_path() -> str | None:
+    configured_path = os.environ.get("CHROMIUM_EXECUTABLE_PATH")
+    candidates = [
+        configured_path,
+        "/usr/bin/chromium",
+        "/usr/bin/chromium-browser",
+        "/usr/bin/google-chrome",
+    ]
+
+    for candidate in candidates:
+        if candidate and Path(candidate).is_file():
+            return candidate
+
+    return None
 
 
 def conversion_error(message: str, status_code: int = 400):
@@ -22,18 +41,28 @@ def conversion_error(message: str, status_code: int = 400):
 async def generate_pdf_from_url(url: str) -> bytes:
     async with async_playwright() as p:
         try:
-            browser = await p.chromium.launch(
-                headless=True,
-                args=[
+            launch_options = {
+                "headless": True,
+                "args": [
                     "--no-sandbox",
                     "--disable-dev-shm-usage",
                     "--disable-gpu",
                     "--disable-setuid-sandbox",
                 ],
+            }
+
+            executable_path = chromium_executable_path()
+            if executable_path:
+                launch_options["executable_path"] = executable_path
+
+            browser = await p.chromium.launch(
+                **launch_options,
             )
         except PlaywrightError as exc:
+            executable_path = chromium_executable_path() or "not found"
             raise RuntimeError(
                 "Chromium could not start on the server. "
+                f"CHROMIUM_EXECUTABLE_PATH={executable_path}. "
                 f"Playwright error: {exc}"
             ) from exc
 

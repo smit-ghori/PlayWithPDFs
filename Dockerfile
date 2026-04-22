@@ -6,6 +6,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     libreoffice \
     libreoffice-writer \
+    chromium \
     ghostscript \
     fonts-dejavu-core \
     wget \
@@ -18,11 +19,11 @@ COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Playwright
-ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+# Use Debian's Chromium package instead of Playwright's downloaded browser cache.
+ENV CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 ENV PYTHONUNBUFFERED=1
-RUN python -m playwright install --with-deps chromium
-RUN python -c "from pathlib import Path; import os; root = Path(os.environ['PLAYWRIGHT_BROWSERS_PATH']); matches = list(root.glob('chromium*/**/chrome')) + list(root.glob('chromium*/**/headless_shell')) + list(root.glob('chromium*/**/chrome-headless-shell')); assert matches, f'Chromium was not installed under {root}'"
+RUN test -x "$CHROMIUM_EXECUTABLE_PATH"
 
 COPY . .
 
