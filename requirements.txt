@@ -10,4 +10,4 @@ reportlab==4.0.9
 pywin32==306;sys_platform=="win32"
 
 deep-translator==1.11.4
-playwright
+playwright==1.58.0
