@@ -1,4 +1,4 @@
-FROM python:3.12
+FROM python:3.12-slim
 
 WORKDIR /app
 
@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     libreoffice \
     libreoffice-calc \
     libreoffice-writer \
+    libreoffice-impress \
     chromium \
     ghostscript \
     fonts-dejavu-core \
@@ -14,19 +15,37 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy requirements
 COPY requirements.txt .
 
-# Python
+# Upgrade pip
 RUN pip install --upgrade pip
+
+# Install Python packages
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Use Debian's Chromium package instead of Playwright's downloaded browser cache.
+# Chromium path
 ENV CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium
-ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
-ENV PYTHONUNBUFFERED=1
-RUN test -x "$CHROMIUM_EXECUTABLE_PATH"
 
+# Skip Playwright browser download
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+
+# Better logs
+ENV PYTHONUNBUFFERED=1
+
+# Flask production safety
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Copy project files
 COPY . .
 
-# Start app
-CMD gunicorn --bind 0.0.0.0:$PORT --timeout 180 main:app
+# Expose port
+EXPOSE 10000
+
+# Start Gunicorn
+CMD gunicorn \
+    --bind 0.0.0.0:$PORT \
+    --workers 2 \
+    --threads 4 \
+    --timeout 180 \
+    main:app

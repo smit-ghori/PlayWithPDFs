@@ -43,7 +43,10 @@ fileListUI.addEventListener("touchmove", (e) => {
 });
 
 const fileTypes = {
-    pdf: ["application/pdf"],
+
+    pdf: [
+        "application/pdf"
+    ],
 
     word: [
         "application/msword",
@@ -53,14 +56,24 @@ const fileTypes = {
     excel: [
         "application/vnd.ms-excel",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ],
+
+    ppt: [
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation"
     ]
 };
-
 function showInvalidFileMessage(type) {
+
     const messages = {
+
         pdf: "Please upload only PDF files.",
+
         word: "Please upload only Word files.",
-        excel: "Please upload only Excel files."
+
+        excel: "Please upload only Excel files.",
+
+        ppt: "Please upload only PowerPoint files."
     };
 
     alert(messages[type] || "Invalid file type!");

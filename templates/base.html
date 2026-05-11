@@ -36,7 +36,7 @@
                 <!-- url_for("blueprint_name.function_name") -->
                 <li><a href="#">JPG to PDF</a></li>
                 <li><a href="#">WORD to PDF</a></li>
-                <li><a href="#">POWERPOINT to PDF</a></li>
+                <li><a href="{{ url_for('ppt_to_pdf.convert_ppt_to_pdf') }}">POWERPOINT to PDF</a></li>
                 <li><a href="{{ url_for('excel_to_pdf.excel_to_pdf') }}">EXCEL to PDF</a></li>
                 <li>
                   <a href="{{ url_for('html_to_pdf.html_to_pdf') }}"
@@ -60,7 +60,7 @@
                   >
                 </li>
                 <li><a href="#">PDF to POWERPOINT</a></li>
-                <li><a href="{{ url_for('excel_to_pdf.excel_to_pdf') }}">PDF to EXCEL</a></li>
+                <li><a href="#">PDF to EXCEL</a></li>
                 <li><a href="#">PDF to PDF/A</a></li>
               </ul>
             </div>
@@ -120,7 +120,7 @@
                     >WORD to PDF</a
                   >
                 </li>
-                <li><a href="#">POWERPOINT to PDF</a></li>
+                <li><a href="{{ url_for('ppt_to_pdf.convert_ppt_to_pdf') }}">POWERPOINT to PDF</a></li>
                 <li><a href="{{ url_for('excel_to_pdf.excel_to_pdf') }}">EXCEL to PDF</a></li>
                 <li>
                   <a href="{{ url_for('html_to_pdf.html_to_pdf') }}"
