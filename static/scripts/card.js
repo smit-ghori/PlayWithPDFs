@@ -44,11 +44,27 @@ fileListUI.addEventListener("touchmove", (e) => {
 
 const fileTypes = {
     pdf: ["application/pdf"],
+
     word: [
         "application/msword",
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ],
+
+    excel: [
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     ]
 };
+
+function showInvalidFileMessage(type) {
+    const messages = {
+        pdf: "Please upload only PDF files.",
+        word: "Please upload only Word files.",
+        excel: "Please upload only Excel files."
+    };
+
+    alert(messages[type] || "Invalid file type!");
+}
 
 function addFiles(files) {
     const type = dropZone.dataset.type;
@@ -58,7 +74,7 @@ function addFiles(files) {
         if (allowed.includes(file.type)) {
             selectedFiles.push(file);
         } else {
-            alert(`Invalid file type! Allowed: ${type}`);
+            showInvalidFileMessage(type);
         }
     }
 

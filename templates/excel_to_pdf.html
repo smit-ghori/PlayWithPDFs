@@ -1,0 +1,84 @@
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/card_style.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/compress.css') }}?v=2"
+/>
+{% extends 'base.html' %} {% block extra_css %} {% endblock %} {% block
+main_title %} Excel to PDF {% endblock %}
+
+<!-- implementing main container -->
+
+{% block main_content %}
+
+<section class="merge-page">
+  <div class="merge-card">
+    <h2>Excel File Into PDF</h2>
+    <p class="muted">Select multiple Excel files and convert them into PDFs.</p>
+
+    <form
+      class="merge-form ajax-upload-form"
+      action="{{ url_for('excel_to_pdf.excel_to_pdf') }}"
+      method="POST"
+      enctype="multipart/form-data"
+      id="mergeForm"
+    >
+      <div class="drop-zone" id="dropZone" data-type="excel">
+        <input
+          type="file"
+          name="files"
+          accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          multiple
+          id="pdfInput"
+          hidden
+        />
+
+        <p class="drop-text">
+          Drag & Drop Excel files here <br />
+          <span>or click to browse</span>
+        </p>
+
+        <ul class="file-list" id="fileList"></ul>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn primary">Convert & Download</button>
+        <button type="button" class="btn ghost" onclick="clearAll()">
+          Clear All
+        </button>
+      </div>
+    </form>
+
+    <div class="upload-note">
+      <span class="note-icon">🛠️</span>
+      Upload Excel files and convert them seamlessly into PDFs.
+    </div>
+  </div>
+</section>
+
+<script>
+  // Excel To PDF Special Module JS
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("mergeForm");
+
+    form.addEventListener("submit", function (e) {
+      // Extra Excel-specific validation
+
+      const maxSize = 10 * 1024 * 1024; // 10 MB
+
+      for (let file of selectedFiles) {
+        if (file.size > maxSize) {
+          e.preventDefault();
+
+          alert(`${file.name} exceeds 10 MB limit.`);
+          return;
+        }
+      }
+    });
+  });
+</script>
+<script src="{{ url_for('static', filename='scripts/card.js') }}"></script>
+{% endblock %}
