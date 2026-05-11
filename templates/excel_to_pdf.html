@@ -20,7 +20,7 @@ main_title %} Excel to PDF {% endblock %}
 
     <form
       class="merge-form ajax-upload-form"
-      action="{{ url_for('excel_to_pdf.excel_to_pdf') }}"
+      action="{{ url_for('excel_to_pdf.convert_excel_to_pdf') }}"
       method="POST"
       enctype="multipart/form-data"
       id="mergeForm"
@@ -58,27 +58,6 @@ main_title %} Excel to PDF {% endblock %}
   </div>
 </section>
 
-<script>
-  // Excel To PDF Special Module JS
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("mergeForm");
-
-    form.addEventListener("submit", function (e) {
-      // Extra Excel-specific validation
-
-      const maxSize = 10 * 1024 * 1024; // 10 MB
-
-      for (let file of selectedFiles) {
-        if (file.size > maxSize) {
-          e.preventDefault();
-
-          alert(`${file.name} exceeds 10 MB limit.`);
-          return;
-        }
-      }
-    });
-  });
-</script>
+<script src="{{ url_for('static', filename='scripts/excel_to_pdf.js') }}"></script>
 <script src="{{ url_for('static', filename='scripts/card.js') }}"></script>
 {% endblock %}
