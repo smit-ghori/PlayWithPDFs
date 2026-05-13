@@ -1,4 +1,4 @@
-// PDF To PPT Module JS
+// PPT To PDF Module JS
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Set upload type dynamically
     if (dropZone) {
-        dropZone.dataset.type = "pdf";
+        dropZone.dataset.type = "ppt";
     }
 
 });

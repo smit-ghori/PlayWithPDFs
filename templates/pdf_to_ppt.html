@@ -1,0 +1,75 @@
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/card_style.css') }}"
+/>
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/compress.css') }}?v=2"
+/>
+
+<!-- extending base -->
+{% extends 'base.html' %}
+
+<!-- initilizing title -->
+{% block main_title %} PDF to Powerpoint {% endblock %}
+
+<!-- implementing main container -->
+{% block main_content %}
+
+<section class="merge-page">
+  <div class="merge-card">
+    <h2>PDF to PowerPoint</h2>
+
+    <p class="muted">
+      Select PDF files and convert them into PowerPoint presentations.
+    </p>
+
+    <form
+      class="merge-form ajax-upload-form"
+      action="{{ url_for('pdf_to_ppt.convert_pdf_to_ppt') }}"
+      method="POST"
+      enctype="multipart/form-data"
+      id="mergeForm"
+    >
+      <div class="drop-zone" id="dropZone" data-type="pdf">
+        <input
+          type="file"
+          name="pdfs"
+          accept=".pdf,application/pdf"
+          multiple
+          id="pdfInput"
+          hidden
+        />
+
+        <p class="drop-text">
+          Drag & Drop PDF files here <br />
+          <span>or click to browse</span>
+        </p>
+
+        <ul class="file-list" id="fileList"></ul>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn primary">Upload & Convert</button>
+
+        <button type="button" class="btn ghost" onclick="clearAll()">
+          Clear All
+        </button>
+      </div>
+    </form>
+
+    <div class="upload-note">
+      <span class="note-icon">🛠️</span>
+      Upload PDF files and convert them into PowerPoint presentations.
+    </div>
+  </div>
+</section>
+
+<!-- Common Upload Logic -->
+<script src="{{ url_for('static', filename='scripts/card.js') }}"></script>
+
+<!-- PDF TO PPT MODULE JS -->
+<script src="{{ url_for('static', filename='scripts/pdf_to_ppt.js') }}"></script>
+
+{% endblock %}
