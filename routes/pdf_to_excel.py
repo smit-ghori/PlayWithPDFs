@@ -132,9 +132,6 @@ def convert_pdf_to_excel():
 
         tables = pdf.extract_tables(
             ocr=ocr,
-            implicit_rows=True,
-            implicit_columns=True,
-            borderless_tables=True,
             min_confidence=50,
         )
 
