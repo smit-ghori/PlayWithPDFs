@@ -83,7 +83,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!resp.ok) throw new Error("Network response was not ok");
 
                 const contentType = resp.headers.get("Content-Type") || "";
+                const disposition = resp.headers.get("Content-Disposition") || "";
                 if (
+                    disposition ||
                     contentType.includes("application/pdf") ||
                     contentType.includes("application/zip") ||
                     contentType.includes("application/octet-stream")

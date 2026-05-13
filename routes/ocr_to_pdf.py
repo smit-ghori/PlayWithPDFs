@@ -108,7 +108,7 @@ def convert_ocr_to_pdf():
                 download_name=os.path.basename(
                     generated_pdfs[0]
                 ),
-                mimetype="application/pdf",
+                mimetype="application/octet-stream",
             )
 
         # MULTIPLE PDFs -> ZIP
