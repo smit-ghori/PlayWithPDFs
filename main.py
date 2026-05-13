@@ -17,6 +17,7 @@ from routes.html_to_pdf import html_to_pdf_bp
 from routes.excel_to_pdf import excel_to_pdf_bp
 from routes.ppt_to_pdf import ppt_to_pdf_bp
 from routes.pdf_to_ppt import pdf_to_ppt_bp
+from routes.pdf_to_word import pdf_to_word_bp
 from utils.file_utils import cleanup_worker
 
 app = Flask(__name__)
@@ -42,6 +43,7 @@ app.register_blueprint(html_to_pdf_bp)
 app.register_blueprint(excel_to_pdf_bp)
 app.register_blueprint(ppt_to_pdf_bp)
 app.register_blueprint(pdf_to_ppt_bp)
+app.register_blueprint(pdf_to_word_bp)
 
 # start cleanup thread
 threading.Thread(target=cleanup_worker, daemon=True).start()

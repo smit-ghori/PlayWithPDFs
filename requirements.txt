@@ -25,3 +25,6 @@ deep-translator==1.11.4
 
 # Browser Automation
 playwright==1.58.0
+
+# pdf wo word 
+pdf2docx==0.5.8
