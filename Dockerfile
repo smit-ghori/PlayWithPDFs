@@ -10,6 +10,9 @@ RUN apt-get update && apt-get install -y \
     libreoffice-impress \
     chromium \
     ghostscript \
+    tesseract-ocr \
+    tesseract-ocr-hin \
+    tesseract-ocr-guj \
     fonts-dejavu-core \
     wget \
     ca-certificates \

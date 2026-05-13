@@ -1,0 +1,65 @@
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/card_style.css') }}"
+/>
+
+{% extends 'base.html' %} {% block main_title %} OCR PDF {% endblock %} {% block
+main_content %}
+
+<section class="merge-page">
+  <div class="merge-card">
+    <h2>OCR PDF</h2>
+
+    <p class="muted">
+      Upload scanned or non-editable PDF files and convert them into searchable
+      and selectable PDFs.
+    </p>
+
+    <form
+      class="merge-form ajax-upload-form"
+      action="{{ url_for('ocr_to_pdf.convert_ocr_to_pdf') }}"
+      method="POST"
+      enctype="multipart/form-data"
+      id="mergeForm"
+    >
+      <div class="drop-zone" id="dropZone" data-type="pdf">
+        <input
+          type="file"
+          name="pdfs"
+          accept=".pdf,application/pdf"
+          multiple
+          id="pdfInput"
+          hidden
+        />
+
+        <p class="drop-text">
+          Drag & Drop PDF files here <br />
+          <span>or click to browse</span>
+        </p>
+
+        <ul class="file-list" id="fileList"></ul>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn primary">Upload & OCR</button>
+
+        <button type="button" class="btn ghost" onclick="clearAll()">
+          Clear All
+        </button>
+      </div>
+    </form>
+
+    <div class="upload-note">
+      <span class="note-icon">🛠️</span>
+      Convert scanned PDFs into searchable and selectable documents using OCR
+      technology.
+    </div>
+  </div>
+</section>
+
+<script src="{{ url_for('static', filename='scripts/card.js') }}"></script>
+
+<!-- OCR MODULE JS -->
+<!-- <script src="{{ url_for('static', filename='scripts/ocr_pdf.js') }}"></script> -->
+
+{% endblock %}

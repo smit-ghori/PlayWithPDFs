@@ -35,9 +35,21 @@
               <ul>
                 <!-- url_for("blueprint_name.function_name") -->
                 <li><a href="#">JPG to PDF</a></li>
-                <li><a href="{{ url_for('word_to_pdf.word_to_pdf') }}">WORD to PDF</a></li>
-                <li><a href="{{ url_for('ppt_to_pdf.convert_ppt_to_pdf') }}">POWERPOINT to PDF</a></li>
-                <li><a href="{{ url_for('excel_to_pdf.excel_to_pdf') }}">EXCEL to PDF</a></li>
+                <li>
+                  <a href="{{ url_for('word_to_pdf.word_to_pdf') }}"
+                    >WORD to PDF</a
+                  >
+                </li>
+                <li>
+                  <a href="{{ url_for('ppt_to_pdf.convert_ppt_to_pdf') }}"
+                    >POWERPOINT to PDF</a
+                  >
+                </li>
+                <li>
+                  <a href="{{ url_for('excel_to_pdf.excel_to_pdf') }}"
+                    >EXCEL to PDF</a
+                  >
+                </li>
                 <li>
                   <a href="{{ url_for('html_to_pdf.html_to_pdf') }}"
                     >HTML to PDF</a
@@ -59,7 +71,11 @@
                     >PDF to WORD</a
                   >
                 </li>
-                <li><a href="{{ url_for('pdf_to_ppt.convert_pdf_to_ppt') }}">PDF to POWERPOINT</a></li>
+                <li>
+                  <a href="{{ url_for('pdf_to_ppt.convert_pdf_to_ppt') }}"
+                    >PDF to POWERPOINT</a
+                  >
+                </li>
                 <li><a href="#">PDF to EXCEL</a></li>
                 <li><a href="#">PDF to PDF/A</a></li>
               </ul>
@@ -104,7 +120,11 @@
                   <a href="{{ url_for('compress.compress') }}">Compress PDF</a>
                 </li>
                 <li><a href="{{ url_for('repair.repair') }}">Repair PDF</a></li>
-                <li><a href="#">OCR PDF</a></li>
+                <li>
+                  <a href="{{ url_for('ocr_to_pdf.convert_ocr_to_pdf') }}"
+                    >OCR PDF</a
+                  >
+                </li>
               </ul>
             </div>
             <div class="more-column">
@@ -120,8 +140,16 @@
                     >WORD to PDF</a
                   >
                 </li>
-                <li><a href="{{ url_for('ppt_to_pdf.convert_ppt_to_pdf') }}">POWERPOINT to PDF</a></li>
-                <li><a href="{{ url_for('excel_to_pdf.excel_to_pdf') }}">EXCEL to PDF</a></li>
+                <li>
+                  <a href="{{ url_for('ppt_to_pdf.convert_ppt_to_pdf') }}"
+                    >POWERPOINT to PDF</a
+                  >
+                </li>
+                <li>
+                  <a href="{{ url_for('excel_to_pdf.excel_to_pdf') }}"
+                    >EXCEL to PDF</a
+                  >
+                </li>
                 <li>
                   <a href="{{ url_for('html_to_pdf.html_to_pdf') }}"
                     >HTML to PDF</a
@@ -137,8 +165,16 @@
                     >PDF to JPG</a
                   >
                 </li>
-                <li><a href="{{ url_for('pdf_to_word.convert_pdf_to_word') }}">PDF to WORD</a></li>
-                <li><a href="{{ url_for('pdf_to_ppt.convert_pdf_to_ppt') }}">PDF to POWERPOINT</a></li>
+                <li>
+                  <a href="{{ url_for('pdf_to_word.convert_pdf_to_word') }}"
+                    >PDF to WORD</a
+                  >
+                </li>
+                <li>
+                  <a href="{{ url_for('pdf_to_ppt.convert_pdf_to_ppt') }}"
+                    >PDF to POWERPOINT</a
+                  >
+                </li>
                 <li><a href="#">PDF to EXCEL</a></li>
                 <li><a href="#">PDF to PDF/A</a></li>
               </ul>
