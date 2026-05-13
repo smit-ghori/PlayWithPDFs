@@ -9,7 +9,6 @@ import platform
 import ocrmypdf
 import pytesseract
 
-
 ocr_to_pdf_bp = Blueprint("ocr_to_pdf", __name__)
 
 
@@ -46,38 +45,27 @@ def convert_ocr_to_pdf():
             try:
 
                 # Save uploaded PDF
-                input_pdf_path = os.path.join(
-                    temp_dir,
-                    uploaded_file.filename
-                )
+                input_pdf_path = os.path.join(temp_dir, uploaded_file.filename)
 
                 uploaded_file.save(input_pdf_path)
 
                 # Output OCR PDF
                 output_pdf_name = (
-                    os.path.splitext(uploaded_file.filename)[0]
-                    + "_ocr.pdf"
+                    os.path.splitext(uploaded_file.filename)[0] + "_ocr.pdf"
                 )
 
-                output_pdf_path = os.path.join(
-                    temp_dir,
-                    output_pdf_name
-                )
+                output_pdf_path = os.path.join(temp_dir, output_pdf_name)
 
                 # OCR PDF
                 ocrmypdf.ocr(
                     input_pdf_path,
                     output_pdf_path,
-
                     # Languages
                     language="eng+hin+guj",
-
                     # Force OCR
                     force_ocr=True,
-
                     # Improve scan alignment
                     deskew=True,
-
                     # Basic optimization
                     optimize=1,
                 )
@@ -86,28 +74,21 @@ def convert_ocr_to_pdf():
 
             except Exception as e:
 
-                return (
-                    f"Error processing "
-                    f"{uploaded_file.filename}: {str(e)}"
-                )
+                return f"Error processing " f"{uploaded_file.filename}: {str(e)}"
 
         # SINGLE PDF DOWNLOAD
         if len(generated_pdfs) == 1:
 
             with open(generated_pdfs[0], "rb") as pdf_file:
 
-                pdf_buffer = BytesIO(
-                    pdf_file.read()
-                )
+                pdf_buffer = BytesIO(pdf_file.read())
 
             pdf_buffer.seek(0)
 
             return send_file(
                 pdf_buffer,
                 as_attachment=True,
-                download_name=os.path.basename(
-                    generated_pdfs[0]
-                ),
+                download_name=os.path.basename(generated_pdfs[0]),
                 mimetype="application/pdf",
             )
 
@@ -116,20 +97,13 @@ def convert_ocr_to_pdf():
 
             zip_buffer = BytesIO()
 
-            with zipfile.ZipFile(
-                zip_buffer,
-                "w",
-                zipfile.ZIP_DEFLATED
-            ) as zip_file:
+            with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
 
                 for pdf_path in generated_pdfs:
 
                     with open(pdf_path, "rb") as pdf_file:
 
-                        zip_file.writestr(
-                            os.path.basename(pdf_path),
-                            pdf_file.read()
-                        )
+                        zip_file.writestr(os.path.basename(pdf_path), pdf_file.read())
 
             zip_buffer.seek(0)
 
