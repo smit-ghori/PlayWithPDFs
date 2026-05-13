@@ -24,7 +24,7 @@ xlrd==2.0.1
 # OCR / Table Detection
 langdetect==1.0.9
 opencv-python-headless==4.8.1.78
-img2table==1.2.3
+img2table==1.2.10
 paddleocr==2.8.1
 paddlepaddle==3.0.0
 
