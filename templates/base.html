@@ -46,7 +46,7 @@
                   >
                 </li>
                 <li>
-                  <a href="{{ url_for('excel_to_pdf.excel_to_pdf') }}"
+                  <a href="{{ url_for('excel_to_pdf.convert_excel_to_pdf') }}"
                     >EXCEL to PDF</a
                   >
                 </li>
@@ -76,7 +76,11 @@
                     >PDF to POWERPOINT</a
                   >
                 </li>
-                <li><a href="#">PDF to EXCEL</a></li>
+                <li>
+                  <a href="{{ url_for('pdf_to_excel.pdf_to_excel') }}"
+                    >PDF to EXCEL</a
+                  >
+                </li>
                 <li><a href="#">PDF to PDF/A</a></li>
               </ul>
             </div>
@@ -146,7 +150,7 @@
                   >
                 </li>
                 <li>
-                  <a href="{{ url_for('excel_to_pdf.excel_to_pdf') }}"
+                  <a href="{{ url_for('excel_to_pdf.convert_excel_to_pdf') }}"
                     >EXCEL to PDF</a
                   >
                 </li>
@@ -175,7 +179,11 @@
                     >PDF to POWERPOINT</a
                   >
                 </li>
-                <li><a href="#">PDF to EXCEL</a></li>
+                <li>
+                  <a href="{{ url_for('pdf_to_excel.pdf_to_excel') }}"
+                    >PDF to EXCEL</a
+                  >
+                </li>
                 <li><a href="#">PDF to PDF/A</a></li>
               </ul>
             </div>

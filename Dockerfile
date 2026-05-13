@@ -2,7 +2,10 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-# System dependencies
+# ==========================================
+# SYSTEM DEPENDENCIES
+# ==========================================
+
 RUN apt-get update && apt-get install -y \
     libreoffice \
     libreoffice-calc \
@@ -16,36 +19,63 @@ RUN apt-get update && apt-get install -y \
     fonts-dejavu-core \
     wget \
     ca-certificates \
+    poppler-utils \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    libgl1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements
+# ==========================================
+# COPY REQUIREMENTS
+# ==========================================
+
 COPY requirements.txt .
 
-# Upgrade pip
+# ==========================================
+# UPGRADE PIP
+# ==========================================
+
 RUN pip install --upgrade pip
 
-# Install Python packages
+# ==========================================
+# INSTALL PYTHON PACKAGES
+# ==========================================
+
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Chromium path
-ENV CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium
+# ==========================================
+# PLAYWRIGHT SETTINGS
+# ==========================================
 
-# Skip Playwright browser download
+ENV CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 
-# Better logs
-ENV PYTHONUNBUFFERED=1
+# ==========================================
+# PYTHON SETTINGS
+# ==========================================
 
-# Flask production safety
+ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
-# Copy project files
+# ==========================================
+# COPY PROJECT
+# ==========================================
+
 COPY . .
 
-# Expose port
+# ==========================================
+# EXPOSE PORT
+# ==========================================
+
 EXPOSE 10000
 
-# Start Gunicorn
+# ==========================================
+# START APP
+# ==========================================
+
 CMD gunicorn \
     --bind 0.0.0.0:$PORT \
     --workers 2 \

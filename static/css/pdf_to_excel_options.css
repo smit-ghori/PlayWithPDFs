@@ -1,0 +1,218 @@
+/* options styles */
+
+
+ /* ==========================================
+   EXCEL OPTIONS CONTAINER
+========================================== */
+
+  .excel-options {
+    margin-top: 24px;
+
+    padding: 22px;
+
+    border-radius: 20px;
+
+    background: linear-gradient(
+      145deg,
+      rgba(16, 25, 44, 0.88),
+      rgba(10, 18, 35, 0.82)
+    );
+
+    border: 1px solid rgba(97, 218, 251, 0.08);
+
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.03);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    transition: all 0.3s ease;
+  }
+
+  /* ==========================================
+   TITLE
+========================================== */
+
+  .excel-options h4 {
+    margin: 0 0 20px;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    color: #ffffff;
+
+    letter-spacing: 0.3px;
+  }
+
+  /* ==========================================
+   OPTION ITEM
+========================================== */
+
+  .option-item {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 16px 18px;
+
+    margin-bottom: 14px;
+
+    border-radius: 16px;
+
+    cursor: pointer;
+
+    overflow: hidden;
+
+    transition:
+      background 0.28s ease,
+      border 0.28s ease,
+      transform 0.2s ease,
+      box-shadow 0.28s ease;
+
+    background: rgba(255, 255, 255, 0.035);
+
+    border: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  /* ==========================================
+   LAST ITEM
+========================================== */
+
+  .option-item:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ==========================================
+   HOVER EFFECT
+========================================== */
+
+  .option-item:hover {
+    background: rgba(97, 218, 251, 0.06);
+
+    border-color: rgba(97, 218, 251, 0.18);
+
+    transform: translateY(-1px);
+
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  }
+
+  /* ==========================================
+   RADIO BUTTON
+========================================== */
+
+  .option-item input[type="radio"] {
+    width: 18px;
+    height: 18px;
+
+    accent-color: #47cfff;
+
+    cursor: pointer;
+
+    flex-shrink: 0;
+
+    margin: 0;
+  }
+
+  /* ==========================================
+   OPTION TEXT
+========================================== */
+
+  .option-item span {
+    color: #e2e8f0;
+
+    font-size: 15px;
+
+    font-weight: 500;
+
+    letter-spacing: 0.2px;
+
+    line-height: 1.4;
+  }
+
+  /* ==========================================
+   ACTIVE / CHECKED STATE
+========================================== */
+
+  .option-item:has(input[type="radio"]:checked) {
+    background: linear-gradient(
+      135deg,
+      rgba(71, 207, 255, 0.14),
+      rgba(71, 207, 255, 0.08)
+    );
+
+    border: 1px solid rgba(71, 207, 255, 0.45);
+
+    box-shadow:
+      0 0 0 1px rgba(71, 207, 255, 0.08),
+      0 8px 24px rgba(71, 207, 255, 0.08);
+  }
+
+  /* ==========================================
+   ACTIVE TEXT
+========================================== */
+
+  .option-item:has(input[type="radio"]:checked) span {
+    color: #ffffff;
+  }
+
+  /* ==========================================
+   OPTIONAL GLOW EFFECT
+========================================== */
+
+  .option-item::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    border-radius: inherit;
+
+    background: linear-gradient(
+      120deg,
+      transparent,
+      rgba(255, 255, 255, 0.04),
+      transparent
+    );
+
+    opacity: 0;
+
+    transition: opacity 0.3s ease;
+  }
+
+  .option-item:hover::before {
+    opacity: 1;
+  }
+
+  /* ==========================================
+   MOBILE RESPONSIVE
+========================================== */
+
+  @media (max-width: 768px) {
+    .excel-options {
+      padding: 18px;
+      border-radius: 18px;
+    }
+
+    .excel-options h4 {
+      font-size: 16px;
+    }
+
+    .option-item {
+      padding: 14px 15px;
+      gap: 12px;
+    }
+
+    .option-item span {
+      font-size: 14px;
+    }
+
+    .option-item input[type="radio"] {
+      width: 16px;
+      height: 16px;
+    }
+  }

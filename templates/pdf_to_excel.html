@@ -1,0 +1,90 @@
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/card_style.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/pdf_to_excel_options.css') }}"
+/>
+
+{% extends 'base.html' %} {% block main_title %} PDF to Excel {% endblock %} {%
+block main_content %}
+
+<section class="merge-page">
+  <div class="merge-card">
+    <h2>PDF to Excel</h2>
+
+    <p class="muted">
+      Upload PDF files and convert tables into editable Excel spreadsheets by
+      OCR.
+    </p>
+
+    <form
+      class="merge-form ajax-upload-form"
+      action="{{ url_for('pdf_to_excel.convert_pdf_to_excel') }}"
+      method="POST"
+      enctype="multipart/form-data"
+      id="mergeForm"
+    >
+      <!-- DROP ZONE -->
+      <div class="drop-zone" id="dropZone" data-type="pdf">
+        <input
+          type="file"
+          name="pdfs"
+          accept=".pdf,application/pdf"
+          multiple
+          id="pdfInput"
+          hidden
+        />
+
+        <p class="drop-text">
+          Drag & Drop PDF files here <br />
+          <span>or click to browse</span>
+        </p>
+
+        <ul class="file-list" id="fileList"></ul>
+      </div>
+
+      <!-- EXCEL EXPORT OPTIONS -->
+      <div class="excel-options">
+        <h4>Excel Export Mode</h4>
+
+        <label class="option-item">
+          <input type="radio" name="sheet_mode" value="single" checked />
+
+          <span>All Pages in Single Sheet</span>
+        </label>
+
+        <label class="option-item">
+          <input type="radio" name="sheet_mode" value="separate" />
+
+          <span>Each PDF Page in Separate Sheet</span>
+        </label>
+      </div>
+
+      <!-- ACTION BUTTONS -->
+      <div class="actions">
+        <button type="submit" class="btn primary">Upload & Convert</button>
+
+        <button type="button" class="btn ghost" onclick="clearAll()">
+          Clear All
+        </button>
+      </div>
+    </form>
+
+    <!-- NOTE -->
+    <div class="upload-note">
+      <span class="note-icon">🛠️</span>
+      Convert PDF tables into editable Excel files quickly and accurately by
+      OCR.
+    </div>
+  </div>
+</section>
+
+<!-- Common Upload Logic -->
+<script src="{{ url_for('static', filename='scripts/card.js') }}"></script>
+
+<!-- PDF TO EXCEL MODULE JS -->
+<!-- <script src="{{ url_for('static', filename='scripts/pdf_to_excel.js') }}"></script> -->
+
+{% endblock %}
