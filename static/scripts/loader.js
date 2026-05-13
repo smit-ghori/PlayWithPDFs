@@ -60,6 +60,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // show loader on any form submit so user sees something while server works
     // regular forms just show a loader while the browser processes the request
     document.querySelectorAll("form:not(.ajax-upload-form)").forEach((form) => {
+        if (form.dataset.noLoader === "true") {
+            return;
+        }
         form.addEventListener("submit", (e) => {
             showLoader();
         });

@@ -16,11 +16,12 @@ main_content %}
     </p>
 
     <form
-      class="merge-form ajax-upload-form"
+      class="merge-form"
       action="{{ url_for('ocr_to_pdf.convert_ocr_to_pdf') }}"
       method="POST"
       enctype="multipart/form-data"
       id="mergeForm"
+      data-no-loader="true"
     >
       <div class="drop-zone" id="dropZone" data-type="pdf">
         <input
@@ -58,8 +59,5 @@ main_content %}
 </section>
 
 <script src="{{ url_for('static', filename='scripts/card.js') }}"></script>
-
-<!-- OCR MODULE JS -->
-<!-- <script src="{{ url_for('static', filename='scripts/ocr_pdf.js') }}"></script> -->
 
 {% endblock %}
