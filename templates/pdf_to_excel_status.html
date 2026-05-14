@@ -1,19 +1,24 @@
-<link rel="stylesheet" href="{{ url_for('static', filename='css/card_style.css') }}" />
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/card_style.css') }}"
+/>
 
-{% extends 'base.html' %}
-{% block main_title %}PDF to Excel Status{% endblock %}
-{% block main_content %}
+{% extends 'base.html' %} {% block main_title %}PDF to Excel Status{% endblock
+%} {% block main_content %}
 <section class="merge-page">
   <div class="merge-card">
     <h2>PDF to Excel Conversion</h2>
 
     {% if status == 'processing' %}
     <p class="muted">
-      Your file is being converted. This can take up to a minute depending on the PDF.
+      Your file is being converted. This can take up to a minute depending on
+      the PDF.
     </p>
     <p>{{ message }}</p>
     <p>Elapsed time: {{ elapsed_time }} seconds</p>
-    <p class="muted">Jobs expire after 10 minutes. Please download your file before then.</p>
+    <p class="muted">
+      Jobs expire after 10 minutes. Please download your file before then.
+    </p>
     <p>Refreshing automatically in 5 seconds...</p>
     <div class="loader"></div>
     <script>
@@ -23,8 +28,13 @@
     </script>
     {% elif status == 'complete' %}
     <p class="muted">{{ message }}</p>
-    <p class="muted">Please download your file now. Jobs expire after 10 minutes.</p>
-    <a class="btn primary" href="{{ url_for('pdf_to_excel.download_pdf_to_excel', job_id=job_id) }}">
+    <p class="muted">
+      Please download your file now. Jobs expire after 10 minutes.
+    </p>
+    <a
+      class="btn primary"
+      href="{{ url_for('pdf_to_excel.download_pdf_to_excel', job_id=job_id) }}"
+    >
       Download Excel File
     </a>
     <a class="btn ghost" href="{{ url_for('pdf_to_excel.pdf_to_excel') }}">

@@ -40,6 +40,7 @@ from img2table.ocr import TesseractOCR
 # JOB HELPERS
 # ==========================================
 
+
 def get_job_folder(job_id):
     return os.path.join(UPLOAD_FOLDER, job_id)
 
@@ -176,10 +177,13 @@ def process_pdf_to_excel_job(job_id, pdf_path, sheet_mode):
 
                 final_df.to_excel(writer, sheet_name="All_Pages", index=False)
 
-        save_job_status(job_id, "complete", "Your Excel file is ready.", output_filename)
+        save_job_status(
+            job_id, "complete", "Your Excel file is ready.", output_filename
+        )
     except Exception as exc:
         print(f"PDF TO EXCEL JOB ERROR [{job_id}]: {exc}")
         save_job_status(job_id, "error", "Conversion failed. Please try again.")
+
 
 # ==========================================
 # BLUEPRINT
