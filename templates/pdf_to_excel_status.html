@@ -1,0 +1,46 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/card_style.css') }}" />
+
+{% extends 'base.html' %}
+{% block main_title %}PDF to Excel Status{% endblock %}
+{% block main_content %}
+<section class="merge-page">
+  <div class="merge-card">
+    <h2>PDF to Excel Conversion</h2>
+
+    {% if status == 'processing' %}
+    <p class="muted">
+      Your file is being converted. This can take up to a minute depending on the PDF.
+    </p>
+    <p>{{ message }}</p>
+    <p>Elapsed time: {{ elapsed_time }} seconds</p>
+    <p class="muted">Jobs expire after 10 minutes. Please download your file before then.</p>
+    <p>Refreshing automatically in 5 seconds...</p>
+    <div class="loader"></div>
+    <script>
+      setTimeout(function () {
+        window.location.reload();
+      }, 5000);
+    </script>
+    {% elif status == 'complete' %}
+    <p class="muted">{{ message }}</p>
+    <p class="muted">Please download your file now. Jobs expire after 10 minutes.</p>
+    <a class="btn primary" href="{{ url_for('pdf_to_excel.download_pdf_to_excel', job_id=job_id) }}">
+      Download Excel File
+    </a>
+    <a class="btn ghost" href="{{ url_for('pdf_to_excel.pdf_to_excel') }}">
+      Convert another PDF
+    </a>
+    {% elif status == 'error' %}
+    <p class="muted">{{ message }}</p>
+    <a class="btn ghost" href="{{ url_for('pdf_to_excel.pdf_to_excel') }}">
+      Go back and try again
+    </a>
+    {% else %}
+    <p class="muted">Unknown job status.</p>
+    <a class="btn ghost" href="{{ url_for('pdf_to_excel.pdf_to_excel') }}">
+      Return to PDF to Excel
+    </a>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
