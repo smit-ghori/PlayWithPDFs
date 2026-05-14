@@ -112,7 +112,9 @@ def process_pdf_to_excel_job(job_id, pdf_path, sheet_mode):
         tables = pdf.extract_tables(**build_extract_kwargs(ocr, pdf, min_confidence=30))
 
         if not tables or not has_valid_table_data(tables):
-            tables = pdf.extract_tables(**build_extract_kwargs(ocr, pdf, min_confidence=20))
+            tables = pdf.extract_tables(
+                **build_extract_kwargs(ocr, pdf, min_confidence=20)
+            )
 
         if not tables or not has_valid_table_data(tables):
             save_job_status(job_id, "error", "No tables detected in PDF.")
