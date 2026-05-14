@@ -130,16 +130,38 @@ def convert_pdf_to_excel():
         # EXTRACT TABLES
         # ==========================================
 
+        def has_valid_table_data(table_collection):
+            return any(
+                not table.df.empty
+                for page_tables in table_collection.values()
+                for table in page_tables
+            )
+
         tables = pdf.extract_tables(
             ocr=ocr,
-            min_confidence=50,
+            min_confidence=30,
+            borderless_tables=True,
+            implicit_rows=True,
+            implicit_columns=True,
+            max_workers=1,
         )
+
+        if not tables or not has_valid_table_data(tables):
+            # Retry with a lower confidence threshold if the first pass found nothing useful
+            tables = pdf.extract_tables(
+                ocr=ocr,
+                min_confidence=20,
+                borderless_tables=True,
+                implicit_rows=True,
+                implicit_columns=True,
+                max_workers=1,
+            )
 
         # ==========================================
         # NO TABLE FOUND
         # ==========================================
 
-        if not tables:
+        if not tables or not has_valid_table_data(tables):
 
             flash("No tables detected in PDF.", "error")
 
@@ -198,15 +220,11 @@ def convert_pdf_to_excel():
             else:
 
                 final_df = pd.DataFrame()
+                valid_content_found = False
 
                 for page_number, page_tables in tables.items():
 
-                    # Page Header
-                    page_title = pd.DataFrame(
-                        [[f"PAGE {page_number}"]], columns=["Page"]
-                    )
-
-                    final_df = pd.concat([final_df, page_title], ignore_index=True)
+                    page_rows = []
 
                     for table in page_tables:
 
@@ -215,14 +233,30 @@ def convert_pdf_to_excel():
                         if df.empty:
                             continue
 
-                        final_df = pd.concat([final_df, df], ignore_index=True)
+                        if not page_rows:
+                            # Page Header
+                            page_rows.append(
+                                pd.DataFrame([[f"PAGE {page_number}"]], columns=["Page"])
+                            )
+
+                        page_rows.append(df)
 
                         # Empty Row
                         empty_row = pd.DataFrame(
                             [[""] * len(df.columns)], columns=df.columns
                         )
 
-                        final_df = pd.concat([final_df, empty_row], ignore_index=True)
+                        page_rows.append(empty_row)
+
+                    if not page_rows:
+                        continue
+
+                    valid_content_found = True
+                    final_df = pd.concat([final_df] + page_rows, ignore_index=True)
+
+                if not valid_content_found:
+                    flash("No tables detected in PDF.", "error")
+                    return redirect(url_for("pdf_to_excel.pdf_to_excel"))
 
                 # Save final sheet
                 final_df.to_excel(writer, sheet_name="All_Pages", index=False)
