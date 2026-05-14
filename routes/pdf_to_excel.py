@@ -1,3 +1,4 @@
+import inspect
 import os
 import io
 import tempfile
@@ -137,25 +138,32 @@ def convert_pdf_to_excel():
                 for table in page_tables
             )
 
-        tables = pdf.extract_tables(
-            ocr=ocr,
-            min_confidence=30,
-            borderless_tables=True,
-            implicit_rows=True,
-            implicit_columns=True,
-            max_workers=1,
-        )
+        extract_kwargs = {
+            "ocr": ocr,
+            "min_confidence": 30,
+            "borderless_tables": True,
+            "implicit_rows": True,
+            "implicit_columns": True,
+            "max_workers": 1,
+        }
+
+        supported_kwargs = {
+            key: value
+            for key, value in extract_kwargs.items()
+            if key in inspect.signature(PDF.extract_tables).parameters
+        }
+
+        tables = pdf.extract_tables(**supported_kwargs)
 
         if not tables or not has_valid_table_data(tables):
             # Retry with a lower confidence threshold if the first pass found nothing useful
-            tables = pdf.extract_tables(
-                ocr=ocr,
-                min_confidence=20,
-                borderless_tables=True,
-                implicit_rows=True,
-                implicit_columns=True,
-                max_workers=1,
-            )
+            extract_kwargs["min_confidence"] = 20
+            supported_kwargs = {
+                key: value
+                for key, value in extract_kwargs.items()
+                if key in inspect.signature(PDF.extract_tables).parameters
+            }
+            tables = pdf.extract_tables(**supported_kwargs)
 
         # ==========================================
         # NO TABLE FOUND
