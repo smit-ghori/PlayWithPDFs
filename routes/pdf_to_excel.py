@@ -236,7 +236,9 @@ def convert_pdf_to_excel():
                         if not page_rows:
                             # Page Header
                             page_rows.append(
-                                pd.DataFrame([[f"PAGE {page_number}"]], columns=["Page"])
+                                pd.DataFrame(
+                                    [[f"PAGE {page_number}"]], columns=["Page"]
+                                )
                             )
 
                         page_rows.append(df)
