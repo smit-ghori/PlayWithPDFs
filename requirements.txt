@@ -13,6 +13,7 @@ pdf2docx==0.5.8
 ocrmypdf==16.4.3
 pikepdf==9.11.0
 pytesseract==0.3.10
+pdfplumber==0.11.0
 
 # Office File Handling
 python-docx==0.8.11
