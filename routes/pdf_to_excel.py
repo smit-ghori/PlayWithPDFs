@@ -1,12 +1,11 @@
 import inspect
-import io
 import json
 import os
 import platform
 import threading
 import time
+import traceback
 import uuid
-import pandas as pd
 
 from flask import (
     Blueprint,
@@ -33,8 +32,7 @@ if platform.system() == "Windows":
 # IMPORT AFTER PATH CONFIG
 # ==========================================
 
-from img2table.document import PDF
-from img2table.ocr import TesseractOCR
+# Defer heavy PDF/OCR imports until worker execution to reduce memory at startup.
 
 # ==========================================
 # JOB HELPERS
@@ -81,7 +79,7 @@ def has_valid_table_data(table_collection):
     )
 
 
-def build_extract_kwargs(ocr, min_confidence=30):
+def build_extract_kwargs(ocr, pdf_obj, min_confidence=30):
     extract_kwargs = {
         "ocr": ocr,
         "min_confidence": min_confidence,
@@ -93,7 +91,7 @@ def build_extract_kwargs(ocr, min_confidence=30):
     return {
         key: value
         for key, value in extract_kwargs.items()
-        if key in inspect.signature(PDF.extract_tables).parameters
+        if key in inspect.signature(pdf_obj.extract_tables).parameters
     }
 
 
@@ -104,13 +102,17 @@ def process_pdf_to_excel_job(job_id, pdf_path, sheet_mode):
     output_path = os.path.join(job_folder, output_filename)
 
     try:
+        from img2table.document import PDF
+        from img2table.ocr import TesseractOCR
+        import pandas as pd
+
         ocr = TesseractOCR(n_threads=1, lang="eng", psm=6)
         pdf = PDF(src=pdf_path)
 
-        tables = pdf.extract_tables(**build_extract_kwargs(ocr, min_confidence=30))
+        tables = pdf.extract_tables(**build_extract_kwargs(ocr, pdf, min_confidence=30))
 
         if not tables or not has_valid_table_data(tables):
-            tables = pdf.extract_tables(**build_extract_kwargs(ocr, min_confidence=20))
+            tables = pdf.extract_tables(**build_extract_kwargs(ocr, pdf, min_confidence=20))
 
         if not tables or not has_valid_table_data(tables):
             save_job_status(job_id, "error", "No tables detected in PDF.")
@@ -119,69 +121,81 @@ def process_pdf_to_excel_job(job_id, pdf_path, sheet_mode):
         with pd.ExcelWriter(output_path, engine="openpyxl") as writer:
             if sheet_mode == "separate":
                 for page_number, page_tables in tables.items():
-                    combined_df = pd.DataFrame()
+                    current_row = 0
+                    sheet_name = f"Page_{page_number}"
+                    wrote_any = False
 
                     for table in page_tables:
                         df = table.df
                         if df.empty:
                             continue
 
-                        combined_df = pd.concat([combined_df, df], ignore_index=True)
-                        empty_row = pd.DataFrame(
-                            [[""] * len(df.columns)], columns=df.columns
-                        )
-                        combined_df = pd.concat(
-                            [combined_df, empty_row], ignore_index=True
-                        )
+                        if current_row == 0:
+                            df.to_excel(writer, sheet_name=sheet_name, index=False)
+                            current_row = len(df) + 2
+                        else:
+                            df.to_excel(
+                                writer,
+                                sheet_name=sheet_name,
+                                index=False,
+                                startrow=current_row,
+                            )
+                            current_row += len(df) + 2
 
-                    if combined_df.empty:
+                        wrote_any = True
+
+                    if not wrote_any:
                         continue
-
-                    combined_df.to_excel(
-                        writer, sheet_name=f"Page_{page_number}", index=False
-                    )
             else:
-                final_df = pd.DataFrame()
+                current_row = 0
                 valid_content_found = False
 
                 for page_number, page_tables in tables.items():
-                    page_rows = []
+                    page_has_tables = any(not table.df.empty for table in page_tables)
+                    if not page_has_tables:
+                        continue
+
+                    valid_content_found = True
+                    page_header = pd.DataFrame([[f"PAGE {page_number}"]])
+                    page_header.to_excel(
+                        writer,
+                        sheet_name="All_Pages",
+                        header=False,
+                        index=False,
+                        startrow=current_row,
+                    )
+                    current_row += 1
 
                     for table in page_tables:
                         df = table.df
                         if df.empty:
                             continue
 
-                        if not page_rows:
-                            page_rows.append(
-                                pd.DataFrame(
-                                    [[f"PAGE {page_number}"]], columns=["Page"]
-                                )
-                            )
-
-                        page_rows.append(df)
-                        empty_row = pd.DataFrame(
-                            [[""] * len(df.columns)], columns=df.columns
+                        df.to_excel(
+                            writer,
+                            sheet_name="All_Pages",
+                            index=False,
+                            startrow=current_row,
                         )
-                        page_rows.append(empty_row)
-
-                    if not page_rows:
-                        continue
-
-                    valid_content_found = True
-                    final_df = pd.concat([final_df] + page_rows, ignore_index=True)
+                        current_row += len(df) + 2
 
                 if not valid_content_found:
                     save_job_status(job_id, "error", "No tables detected in PDF.")
                     return
 
-                final_df.to_excel(writer, sheet_name="All_Pages", index=False)
-
         save_job_status(
             job_id, "complete", "Your Excel file is ready.", output_filename
         )
+    except MemoryError as exc:
+        print(f"PDF TO EXCEL JOB MEMORY ERROR [{job_id}]: {exc}")
+        save_job_status(
+            job_id,
+            "error",
+            "Server memory limit exceeded during conversion. Try a smaller PDF.",
+        )
     except Exception as exc:
         print(f"PDF TO EXCEL JOB ERROR [{job_id}]: {exc}")
+        traceback.print_exc()
         save_job_status(job_id, "error", "Conversion failed. Please try again.")
 
 
