@@ -16,7 +16,7 @@
 <!-- implementing main container -->
 {% block main_content %}
 <section class="merge-page">
-  <div class="merge-card">
+  <div class="merge-card compress-card">
     <h2>Compress</h2>
     <p class="muted">Select multiple PDF files and merge them into one.</p>
 
@@ -89,4 +89,44 @@
   </div>
 </section>
 <script src="{{ url_for('static', filename='scripts/card.js') }}"></script>
+<script>
+  const compressCard = document.querySelector(".compress-card");
+  const compressFileInput = document.getElementById("pdfInput");
+  const compressDropZone = document.getElementById("dropZone");
+  const compressFileList = document.getElementById("fileList");
+
+  function updateCompressionOptions() {
+    compressCard.classList.toggle(
+      "uploaded",
+      compressFileList.children.length > 0
+    );
+  }
+
+  function syncCompressionOptions() {
+    requestAnimationFrame(updateCompressionOptions);
+  }
+
+  compressFileInput.addEventListener("change", syncCompressionOptions);
+  compressDropZone.addEventListener("drop", syncCompressionOptions);
+
+  if (typeof window.removeFile === "function") {
+    const originalRemoveFile = window.removeFile;
+
+    window.removeFile = function (...args) {
+      originalRemoveFile.apply(this, args);
+      syncCompressionOptions();
+    };
+  }
+
+  if (typeof window.clearAll === "function") {
+    const originalClearAll = window.clearAll;
+
+    window.clearAll = function (...args) {
+      originalClearAll.apply(this, args);
+      syncCompressionOptions();
+    };
+  }
+
+  updateCompressionOptions();
+</script>
 {% endblock %}

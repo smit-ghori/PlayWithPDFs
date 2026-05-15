@@ -25,6 +25,21 @@ const italicBtn =
 const underlineBtn =
     document.getElementById("underlineBtn");
 
+const pageNumberCard =
+    document.querySelector(".page-number-card");
+
+const pageNumberFileInput =
+    document.getElementById("pdfInput");
+
+const pageNumberDropZone =
+    document.getElementById("dropZone");
+
+const pageNumberFileList =
+    document.getElementById("fileList");
+
+const pageNumberForm =
+    document.getElementById("mergeForm");
+
 
 /* =========================================
    HIDDEN INPUTS
@@ -47,6 +62,75 @@ const underlineInput =
 let isBold = false;
 let isItalic = false;
 let isUnderline = false;
+
+
+/* =========================================
+   SHOW / HIDE SETTINGS
+========================================= */
+
+function updatePageNumberControls() {
+
+    const hasUploadedFile =
+        pageNumberFileList.children.length > 0;
+
+    pageNumberCard.classList.toggle(
+        "uploaded",
+        hasUploadedFile
+    );
+}
+
+function syncPageNumberControls() {
+
+    requestAnimationFrame(updatePageNumberControls);
+}
+
+pageNumberFileInput.addEventListener(
+    "change",
+    syncPageNumberControls
+);
+
+pageNumberDropZone.addEventListener(
+    "drop",
+    syncPageNumberControls
+);
+
+pageNumberForm.addEventListener("reset", () => {
+
+    pageNumberFileInput.value = "";
+
+    if (typeof window.clearAll === "function") {
+
+        window.clearAll();
+    }
+
+    syncPageNumberControls();
+});
+
+if (typeof window.removeFile === "function") {
+
+    const originalRemoveFile =
+        window.removeFile;
+
+    window.removeFile = function (...args) {
+
+        originalRemoveFile.apply(this, args);
+
+        syncPageNumberControls();
+    };
+}
+
+if (typeof window.clearAll === "function") {
+
+    const originalClearAll =
+        window.clearAll;
+
+    window.clearAll = function (...args) {
+
+        originalClearAll.apply(this, args);
+
+        syncPageNumberControls();
+    };
+}
 
 
 /* =========================================
@@ -254,3 +338,5 @@ underlineBtn.addEventListener("click", () => {
 ========================================= */
 
 updatePreview();
+
+updatePageNumberControls();
