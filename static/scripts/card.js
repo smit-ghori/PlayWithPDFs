@@ -1,10 +1,14 @@
-
 const dropZone = document.getElementById("dropZone");
 const input = document.getElementById("pdfInput");
 const fileListUI = document.getElementById("fileList");
-const uploadCard = dropZone.closest(".merge-card");
+const uploadCard = dropZone?.closest(".merge-card");
+const uploadForm = input?.closest("form");
 
 let selectedFiles = [];
+
+if (!dropZone || !input || !fileListUI || !uploadCard || !uploadForm) {
+    window.clearAll = function () { };
+} else {
 
 function updateUploadState() {
     uploadCard.classList.toggle("uploaded", selectedFiles.length > 0);
@@ -137,7 +141,7 @@ window.resetUploadForm = function () {
 };
 
 // Before submit, rebuild input files
-document.getElementById("mergeForm").addEventListener("submit", function (e) {
+uploadForm.addEventListener("submit", function (e) {
     if (selectedFiles.length === 0) {
         e.preventDefault();
         alert("Please select at least one PDF file.");
@@ -148,3 +152,4 @@ document.getElementById("mergeForm").addEventListener("submit", function (e) {
     selectedFiles.forEach((file) => dataTransfer.items.add(file));
     input.files = dataTransfer.files;
 });
+}
