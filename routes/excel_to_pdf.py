@@ -26,7 +26,7 @@ def excel_to_pdf():
 
 
 # CONVERT EXCEL TO PDF
-@excel_to_pdf_bp.route("/excel_to_pdf/convert", methods=["POST"])
+@excel_to_pdf_bp.route("/excel_to_pdf", methods=["POST"])
 def convert_excel_to_pdf():
 
     uploaded_files = request.files.getlist("files")
