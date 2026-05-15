@@ -5,8 +5,13 @@ const dropZone = document.getElementById("dropZone");
 const input = document.getElementById("pdfInput");
 const fileListUI = document.getElementById("fileList");
 const form = document.getElementById("mergeForm");
+const uploadCard = dropZone.closest(".merge-card");
 
 let selectedFiles = [];
+
+function updateUploadState() {
+    uploadCard.classList.toggle("uploaded", selectedFiles.length > 0);
+}
 
 /* =========================================
    FILE HANDLING
@@ -76,6 +81,8 @@ function renderFileList() {
 
         fileListUI.appendChild(li);
     });
+
+    updateUploadState();
 }
 
 function removeFile(index) {

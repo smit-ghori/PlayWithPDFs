@@ -147,6 +147,90 @@
   gap: 12px;
 }
 
+.merge-page .merge-card:has(.drop-zone):not(.uploaded) .actions,
+.merge-page .merge-card:has(.drop-zone):not(.uploaded) .split-options,
+.merge-page .merge-card:has(.drop-zone):not(.uploaded) .split-wrapper,
+.merge-page .merge-card:has(.drop-zone):not(.uploaded) .custom-dropdown,
+.merge-page .merge-card:has(.drop-zone):not(.uploaded) .excel-options,
+.merge-page .merge-card:has(.drop-zone):not(.uploaded) .options,
+.merge-page .merge-card:has(.drop-zone):not(.uploaded) .pdf-preview,
+.merge-page .merge-card:has(.drop-zone):not(.uploaded) .image-preview {
+  max-height: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  filter: blur(2px);
+  transform: translateY(-14px) scale(0.985);
+  transition:
+    max-height 1.8s cubic-bezier(0.16, 1, 0.3, 1),
+    margin 1.35s ease,
+    padding 1.35s ease,
+    opacity 1.25s ease,
+    filter 1.25s ease,
+    transform 1.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.merge-page .merge-card.uploaded .actions,
+.merge-page .merge-card.uploaded .split-options,
+.merge-page .merge-card.uploaded .split-wrapper,
+.merge-page .merge-card.uploaded .custom-dropdown,
+.merge-page .merge-card.uploaded .excel-options,
+.merge-page .merge-card.uploaded .options,
+.merge-page .merge-card.uploaded .pdf-preview,
+.merge-page .merge-card.uploaded .image-preview {
+  opacity: 1;
+  filter: blur(0);
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+  animation: uploadReveal 1.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.merge-page .merge-card.uploaded .actions {
+  max-height: 90px;
+}
+
+.merge-page .merge-card.uploaded .split-options,
+.merge-page .merge-card.uploaded .custom-dropdown,
+.merge-page .merge-card.uploaded .options {
+  max-height: 120px;
+}
+
+.merge-page .merge-card.uploaded .excel-options {
+  max-height: 340px;
+}
+
+.merge-page .merge-card.uploaded .split-wrapper {
+  max-height: 220px;
+}
+
+.merge-page .merge-card.uploaded .pdf-preview,
+.merge-page .merge-card.uploaded .image-preview {
+  max-height: 560px;
+}
+
+@keyframes uploadReveal {
+  0% {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translateY(18px) scale(0.98);
+  }
+
+  45% {
+    opacity: 0.55;
+    filter: blur(2px);
+  }
+
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
 .merge-page .btn {
   flex: 1;
   padding: 10px;

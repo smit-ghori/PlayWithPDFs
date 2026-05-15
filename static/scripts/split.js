@@ -9,8 +9,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const input = document.getElementById("pdfInput");
     const fileListUI = document.getElementById("fileList");
     const form = document.getElementById("mergeForm");
+    const uploadCard = dropZone.closest(".merge-card");
 
     let selectedFiles = [];
+
+    function updateUploadState() {
+        uploadCard.classList.toggle("uploaded", selectedFiles.length > 0);
+    }
 
     /* =========================
        TOGGLE FUNCTION
@@ -93,6 +98,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             fileListUI.appendChild(li);
         });
+
+        updateUploadState();
     }
 
     function removeFile(index) {

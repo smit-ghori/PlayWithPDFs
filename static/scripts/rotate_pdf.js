@@ -18,6 +18,7 @@ const rotateCard =
 
 let uploadedPDF = null;
 let pageRotations = {};
+let isClearingRotatePDF = false;
 
 
 /* =========================================
@@ -338,6 +339,8 @@ function updateRotationInput() {
 
 function clearAll() {
 
+    isClearingRotatePDF = true;
+
     uploadedPDF = null;
 
     pageRotations = {};
@@ -356,4 +359,24 @@ function clearAll() {
     }
 
     hideControls();
+
+    isClearingRotatePDF = false;
 }
+
+if (typeof window.removeFile === "function") {
+
+    const originalRemoveFile =
+        window.removeFile;
+
+    window.removeFile = function (...args) {
+
+        originalRemoveFile.apply(this, args);
+
+        if (!isClearingRotatePDF) {
+
+            clearAll();
+        }
+    };
+}
+
+window.resetUploadForm = clearAll;

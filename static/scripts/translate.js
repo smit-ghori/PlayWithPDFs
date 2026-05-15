@@ -5,8 +5,13 @@
 const dropZone = document.getElementById("dropZone");
 const inputFile = document.getElementById("pdfInput");
 const fileListUI = document.getElementById("fileList");
+const uploadCard = dropZone.closest(".merge-card");
 
 let selectedFiles = [];
+
+function updateUploadState() {
+    uploadCard.classList.toggle("uploaded", selectedFiles.length > 0);
+}
 
 // Open file picker
 if (dropZone && inputFile) {
@@ -69,6 +74,8 @@ function renderFileList() {
 
         fileListUI.appendChild(li);
     });
+
+    updateUploadState();
 }
 
 // Remove file

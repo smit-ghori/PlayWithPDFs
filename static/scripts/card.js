@@ -2,8 +2,13 @@
 const dropZone = document.getElementById("dropZone");
 const input = document.getElementById("pdfInput");
 const fileListUI = document.getElementById("fileList");
+const uploadCard = dropZone.closest(".merge-card");
 
 let selectedFiles = [];
+
+function updateUploadState() {
+    uploadCard.classList.toggle("uploaded", selectedFiles.length > 0);
+}
 
 // Open file picker when clicking drop zone
 dropZone.addEventListener("click", () => input.click());
@@ -11,6 +16,9 @@ dropZone.addEventListener("click", () => input.click());
 // Handle file selection
 input.addEventListener("change", (e) => {
     addFiles(e.target.files);
+    setTimeout(() => {
+        input.value = "";
+    }, 0);
 });
 
 // Drag events
@@ -107,6 +115,8 @@ function renderFileList() {
 
         fileListUI.appendChild(li);
     });
+
+    updateUploadState();
 }
 
 function removeFile(event, index) {
@@ -118,13 +128,13 @@ function removeFile(event, index) {
 function clearAll() {
     selectedFiles = [];
     renderFileList();
-    // if (input) input.value = "";
+    input.value = "";
 }
 
-// // Allow external scripts (like the AJAX loader) to reset the form state after an upload
-// window.resetUploadForm = function () {
-//     clearAll();
-// };
+// Allow external scripts (like the AJAX loader) to reset the form state after an upload
+window.resetUploadForm = function () {
+    clearAll();
+};
 
 // Before submit, rebuild input files
 document.getElementById("mergeForm").addEventListener("submit", function (e) {

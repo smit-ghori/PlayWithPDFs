@@ -10,16 +10,18 @@
   border-radius: 12px;
   border: 1px solid transparent;
   opacity: 0;
+  filter: blur(2px);
   overflow: hidden;
   pointer-events: none;
-  transform: translateY(-10px);
+  transform: translateY(-14px) scale(0.985);
   transition:
-    max-height 0.45s ease,
-    margin 0.35s ease,
-    padding 0.35s ease,
-    border-color 0.35s ease,
-    opacity 0.35s ease,
-    transform 0.35s ease;
+    max-height 1.3s cubic-bezier(0.16, 1, 0.3, 1),
+    margin 1s ease,
+    padding 1s ease,
+    border-color 1s ease,
+    opacity 1s ease,
+    filter 1s ease,
+    transform 1.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .compress-card.uploaded .compression-options {
@@ -28,8 +30,9 @@
   padding: 20px;
   border-color: rgba(255, 255, 255, 0.08);
   opacity: 1;
+  filter: blur(0);
   pointer-events: auto;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 
 /* Each option */

@@ -5,8 +5,16 @@ const dropZone = document.getElementById("dropZone");
 const input = document.getElementById("imageInput");
 const preview = document.getElementById("preview_section");
 const form = document.getElementById("mergeForm");
+const uploadCard = dropZone.closest(".merge-card");
 
 let selectedFiles = [];
+
+function updateUploadState() {
+  uploadCard.classList.toggle(
+    "uploaded",
+    preview.children.length > 0
+  );
+}
 
 /* =========================================
    CLICK
@@ -67,9 +75,11 @@ function handleFiles(files) {
 
         selectedFiles[originalIndex] = null; // 🔥 DON'T SHIFT ARRAY
         div.remove();
+        updateUploadState();
       };
 
       preview.appendChild(div);
+      updateUploadState();
     };
 
     reader.readAsDataURL(file);
@@ -98,6 +108,7 @@ function clearAll() {
   preview.innerHTML = "";
   input.value = "";
   selectedFiles = [];
+  updateUploadState();
 }
 
 /* =========================================
