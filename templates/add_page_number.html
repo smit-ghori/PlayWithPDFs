@@ -1,0 +1,232 @@
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/card_style.css') }}"
+/>
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/add_page_number.css') }}"
+/>
+
+{% extends 'base.html' %} {% block main_title %} Add Page Number {% endblock %}
+{% block main_content %}
+
+<section class="merge-page">
+  <div class="merge-card page-number-card">
+    <h2>Add Page Number</h2>
+
+    <p class="muted">
+      Customize professional page numbering for your PDF document.
+    </p>
+
+    <!-- =====================================
+         FORM   
+    ====================================== -->
+
+    <form
+      class="merge-form ajax-upload-form"
+      id="mergeForm"
+      method="POST"
+      action="{{ url_for('add_page_number.add_page_number') }}"
+      enctype="multipart/form-data"
+    >
+      <!-- =====================================
+           PDF UPLOAD
+      ====================================== -->
+
+      <div class="drop-zone" id="dropZone" data-type="pdf">
+        <input
+          type="file"
+          name="pdfs"
+          id="pdfInput"
+          accept=".pdf,application/pdf"
+          hidden
+        />
+
+        <p class="drop-text">
+          Drag & Drop PDF here
+          <br />
+          <span>or click to browse</span>
+        </p>
+
+        <ul class="file-list" id="fileList"></ul>
+      </div>
+
+      <!-- =====================================
+           MAIN LAYOUT
+      ====================================== -->
+
+      <div class="page-number-layout">
+        <!-- =====================================
+             SETTINGS
+        ====================================== -->
+
+        <div class="settings-grid">
+          <!-- Numbering Mode -->
+
+          <div class="setting-box">
+            <label class="setting-title"> Numbering Mode </label>
+
+            <div class="radio-group">
+              <label>
+                <input type="radio" name="mode" value="single" checked />
+                Single Page
+              </label>
+
+              <label>
+                <input type="radio" name="mode" value="facing" />
+                Facing Page
+              </label>
+            </div>
+          </div>
+
+          <!-- Cover Page -->
+
+          <div class="setting-box">
+            <label class="checkbox-label">
+              <input
+                type="checkbox"
+                id="coverPage"
+                name="cover_page"
+                value="true"
+              />
+
+              First Page is Cover Page
+            </label>
+          </div>
+
+          <!-- Position -->
+
+          <div class="setting-box">
+            <label class="setting-title"> Position </label>
+
+            <select id="position" name="position">
+              <option value="top-left">Top Left</option>
+
+              <option value="top-center">Top Center</option>
+
+              <option value="top-right">Top Right</option>
+
+              <option value="bottom-left">Bottom Left</option>
+
+              <option value="bottom-center" selected>Bottom Center</option>
+
+              <option value="bottom-right">Bottom Right</option>
+            </select>
+          </div>
+
+          <!-- Starting Page Number -->
+
+          <div class="setting-box">
+            <label class="setting-title"> Starting Page Number </label>
+
+            <input
+              type="number"
+              id="startNumber"
+              name="start_number"
+              min="1"
+              value="1"
+            />
+          </div>
+
+          <!-- Format -->
+
+          <div class="setting-box">
+            <label class="setting-title"> Page Number Format </label>
+
+            <select id="pageFormat" name="page_format">
+              <option value="number" selected>Only Page Number</option>
+
+              <option value="page-n">Page n</option>
+
+              <option value="n-of-p">Page n of p</option>
+            </select>
+          </div>
+
+          <!-- Font Family -->
+
+          <div class="setting-box">
+            <label class="setting-title"> Font Family </label>
+
+            <select id="fontFamily" name="font_family">
+              <option value="Arial" selected>Arial</option>
+
+              <option value="Times New Roman">Times New Roman</option>
+
+              <option value="Verdana">Verdana</option>
+
+              <option value="Georgia">Georgia</option>
+
+              <option value="Courier New">Courier New</option>
+            </select>
+          </div>
+
+          <!-- Text Style -->
+
+          <div class="setting-box">
+            <label class="setting-title"> Text Style </label>
+
+            <div class="style-buttons">
+              <button type="button" class="style-btn" id="boldBtn">B</button>
+              <input type="hidden" name="bold" id="boldInput" value="" />
+
+              <button type="button" class="style-btn" id="italicBtn">I</button>
+              <input type="hidden" name="italic" id="italicInput" value="" />
+
+              <button type="button" class="style-btn" id="underlineBtn">
+                U
+              </button>
+              <input
+                type="hidden"
+                name="underline"
+                id="underlineInput"
+                value=""
+              />
+            </div>
+          </div>
+
+          <!-- Text Color -->
+
+          <div class="setting-box">
+            <label class="setting-title"> Text Color </label>
+
+            <input
+              type="color"
+              id="fontColor"
+              value="#7b2d2d"
+              name="font_color"
+            />
+          </div>
+        </div>
+
+        <!-- =====================================
+             LIVE PREVIEW
+        ====================================== -->
+
+        <div class="preview-box">
+          <div class="preview-header">Live Preview</div>
+
+          <div class="preview-page">
+            <div id="previewNumber">1</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =====================================
+           ACTIONS
+      ====================================== -->
+
+      <div class="actions">
+        <button type="submit" class="btn primary">Add Page Number</button>
+
+        <button type="reset" class="btn ghost">Reset</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script src="{{ url_for('static', filename='scripts/card.js') }}"></script>
+
+<script src="{{ url_for('static', filename='scripts/add_page_number.js') }}"></script>
+
+{% endblock %}

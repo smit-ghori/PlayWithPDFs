@@ -1,0 +1,468 @@
+/* =========================================
+   ADD PAGE NUMBER
+   PROFESSIONAL + RESPONSIVE + CONFLICT FREE
+========================================= */
+
+/* =========================================
+   MAIN CARD OVERRIDE
+========================================= */
+
+.merge-page .merge-card.page-number-card {
+  width: 100%;
+  max-width: 1380px;
+
+  padding: 34px;
+
+  overflow: visible;
+}
+/* =========================================
+   MAIN LAYOUT
+========================================= */
+
+.page-number-layout {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    320px;
+
+  gap: 26px;
+
+  align-items: start;
+
+  width: 100%;
+}
+
+/* =========================================
+   SETTINGS GRID
+========================================= */
+
+.settings-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 18px;
+
+  min-width: 0;
+}
+
+/* =========================================
+   SETTING BOX
+========================================= */
+
+.setting-box {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+
+  min-width: 0;
+
+  padding: 18px;
+
+  border-radius: 18px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.035),
+    rgba(255, 255, 255, 0.02)
+  );
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.setting-box:hover {
+  transform: translateY(-2px);
+
+  border-color: rgba(125, 211, 252, 0.18);
+
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+/* =========================================
+   TITLES
+========================================= */
+
+.setting-title {
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #f1fbff;
+}
+
+/* =========================================
+   INPUTS
+========================================= */
+
+.setting-box select,
+.setting-box input[type="number"] {
+  width: 100%;
+
+  height: 48px;
+
+  padding: 0 14px;
+
+  border-radius: 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.03)
+  );
+
+  color: #f1fbff;
+
+  font-size: 14px;
+
+  outline: none;
+
+  appearance: auto;
+  -webkit-appearance: auto;
+  -moz-appearance: auto;
+  transition: 0.25s ease;
+}
+
+/* =========================================
+   INPUT FOCUS
+========================================= */
+
+.setting-box select:focus,
+.setting-box input[type="number"]:focus {
+  border-color: rgba(125, 211, 252, 0.32);
+
+  box-shadow: 0 0 0 3px rgba(125, 211, 252, 0.08);
+}
+
+/* =========================================
+   DROPDOWN OPTIONS
+========================================= */
+
+.setting-box select option {
+  background: #111827;
+
+  color: #f1fbff;
+}
+
+/* =========================================
+   RADIO GROUP
+========================================= */
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+.radio-group label,
+.checkbox-label {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  font-size: 14px;
+
+  color: rgba(230, 238, 248, 0.82);
+
+  cursor: pointer;
+}
+
+/* =========================================
+   RADIO / CHECKBOX
+========================================= */
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: #7dd3fc;
+}
+
+/* =========================================
+   STYLE BUTTONS
+========================================= */
+
+.style-buttons {
+  display: flex;
+
+  gap: 10px;
+}
+
+.style-btn {
+  width: 44px;
+  height: 44px;
+
+  border-radius: 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.03)
+  );
+
+  color: #ffffff;
+
+  cursor: pointer;
+
+  transition: 0.25s ease;
+}
+
+.style-btn:hover,
+.style-btn.active {
+  background: linear-gradient(
+    135deg,
+    rgba(125, 211, 252, 0.22),
+    rgba(125, 211, 252, 0.1)
+  );
+
+  border-color: rgba(125, 211, 252, 0.28);
+
+  transform: translateY(-2px);
+}
+
+/* =========================================
+   BUTTON FONT STYLES
+========================================= */
+
+#boldBtn {
+  font-weight: bold;
+}
+
+#italicBtn {
+  font-style: italic;
+}
+
+#underlineBtn {
+  text-decoration: underline;
+}
+
+/* =========================================
+   COLOR PICKER
+========================================= */
+
+.setting-box input[type="color"] {
+  width: 100%;
+  max-width: 140px;
+
+  height: 42px;
+
+  padding: 0;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: transparent;
+
+  cursor: pointer;
+
+  overflow: hidden;
+}
+
+/* =========================================
+   PREVIEW PANEL
+========================================= */
+
+.preview-box {
+  position: sticky;
+  top: 20px;
+
+  padding: 24px;
+
+  border-radius: 22px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0.02)
+  );
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* =========================================
+   PREVIEW TITLE
+========================================= */
+
+.preview-header {
+  margin-bottom: 18px;
+
+  color: #ffffff;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  text-align: center;
+}
+
+/* =========================================
+   PREVIEW PAGE
+========================================= */
+
+.preview-page {
+  position: relative;
+
+  width: 100%;
+
+  max-width: 290px;
+
+  height: 400px;
+
+  margin: auto;
+
+  background: #ffffff;
+
+  border-radius: 18px;
+
+  overflow: hidden;
+
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+}
+
+/* =========================================
+   PREVIEW PAGE NUMBER
+========================================= */
+
+#previewNumber {
+  position: absolute;
+
+  bottom: 18px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  font-size: 18px;
+
+  color: #000000;
+
+  font-family: Arial;
+
+  transition: 0.25s ease;
+}
+
+/* =========================================
+   ACTION BUTTONS
+========================================= */
+
+.actions {
+  margin-top: 24px;
+}
+
+/* =========================================
+   LARGE LAPTOP
+========================================= */
+
+@media (max-width: 1300px) {
+  .merge-page .merge-card.page-number-card {
+    max-width: 1200px;
+  }
+}
+
+/* =========================================
+   LAPTOP
+========================================= */
+
+@media (max-width: 1150px) {
+  .page-number-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .preview-box {
+    position: relative;
+  }
+
+  .preview-page {
+    max-width: 260px;
+    height: 360px;
+  }
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 900px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .merge-page .merge-card.page-number-card {
+    padding: 28px;
+  }
+
+  .preview-page {
+    max-width: 240px;
+    height: 330px;
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+  .merge-page .merge-card.page-number-card {
+    padding: 22px;
+  }
+
+  .setting-box {
+    padding: 16px;
+  }
+
+  .preview-page {
+    max-width: 210px;
+    height: 290px;
+  }
+
+  .style-buttons {
+    justify-content: center;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .setting-box select,
+  .setting-box input[type="number"] {
+    height: 44px;
+    font-size: 13px;
+  }
+}
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 380px) {
+  .merge-page .merge-card.page-number-card {
+    padding: 18px;
+  }
+
+  .preview-page {
+    max-width: 180px;
+    height: 250px;
+  }
+
+  .setting-title {
+    font-size: 13px;
+  }
+
+  .radio-group label,
+  .checkbox-label {
+    font-size: 13px;
+  }
+
+  .style-btn {
+    width: 40px;
+    height: 40px;
+  }
+}
