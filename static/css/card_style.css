@@ -24,6 +24,10 @@
     0 25px 60px rgba(2, 6, 23, 0.7),
     inset 0 1px 0 rgba(255, 255, 255, 0.03);
   color: #e6eef8;
+  -webkit-border-radius: 18px;
+  -moz-border-radius: 18px;
+  -ms-border-radius: 18px;
+  -o-border-radius: 18px;
 }
 
 /* Titles */
@@ -99,7 +103,6 @@
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
-
 
 .merge-page .file-list li {
   display: flex;
@@ -206,4 +209,120 @@
 .merge-page .note-icon {
   font-size: 14px;
   opacity: 0.9;
+}
+
+/* =========================================
+   RESPONSIVE DESIGN
+========================================= */
+
+/* Laptop */
+@media (max-width: 1024px) {
+  .merge-page {
+    padding: 50px 14px;
+  }
+
+  .merge-page .merge-card {
+    max-width: 90%;
+    padding: 28px;
+  }
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  .merge-page {
+    padding: 40px 12px;
+  }
+
+  .merge-page .merge-card {
+    max-width: 100%;
+    padding: 24px;
+    border-radius: 16px;
+  }
+
+  .merge-page h2 {
+    font-size: 26px;
+  }
+
+  .merge-page .muted {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .merge-page .drop-zone {
+    padding: 24px;
+    min-height: 110px;
+  }
+
+  .merge-page .actions {
+    flex-direction: column;
+  }
+
+  .merge-page .btn {
+    width: 100%;
+  }
+}
+
+/* Mobile */
+@media (max-width: 520px) {
+  .merge-page {
+    padding: 28px 10px;
+  }
+
+  .merge-page .merge-card {
+    padding: 20px;
+    border-radius: 14px;
+  }
+
+  .merge-page h2 {
+    font-size: 22px;
+  }
+
+  .merge-page .drop-zone {
+    padding: 20px 16px;
+  }
+
+  .merge-page .drop-text {
+    font-size: 13px;
+  }
+
+  .merge-page .drop-text span {
+    font-size: 11px;
+  }
+
+  .merge-page .btn {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .merge-page .file-list li {
+    font-size: 12px;
+  }
+
+  .merge-page .upload-note {
+    font-size: 12px;
+    padding: 10px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 380px) {
+  .merge-page .merge-card {
+    padding: 16px;
+  }
+
+  .merge-page h2 {
+    font-size: 20px;
+  }
+
+  .merge-page .drop-zone {
+    padding: 18px 12px;
+  }
+
+  .merge-page .btn {
+    font-size: 12px;
+  }
+
+  .merge-page .upload-note {
+    font-size: 11px;
+  }
 }

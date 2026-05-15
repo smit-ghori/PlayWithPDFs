@@ -1,0 +1,102 @@
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/rotate_pdf.css') }}"
+/>
+<!-- <link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/card_style.css') }}"
+/> -->
+
+<!-- extending base -->
+{% extends 'base.html' %}
+
+<!-- initializing title -->
+{% block main_title %} Rotate PDF {% endblock %}
+
+<!-- implementing main container -->
+{% block main_content %}
+
+<section class="merge-page">
+  <div class="merge-card rotate-card">
+    <h2>Rotate PDF</h2>
+
+    <p class="muted">
+      Upload a PDF file and rotate all pages or individual pages.
+    </p>
+
+    <form
+      class="merge-form ajax-upload-form"
+      action="{{ url_for('rotate_pdf.rotate_pdf') }}"
+      method="POST"
+      enctype="multipart/form-data"
+      id="mergeForm"
+    >
+      <!-- Upload Area -->
+      <div class="drop-zone" id="dropZone" data-type="pdf">
+        <input
+          type="file"
+          name="pdfs"
+          accept=".pdf,application/pdf"
+          id="pdfInput"
+          hidden
+        />
+
+        <p class="drop-text">
+          Drag & Drop PDF here <br />
+          <span>or click to browse</span>
+        </p>
+
+        <ul class="file-list" id="fileList"></ul>
+      </div>
+
+      <!-- Global Rotate Controls -->
+      <div class="global-controls">
+        <h3>Rotate Entire PDF</h3>
+
+        <div class="rotate-buttons">
+          <button type="button" class="rotate-btn" onclick="rotateAll(-90)">
+            Rotate Left
+          </button>
+
+          <button type="button" class="rotate-btn" onclick="rotateAll(90)">
+            Rotate Right
+          </button>
+
+          <button type="button" class="reset-btn" onclick="resetAllPages()">
+            Reset All
+          </button>
+        </div>
+      </div>
+
+      <!-- Preview Pages -->
+      <div id="pdfPreviewContainer" class="preview-container"></div>
+
+      <!-- Hidden Rotation Data -->
+      <input type="hidden" name="rotation_data" id="rotationData" />
+
+      <div class="actions">
+        <button type="submit" class="btn primary">Rotate & Download</button>
+
+        <button type="button" class="btn ghost" onclick="clearAll()">
+          Clear All
+        </button>
+      </div>
+    </form>
+
+    <div class="upload-note">
+      <span class="note-icon">🛠️</span>
+      Rotate entire PDFs or individual pages with live preview support.
+    </div>
+  </div>
+</section>
+
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<!-- Common Upload Logic -->
+<script src="{{ url_for('static', filename='scripts/card.js') }}"></script>
+
+<!-- Rotate PDF JS -->
+<script src="{{ url_for('static', filename='scripts/rotate_pdf.js') }}"></script>
+
+{% endblock %}
