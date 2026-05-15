@@ -9,7 +9,7 @@
 
 .merge-page .merge-card.page-number-card {
   width: 100%;
-  max-width: 1380px;
+  max-width: 1100px;
 
   padding: 34px;
 
@@ -363,7 +363,7 @@ input[type="radio"] {
 
 @media (max-width: 1300px) {
   .merge-page .merge-card.page-number-card {
-    max-width: 1200px;
+    max-width: 960px;
   }
 }
 

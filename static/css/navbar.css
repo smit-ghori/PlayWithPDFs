@@ -7,7 +7,8 @@
 body {
   background: #cfc2e4;
   font-family: Arial, sans-serif;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 } /* ========================= */ /* NAVBAR */ /* ========================= */
 .navbar {
   position: sticky;

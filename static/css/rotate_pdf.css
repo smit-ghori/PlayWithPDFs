@@ -65,8 +65,8 @@
 /* Expanded after upload */
 
 .rotate-card.expanded {
-  max-width: 1450px;
-  min-height: 780px;
+  max-width: 1044px;
+  min-height: 624px;
 }
 
 
@@ -485,25 +485,51 @@
    PDF CANVAS
 ========================================= */
 
-.preview-page canvas {
-  width: 100%;
-  height: 240px;
+.canvas-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  object-fit: contain;
+  width: 100%;
+  height: 260px;
+
+  padding: 8px;
+
+  overflow: hidden;
 
   background: #ffffff;
 
   border-radius: 16px;
 
-  padding: 6px;
-
   border: 1px solid rgba(255,255,255,0.08);
 
-  transition: 0.3s ease;
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
 }
 
-.preview-page:hover canvas {
-  transform: scale(1.02);
+.preview-page canvas {
+  width: auto;
+  height: auto;
+
+  max-width: 100%;
+  max-height: 100%;
+
+  object-fit: contain;
+
+  background: #ffffff;
+
+  border-radius: 10px;
+
+  transform-origin: center center;
+
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.3s ease;
+}
+
+.preview-page:hover .canvas-frame {
+  transform: scale(1.01);
 
   box-shadow:
     0 0 26px rgba(71,207,255,0.18);
@@ -666,29 +692,13 @@
 
 
 /* =========================================
-   FOOTER FIX
-========================================= */
-
-body {
-  display: flex;
-  flex-direction: column;
-
-  min-height: 100vh;
-}
-
-footer {
-  margin-top: auto;
-}
-
-
-/* =========================================
    RESPONSIVE
 ========================================= */
 
 @media (max-width: 1400px) {
 
   .rotate-card.expanded {
-    max-width: 1200px;
+    max-width: 864px;
   }
 
   .preview-container {
@@ -699,7 +709,7 @@ footer {
 @media (max-width: 1100px) {
 
   .rotate-card.expanded {
-    max-width: 1000px;
+    max-width: 720px;
   }
 
   .preview-container {
@@ -752,7 +762,7 @@ footer {
     width: 100%;
   }
 
-  .preview-page canvas {
+  .canvas-frame {
     height: 220px;
   }
 }
@@ -767,7 +777,7 @@ footer {
     font-size: 1.7rem;
   }
 
-  .preview-page canvas {
+  .canvas-frame {
     height: 190px;
   }
 }

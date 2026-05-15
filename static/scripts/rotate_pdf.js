@@ -148,7 +148,13 @@ async function renderAllPages() {
 
         /* PDF CANVAS */
 
-        wrapper.appendChild(canvas);
+        const canvasFrame = document.createElement("div");
+
+        canvasFrame.className = "canvas-frame";
+
+        canvasFrame.appendChild(canvas);
+
+        wrapper.appendChild(canvasFrame);
 
         /* =========================================
            PAGE CONTROLS
@@ -260,14 +266,59 @@ function applyRotation(pageNumber) {
         previewPages[pageNumber - 1]
             .querySelector("canvas");
 
+    const frame =
+        canvas.closest(".canvas-frame");
+
+    const normalizedRotation =
+        ((pageRotations[pageNumber] % 360) + 360) % 360;
+
+    let scale = 1;
+
+    if (
+        normalizedRotation === 90 ||
+        normalizedRotation === 270
+    ) {
+
+        const frameRect =
+            frame.getBoundingClientRect();
+
+        const canvasWidth =
+            canvas.offsetWidth;
+
+        const canvasHeight =
+            canvas.offsetHeight;
+
+        if (
+            frameRect.width &&
+            frameRect.height &&
+            canvasWidth &&
+            canvasHeight
+        ) {
+
+            scale = Math.min(
+                frameRect.width / canvasHeight,
+                frameRect.height / canvasWidth,
+                1
+            ) * 0.96;
+        }
+    }
+
     canvas.style.transition =
         "transform 0.35s ease";
 
     canvas.style.transform =
-        `rotate(${pageRotations[pageNumber]}deg)`;
+        `rotate(${pageRotations[pageNumber]}deg) scale(${scale})`;
 
     updateRotationInput();
 }
+
+window.addEventListener("resize", () => {
+
+    Object.keys(pageRotations).forEach((page) => {
+
+        applyRotation(page);
+    });
+});
 
 
 /* =========================================
