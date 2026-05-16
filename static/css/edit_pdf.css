@@ -309,6 +309,14 @@
   overflow: hidden;
 }
 
+.canvas-container.text-selection-mode {
+  pointer-events: none;
+}
+
+.canvas-container:not(.text-selection-mode) {
+  pointer-events: auto;
+}
+
 /* =========================================
    RIGHT SIDE PANEL
    ========================================= */

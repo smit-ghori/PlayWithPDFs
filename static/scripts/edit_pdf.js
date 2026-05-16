@@ -914,23 +914,7 @@ function buildTextboxFromSelection(
 
   fabricCanvas.add(textbox);
 
-  fabricCanvas.setActiveObject(
-    textbox
-  );
-
-  fabricCanvas.renderAll();
-
-  setActiveTool(
-    "select",
-    null
-  );
-
-  textbox.enterEditing();
-  textbox.selectAll();
-
-  if (textbox.hiddenTextarea) {
-    textbox.hiddenTextarea.focus();
-  }
+  editTextbox(textbox);
 }
 
 function syncTextboxCoverRect(
@@ -1071,6 +1055,38 @@ function syncEditorControlsFromObject(
     document.getElementById(
       "textColor"
     ).value = active.fill;
+  }
+}
+
+function editTextbox(textbox) {
+  if (
+    !textbox ||
+    textbox.type !== "textbox"
+  ) {
+    return;
+  }
+
+  setActiveTool(
+    "select",
+    null
+  );
+
+  textbox.set({
+    editable: true,
+    selectable: true,
+    evented: true
+  });
+
+  fabricCanvas.setActiveObject(
+    textbox
+  );
+
+  textbox.enterEditing();
+  textbox.selectAll();
+  fabricCanvas.renderAll();
+
+  if (textbox.hiddenTextarea) {
+    textbox.hiddenTextarea.focus();
   }
 }
 
@@ -1273,14 +1289,7 @@ fabricCanvas.on(
 
       fabricCanvas.add(textbox);
 
-      fabricCanvas.setActiveObject(
-        textbox
-      );
-
-      setActiveTool(
-        "select",
-        null
-      );
+      editTextbox(textbox);
     }
 
     /* ===================================
@@ -1345,6 +1354,18 @@ fabricCanvas.on(
       document.getElementById(
         "editorText"
       ).value = textbox.text || "";
+    }
+  }
+);
+
+fabricCanvas.on(
+  "mouse:dblclick",
+  function (event) {
+    if (
+      event.target &&
+      event.target.type === "textbox"
+    ) {
+      editTextbox(event.target);
     }
   }
 );
