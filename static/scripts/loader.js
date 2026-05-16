@@ -55,6 +55,21 @@ function resetUploader(form) {
     }
 }
 
+function showFlashMessagesFromHtml(html) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    const nextFlash = doc.getElementById("flash-container");
+    const currentFlash = document.getElementById("flash-container");
+
+    if (!nextFlash || !currentFlash || !nextFlash.innerHTML.trim()) {
+        return false;
+    }
+
+    currentFlash.innerHTML = nextFlash.innerHTML;
+    currentFlash.scrollIntoView({ behavior: "smooth", block: "start" });
+    return true;
+}
+
 // when DOM ready, wire up interactions
 document.addEventListener("DOMContentLoaded", () => {
     // show loader on any form submit so user sees something while server works
@@ -96,14 +111,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     await downloadFromResponse(resp);
                     resetUploader(form);
                 } else {
-                    if (resp.redirected && resp.url) {
+                    const text = await resp.text();
+                    const showedFlash = showFlashMessagesFromHtml(text);
+
+                    if (!showedFlash && resp.redirected && resp.url) {
                         window.location.href = resp.url;
                         return;
                     }
 
                     resetUploader(form);
-                    const text = await resp.text();
-                    console.log("Upload response:", text);
                 }
             } catch (err) {
                 console.error(err);

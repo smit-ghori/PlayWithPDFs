@@ -1,0 +1,260 @@
+/* =========================================
+   PASSWORD SECTION
+   ========================================= */
+
+.merge-page .excel-options {
+  margin-top: 28px;
+
+  width: 100%;
+}
+
+/* =========================================
+   OPTION GROUP
+   ========================================= */
+
+.merge-page .option-group {
+  width: 100%;
+}
+
+/* =========================================
+   LABEL
+   ========================================= */
+
+.merge-page .option-group label {
+  display: block;
+
+  margin-bottom: 12px;
+
+  color: #f4f8ff;
+
+  font-size: 17px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.2px;
+}
+
+/* =========================================
+   PASSWORD WRAPPER
+   ========================================= */
+
+.merge-page .password-wrapper {
+  position: relative;
+
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+}
+
+/* =========================================
+   INPUT FIELD
+   ========================================= */
+
+.merge-page .input-field {
+  width: 100%;
+
+  height: 56px;
+
+  padding: 0 60px 0 18px;
+
+  border-radius: 16px;
+
+  border: 1px solid rgba(125, 211, 252, 0.14);
+
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.07),
+    rgba(255, 255, 255, 0.03)
+  );
+
+  color: #ffffff;
+
+  font-size: 15px;
+
+  font-weight: 500;
+
+  outline: none;
+
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+
+  box-sizing: border-box;
+
+  backdrop-filter: blur(8px);
+}
+
+/* Placeholder */
+.merge-page .input-field::placeholder {
+  color: rgba(220, 230, 245, 0.55);
+
+  font-weight: 400;
+}
+
+/* Focus */
+.merge-page .input-field:focus {
+  border-color: rgba(125, 211, 252, 0.55);
+
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.04)
+  );
+
+  box-shadow:
+    0 0 0 4px rgba(125, 211, 252, 0.1),
+    0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+/* =========================================
+   TOGGLE PASSWORD BUTTON
+   ========================================= */
+
+.merge-page .toggle-password {
+  position: absolute;
+
+  right: 16px;
+
+  width: 38px;
+  height: 38px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: rgba(255, 255, 255, 0.06);
+
+  color: #dff6ff;
+
+  font-size: 17px;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  transition:
+    background 0.25s ease,
+    transform 0.2s ease;
+}
+
+/* Hover */
+.merge-page .toggle-password:hover {
+  background: rgba(125, 211, 252, 0.18);
+
+  transform: translateY(-1px);
+}
+
+/* Active */
+.merge-page .toggle-password:active {
+  transform: scale(0.96);
+}
+
+/* =========================================
+   FIELD NOTE
+   ========================================= */
+
+.merge-page .field-note {
+  margin-top: 10px;
+
+  color: rgba(225, 235, 245, 0.72);
+
+  font-size: 13px;
+
+  line-height: 1.5;
+
+  letter-spacing: 0.2px;
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media (max-width: 768px) {
+  .merge-page .option-group label {
+    font-size: 16px;
+  }
+
+  .merge-page .input-field {
+    height: 52px;
+
+    font-size: 14px;
+
+    padding: 0 56px 0 16px;
+  }
+
+  .merge-page .toggle-password {
+    width: 36px;
+    height: 36px;
+
+    right: 14px;
+
+    font-size: 16px;
+  }
+
+  .merge-page .field-note {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 520px) {
+  .merge-page .excel-options {
+    margin-top: 22px;
+  }
+
+  .merge-page .option-group label {
+    font-size: 15px;
+
+    margin-bottom: 10px;
+  }
+
+  .merge-page .input-field {
+    height: 50px;
+
+    border-radius: 14px;
+
+    font-size: 14px;
+
+    padding: 0 52px 0 14px;
+  }
+
+  .merge-page .toggle-password {
+    width: 34px;
+    height: 34px;
+
+    border-radius: 10px;
+
+    right: 12px;
+  }
+
+  .merge-page .field-note {
+    margin-top: 8px;
+
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 380px) {
+  .merge-page .input-field {
+    height: 48px;
+
+    font-size: 13px;
+  }
+
+  .merge-page .toggle-password {
+    width: 32px;
+    height: 32px;
+
+    font-size: 15px;
+  }
+
+  .merge-page .option-group label {
+    font-size: 14px;
+  }
+}

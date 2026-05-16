@@ -16,6 +16,45 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/loader.css') }}"
     />
+    <style>
+      .flash-wrapper {
+        width: min(960px, 92%);
+        margin: 18px auto 0;
+      }
+
+      .flash-message {
+        padding: 14px 18px;
+        border-radius: 14px;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        animation: flashIn 0.3s ease;
+      }
+
+      .flash-message.success {
+        background: #ecfdf3;
+        border: 1px solid #abefc6;
+        color: #027a48;
+      }
+
+      .flash-message.error {
+        background: #fdecea;
+        border: 1px solid #f5c2c7;
+        color: #b42318;
+      }
+
+      @keyframes flashIn {
+        from {
+          opacity: 0;
+          transform: translateY(-8px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
     {% block extra_css %}{% endblock %}
   </head>
   <body>
@@ -208,13 +247,15 @@
                 <li>
                   <a href="{{ url_for('crop_pdf.crop_pdf') }}">Crop PDF</a>
                 </li>
-                <li><a href="{{ url_for('edit_pdf.edit_pdf') }}">Edit PDF</a></li>
+                <li>
+                  <a href="{{ url_for('edit_pdf.edit_pdf') }}">Edit PDF</a>
+                </li>
               </ul>
             </div>
             <div class="more-column">
               <h4>PDF SECURITY</h4>
               <ul>
-                <li><a href="#">Unlock PDF</a></li>
+                <li><a href="{{ url_for('unlock_pdf.unlock_pdf') }}">Unlock PDF</a></li>
                 <li><a href="#">Protect PDF</a></li>
                 <li><a href="#">Sign PDF</a></li>
                 <li><a href="#">Redact PDF</a></li>
@@ -226,18 +267,12 @@
       </ul>
     </nav>
 
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %}
-    <div style="width: min(960px, 92%); margin: 18px auto 0">
-      {% for category, message in messages %}
-      <div
-        style="padding:12px 14px;margin-bottom:10px;border-radius:10px;background:{% if category == 'error' %}#fdecea{% else %}#ecfdf3{% endif %};color:{% if category == 'error' %}#b42318{% else %}#027a48{% endif %};border:1px solid {% if category == 'error' %}#f5c2c7{% else %}#abefc6{% endif %};"
-      >
-        {{ message }}
-      </div>
-      {% endfor %}
+    <div id="flash-container" class="flash-wrapper">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div class="flash-message {{ category }}">{{ message }}</div>
+      {% endfor %} {% endif %} {% endwith %}
     </div>
-    {% endif %} {% endwith %}
 
     <div class="main_content">{% block main_content %} {% endblock %}</div>
 
@@ -261,5 +296,27 @@
 
     <!-- scripts -->
     <script src="{{ url_for('static', filename='scripts/loader.js') }}"></script>
+    <!-- scripts -->
+    <script src="{{ url_for('static', filename='scripts/loader.js') }}"></script>
+
+    <script>
+      window.addEventListener("load", function () {
+        const flashMessages = document.querySelectorAll(".flash-message");
+
+        flashMessages.forEach(function (message) {
+          setTimeout(function () {
+            message.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+
+            message.style.opacity = "0";
+
+            message.style.transform = "translateY(-10px)";
+
+            setTimeout(function () {
+              message.remove();
+            }, 400);
+          }, 4000);
+        });
+      });
+    </script>
   </body>
 </html>
