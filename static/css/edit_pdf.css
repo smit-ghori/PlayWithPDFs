@@ -35,9 +35,9 @@
 .merge-page .merge-card.uploaded {
   max-width: min(960px, calc(100vw - 56px));
 
-  max-height: calc(100vh - 110px);
+  max-height: none;
 
-  overflow: hidden;
+  overflow: visible;
 
   display: flex;
 
@@ -634,7 +634,7 @@ body {
   .merge-page .merge-card.uploaded {
     max-width: min(840px, calc(100vw - 32px));
 
-    max-height: unset;
+    max-height: none;
   }
 
   .merge-page .pdf-canvas-wrapper {
