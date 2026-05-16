@@ -1,0 +1,220 @@
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/crop_file.css') }}"
+/>
+
+<!-- extending base -->
+{% extends 'base.html' %}
+
+<!-- Main title -->
+{% block main_title %} Crop PDF {% endblock %}
+
+<!-- Implementing container -->
+{% block main_content %}
+
+<section class="merge-page">
+  <div class="merge-card crop-card">
+    <h2>Crop PDF Files</h2>
+
+    <p class="muted">Upload PDF files and crop pages visually.</p>
+
+    <form
+      class="merge-form ajax-upload-form"
+      action="{{ url_for('crop_pdf.crop_pdf') }}"
+      method="POST"
+      enctype="multipart/form-data"
+      id="mergeForm"
+    >
+      <!-- ========================================= -->
+      <!-- DROP ZONE -->
+      <!-- ========================================= -->
+
+      <div class="drop-zone" id="dropZone" data-type="pdf">
+        <input
+          type="file"
+          name="pdfs"
+          accept="application/pdf"
+          id="pdfInput"
+          hidden
+        />
+
+        <p class="drop-text">
+          Drag & Drop PDF files here
+          <br />
+
+          <span>or click to browse</span>
+        </p>
+
+        <ul class="file-list" id="fileList"></ul>
+      </div>
+
+      <!-- ========================================= -->
+      <!-- CROP WORKSPACE -->
+      <!-- ========================================= -->
+
+      <div class="crop-workspace">
+        <!-- ========================================= -->
+        <!-- LEFT SIDE PDF PREVIEW -->
+        <!-- ========================================= -->
+
+        <div class="pdf-preview-panel">
+          <!-- Toolbar -->
+          <div class="preview-toolbar">
+            <button type="button" class="nav-btn" id="prevPageBtn">
+              &larr;
+            </button>
+
+            <span class="page-indicator">
+              Page
+
+              <span id="currentPage"> 1 </span>
+
+              /
+
+              <span id="totalPages"> 1 </span>
+            </span>
+
+            <button type="button" class="nav-btn" id="nextPageBtn">
+              &rarr;
+            </button>
+          </div>
+
+          <!-- PDF Preview -->
+          <div class="pdf-preview-wrapper">
+            <div class="pdf-page-stage" id="pdfPageStage">
+              <canvas id="pdfCanvas"></canvas>
+
+              <!-- Crop Box -->
+              <div id="cropBox">
+                <div
+                  class="resize-handle top-left"
+                  data-handle="top-left"
+                ></div>
+
+                <div
+                  class="resize-handle top-right"
+                  data-handle="top-right"
+                ></div>
+
+                <div
+                  class="resize-handle bottom-left"
+                  data-handle="bottom-left"
+                ></div>
+
+                <div
+                  class="resize-handle bottom-right"
+                  data-handle="bottom-right"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================= -->
+        <!-- RIGHT SIDE OPTIONS -->
+        <!-- ========================================= -->
+
+        <div class="crop-options">
+          <h3>Crop Settings</h3>
+
+          <!-- ========================================= -->
+          <!-- CROP MODE -->
+          <!-- ========================================= -->
+
+          <div class="option-group">
+            <label>Apply Crop</label>
+
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="crop_mode" value="all" checked />
+
+                <span>All Pages</span>
+              </label>
+
+              <label class="radio-option">
+                <input type="radio" name="crop_mode" value="current" />
+
+                <span>Current Page</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- ========================================= -->
+          <!-- PAGE INFO -->
+          <!-- ========================================= -->
+
+          <div class="crop-info-card">
+            <div class="crop-info-row">
+              <span>X</span>
+              <strong id="cropX">0</strong>
+            </div>
+
+            <div class="crop-info-row">
+              <span>Y</span>
+              <strong id="cropY">0</strong>
+            </div>
+
+            <div class="crop-info-row">
+              <span>Width</span>
+              <strong id="cropWidth">0</strong>
+            </div>
+
+            <div class="crop-info-row">
+              <span>Height</span>
+              <strong id="cropHeight">0</strong>
+            </div>
+          </div>
+
+          <!-- ========================================= -->
+          <!-- HIDDEN INPUTS -->
+          <!-- ========================================= -->
+
+          <input type="hidden" name="crop_x" id="cropXInput" />
+
+          <input type="hidden" name="crop_y" id="cropYInput" />
+
+          <input type="hidden" name="crop_width" id="cropWidthInput" />
+
+          <input type="hidden" name="crop_height" id="cropHeightInput" />
+
+          <input type="hidden" name="current_page" id="currentPageInput" />
+
+          <input type="hidden" name="crop_data" id="cropDataInput" />
+
+          <!-- ========================================= -->
+          <!-- ACTION BUTTONS -->
+          <!-- ========================================= -->
+
+          <div class="crop-action-buttons">
+            <button type="button" class="btn ghost" id="resetCropBtn">
+              Reset Crop
+            </button>
+
+            <button type="submit" class="btn primary">Crop PDF</button>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- ========================================= -->
+    <!-- NOTE -->
+    <!-- ========================================= -->
+
+    <div class="upload-note">
+      <span class="note-icon">PDF</span>
+
+      Crop specific areas from PDF pages visually.
+    </div>
+  </div>
+</section>
+
+<!-- ========================================= -->
+<!-- PDF.JS -->
+<!-- ========================================= -->
+
+<script
+  src="{{ url_for('static', filename='scripts/crop_file.js') }}"
+  type="module"
+></script>
+
+{% endblock %}

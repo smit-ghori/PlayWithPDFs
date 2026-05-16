@@ -200,8 +200,14 @@
                     >Add page numbers</a
                   >
                 </li>
-                <li><a href="{{ url_for('add_watermark.add_watermark') }}">Add watermark</a></li>
-                <li><a href="#">Crop PDF</a></li>
+                <li>
+                  <a href="{{ url_for('add_watermark.add_watermark') }}"
+                    >Add watermark</a
+                  >
+                </li>
+                <li>
+                  <a href="{{ url_for('crop_pdf.crop_pdf') }}">Crop PDF</a>
+                </li>
                 <li><a href="#">Edit PDF</a></li>
               </ul>
             </div>
