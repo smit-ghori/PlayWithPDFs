@@ -1,0 +1,234 @@
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/card_style.css') }}"
+/>
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/edit_pdf.css') }}"
+/>
+
+<!-- extending base -->
+{% extends 'base.html' %}
+
+<!-- Main title -->
+{% block main_title %} PDF Editor {% endblock %}
+
+<!-- Implementing container -->
+{% block main_content %}
+
+<section class="merge-page edit-pdf-page">
+  <div class="merge-card">
+    <h2>PDF Editor</h2>
+
+    <p class="muted">Upload PDF files and edit them visually.</p>
+
+    <form
+      class="merge-form ajax-upload-form"
+      action="{{ url_for('edit_pdf.edit_pdf') }}"
+      method="POST"
+      enctype="multipart/form-data"
+      id="mergeForm"
+    >
+      <input type="hidden" name="annotations_data" id="annotationsData" />
+      <input type="hidden" name="current_page" id="currentPageInput" value="1" />
+
+      <!-- ========================================= -->
+      <!-- DROP ZONE -->
+      <!-- ========================================= -->
+
+      <div class="drop-zone" id="dropZone" data-type="pdf">
+        <input
+          type="file"
+          name="pdfs"
+          accept="application/pdf"
+          id="pdfInput"
+          hidden
+        />
+
+        <p class="drop-text">
+          Drag & Drop PDF file here
+          <br />
+
+          <span>or click to browse</span>
+        </p>
+
+        <ul class="file-list" id="fileList"></ul>
+      </div>
+
+      <!-- ========================================= -->
+      <!-- PDF EDITOR WORKSPACE -->
+      <!-- ========================================= -->
+
+      <div class="editor-workspace">
+        <!-- ========================================= -->
+        <!-- LEFT SIDE PDF PREVIEW -->
+        <!-- ========================================= -->
+
+        <div class="pdf-editor-panel">
+          <!-- Toolbar -->
+          <div class="editor-toolbar">
+            <!-- Page Navigation -->
+            <div class="toolbar-group">
+              <button type="button" class="tool-btn" id="prevPageBtn">←</button>
+
+              <span class="page-indicator">
+                Page
+
+                <span id="currentPage"> 1 </span>
+
+                /
+
+                <span id="totalPages"> 1 </span>
+              </span>
+
+              <button type="button" class="tool-btn" id="nextPageBtn">→</button>
+            </div>
+
+            <!-- Editing Tools -->
+            <div class="toolbar-group">
+              <button type="button" class="tool-btn" id="selectTextBtn">
+                Select Text
+              </button>
+
+              <button type="button" class="tool-btn active" id="addTextBtn">
+                Add Text
+              </button>
+
+              <button type="button" class="tool-btn" id="drawBtn">Draw</button>
+
+              <button type="button" class="tool-btn" id="eraseBtn">
+                Whiteout
+              </button>
+            </div>
+          </div>
+
+          <!-- ========================================= -->
+          <!-- PDF CANVAS -->
+          <!-- ========================================= -->
+
+          <div class="pdf-canvas-wrapper">
+            <div id="pdfPages" class="pdf-pages"></div>
+
+            <!-- Fabric Canvas used on the active page -->
+            <canvas id="fabricCanvas"></canvas>
+          </div>
+        </div>
+
+        <!-- ========================================= -->
+        <!-- RIGHT SIDE OPTIONS -->
+        <!-- ========================================= -->
+
+        <div class="editor-options">
+          <h3>Edit Options</h3>
+
+          <!-- ========================================= -->
+          <!-- TEXT OPTIONS -->
+          <!-- ========================================= -->
+
+          <div class="option-group">
+            <label>Text</label>
+
+            <input
+              type="text"
+              id="editorText"
+              class="editor-input"
+              placeholder="Enter text"
+            />
+          </div>
+
+          <!-- Font Size -->
+          <div class="option-group">
+            <label>Font Size</label>
+
+            <input type="range" min="10" max="80" value="24" id="fontSize" />
+          </div>
+
+          <!-- Text Color -->
+          <div class="option-group">
+            <label>Text Color</label>
+
+            <input type="color" id="textColor" value="#ff0000" />
+          </div>
+
+          <!-- Font Family -->
+          <div class="option-group">
+            <label>Font Family</label>
+
+            <select id="fontFamily">
+              <option value="Arial">Arial</option>
+
+              <option value="Times New Roman">Times New Roman</option>
+
+              <option value="Courier New">Courier New</option>
+
+              <option value="Verdana">Verdana</option>
+            </select>
+          </div>
+
+          <!-- ========================================= -->
+          <!-- STYLE OPTIONS -->
+          <!-- ========================================= -->
+
+          <div class="style-options">
+            <button type="button" class="style-btn" id="boldBtn">B</button>
+
+            <button type="button" class="style-btn italic" id="italicBtn">
+              I
+            </button>
+
+            <button type="button" class="style-btn underline" id="underlineBtn">
+              U
+            </button>
+          </div>
+
+
+          <!-- ========================================= -->
+          <!-- ACTION BUTTONS -->
+          <!-- ========================================= -->
+
+          <div class="editor-actions">
+            <button type="button" class="btn ghost" id="resetEditorBtn">
+              Reset
+            </button>
+
+            <button type="submit" class="btn primary">Save PDF</button>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- ========================================= -->
+    <!-- NOTE -->
+    <!-- ========================================= -->
+
+    <div class="upload-note">
+      <span class="note-icon"> 📄 </span>
+
+      Add text, draw, erase, and annotate PDF files visually.
+    </div>
+  </div>
+</section>
+
+<!-- ========================================= -->
+<!-- PDF.JS -->
+<!-- ========================================= -->
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs"
+  type="module"
+></script>
+
+<!-- ========================================= -->
+<!-- FABRIC JS -->
+<!-- ========================================= -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+
+<!-- ========================================= -->
+<!-- EDITOR SCRIPT -->
+<!-- ========================================= -->
+
+<script src="{{ url_for('static', filename='scripts/edit_pdf.js') }}"></script>
+
+{% endblock %}

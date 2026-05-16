@@ -24,6 +24,7 @@ from routes.rotate_pdf import rotate_pdf_bp
 from routes.add_page_number import add_page_number_bp
 from routes.add_watermark import add_watermark_bp
 from routes.crop_pdf import crop_pdf_bp
+from routes.edit_pdf import edit_pdf_bp
 from utils.file_utils import cleanup_worker
 
 app = Flask(__name__)
@@ -56,6 +57,7 @@ app.register_blueprint(rotate_pdf_bp)
 app.register_blueprint(add_watermark_bp)
 app.register_blueprint(add_page_number_bp)
 app.register_blueprint(crop_pdf_bp)
+app.register_blueprint(edit_pdf_bp)
 
 # start cleanup thread
 threading.Thread(target=cleanup_worker, daemon=True).start()
