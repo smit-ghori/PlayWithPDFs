@@ -1,0 +1,98 @@
+{% extends 'base.html' %} {% block main_title %} Sign PDF {% endblock %} {%
+block main_content %}
+
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/sign_pdf.css') }}"
+/>
+
+<section class="merge-page">
+  <div class="merge-card" id="mergeCard">
+    <h2>Sign PDF</h2>
+    <p class="muted">Upload a PDF, then place your signature on any page.</p>
+
+    <form
+      class="merge-form ajax-upload-form"
+      action="{{ url_for('sign_pdf.sign_pdf') }}"
+      method="POST"
+      enctype="multipart/form-data"
+      id="mergeForm"
+    >
+      <!-- ── PDF DROP ZONE ── -->
+      <div class="drop-zone" id="dropZone">
+        <input
+          type="file"
+          name="pdfs"
+          accept="application/pdf"
+          id="pdfInput"
+          hidden
+        />
+        <div class="drop-icon">📄</div>
+        <p class="drop-text">
+          Drag & drop your PDF here<br />
+          <span>or click to browse</span>
+        </p>
+        <ul class="file-list" id="fileList"></ul>
+      </div>
+
+      <!-- ── SIGNATURE UPLOAD (visible after PDF uploaded) ── -->
+      <div class="sig-upload-panel" id="sigPanel">
+        <label class="sig-label">Upload Your Signature</label>
+        <p class="field-note">Accepted: PNG, JPG, JPEG, WEBP, SVG</p>
+
+        <label class="sig-drop" id="sigDrop">
+          <input
+            type="file"
+            name="signature_image"
+            accept="image/*"
+            id="sigInput"
+            hidden
+          />
+          <span class="sig-drop-icon">✍️</span>
+          <span id="sigDropText">Click or drag signature image here</span>
+        </label>
+
+        <!-- Signature thumbnail preview -->
+        <div class="sig-thumb-wrap" id="sigThumbWrap" style="display: none">
+          <img id="sigThumb" class="sig-thumb" alt="Signature preview" />
+          <button type="button" class="sig-clear-btn" id="sigClearBtn">
+            Remove
+          </button>
+        </div>
+
+        <p class="field-note" style="margin-top: 6px">
+          After uploading, click <strong>"+ Add to page"</strong> on any page
+          below to place it.
+        </p>
+      </div>
+
+      <!-- ── PDF PREVIEW ── -->
+      <div class="pdf-preview" id="pdfPreview">
+        <div class="preview-header">
+          <h3>PDF Preview</h3>
+          <p>Place and drag your signature on any page.</p>
+        </div>
+        <div class="pdf-pages-container" id="pdfPagesContainer"></div>
+      </div>
+
+      <!-- ── ACTIONS ── -->
+      <div class="form-actions" id="formActions">
+        <button type="submit" class="btn primary">Sign & Download</button>
+        <button type="button" class="btn ghost" id="clearAllBtn">
+          Clear All
+        </button>
+      </div>
+    </form>
+
+    <p class="upload-note">
+      <span class="note-icon">🔒</span>
+      Your files are processed securely and never stored.
+    </p>
+  </div>
+</section>
+
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="{{ url_for('static', filename='scripts/sign_pdf.js') }}"></script>
+
+{% endblock %}
