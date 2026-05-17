@@ -1,0 +1,117 @@
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/card_style.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/unlock_pdf.css') }}"
+/>
+
+{% extends 'base.html' %} {% block main_title %} Protect PDF {% endblock %} {%
+block main_content %}
+
+<section class="merge-page">
+  <div class="merge-card">
+    <h2>Protect PDF</h2>
+
+    <p class="muted">Upload PDF and add password protection securely.</p>
+
+    <form
+      class="merge-form ajax-upload-form"
+      action="{{ url_for('protect_pdf.protect_pdf') }}"
+      method="POST"
+      enctype="multipart/form-data"
+      id="mergeForm"
+    >
+      <!-- Drop Zone -->
+      <div class="drop-zone" id="dropZone" data-type="pdf">
+        <input
+          type="file"
+          name="pdfs"
+          accept="application/pdf"
+          id="pdfInput"
+          hidden
+        />
+
+        <p class="drop-text">
+          Drag & Drop PDF files here
+          <br />
+
+          <span>or click to browse</span>
+        </p>
+
+        <ul class="file-list" id="fileList"></ul>
+      </div>
+
+      <!-- ========================================= -->
+      <!-- PASSWORD SECTION -->
+      <!-- ========================================= -->
+
+      <div class="excel-options">
+        <div class="option-group full-width">
+          <label> Set PDF Password </label>
+
+          <div class="password-wrapper">
+            <input
+              type="password"
+              name="pdf_password"
+              id="pdfPassword"
+              class="input-field"
+              placeholder="Enter new PDF password"
+              required
+            />
+
+            <button type="button" class="toggle-password" id="togglePassword">
+              👁
+            </button>
+          </div>
+
+          <p class="field-note">
+            This password will be required to open the protected PDF.
+          </p>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="actions">
+        <button type="submit" class="btn primary">Protect & Download</button>
+
+        <button type="button" class="btn ghost" onclick="clearAll()">
+          Clear All
+        </button>
+      </div>
+    </form>
+
+    <!-- Note -->
+    <div class="upload-note">
+      <span class="note-icon"> 🔒 </span>
+
+      Your PDF is protected securely and the password is not stored.
+    </div>
+  </div>
+</section>
+
+<!-- Password Toggle -->
+<script>
+  const togglePassword = document.getElementById("togglePassword");
+
+  const passwordInput = document.getElementById("pdfPassword");
+
+  if (togglePassword && passwordInput) {
+    togglePassword.addEventListener("click", () => {
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+
+        togglePassword.textContent = "🙈";
+      } else {
+        passwordInput.type = "password";
+
+        togglePassword.textContent = "👁";
+      }
+    });
+  }
+</script>
+
+<script src="{{ url_for('static', filename='scripts/card.js') }}"></script>
+
+{% endblock %}
