@@ -28,7 +28,8 @@
 }
 
 .merge-page .merge-card.uploaded {
-  max-width: 960px;
+  max-width: 768px;
+  transition: max-width 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .merge-page h2 {
