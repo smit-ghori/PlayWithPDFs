@@ -97,7 +97,7 @@ def sign_pdf():
             out,
             mimetype="application/pdf",
             as_attachment=True,
-            download_name="signed.pdf",
+            download_name="signed_by_PlayWithPDFs.pdf",
         )
 
     return render_template("sign_pdf.html")

@@ -1,0 +1,134 @@
+<!-- extending base -->
+{% extends 'base.html' %}
+
+<!-- Main title -->
+{% block main_title %} Redact PDF {% endblock %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/redact_pdf.css') }}"
+/>
+{% endblock %}
+
+<!-- Implementing container -->
+{% block main_content %}
+
+<section class="merge-page">
+  <div class="merge-card redact-card">
+    <h2>Redact PDF Files</h2>
+    <p class="muted">
+      Upload PDF and select text that you want to hide permanently.
+    </p>
+
+    <form
+      class="merge-form ajax-upload-form"
+      action="{{ url_for('redact_pdf.redact_pdf') }}"
+      method="POST"
+      enctype="multipart/form-data"
+      id="mergeForm"
+    >
+      <!-- Drop Zone -->
+      <div class="drop-zone" id="dropZone" data-type="pdf">
+        <input
+          type="file"
+          name="pdfs"
+          accept="application/pdf"
+          multiple
+          id="pdfInput"
+          hidden
+        />
+
+        <p class="drop-text">
+          Drag & Drop PDF files here <br />
+          <span>or click to browse</span>
+        </p>
+
+        <ul class="file-list" id="fileList"></ul>
+      </div>
+
+      <!-- PDF Preview -->
+      <div class="pdf-preview" id="pdfPreview">
+        <div class="preview-toolbar">
+          <div class="page-indicator">
+            <span id="pageNumber">Page 1</span>
+            <div class="zoom-controls" aria-label="PDF preview zoom">
+              <button
+                type="button"
+                class="zoom-btn"
+                id="zoomOutBtn"
+                onclick="zoomPdf(-0.15)"
+              >
+                -
+              </button>
+              <span class="zoom-value" id="zoomValue">100%</span>
+              <button
+                type="button"
+                class="zoom-btn"
+                id="zoomInBtn"
+                onclick="zoomPdf(0.15)"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <div class="selection-tools">
+            <div class="tool-toggle" aria-label="Selection tool">
+              <button
+                type="button"
+                class="tool-btn active"
+                id="markToolBtn"
+                onclick="setRedactTool('mark')"
+              >
+                Mark
+              </button>
+              <button
+                type="button"
+                class="tool-btn"
+                id="eraseToolBtn"
+                onclick="setRedactTool('erase')"
+              >
+                Eraser
+              </button>
+            </div>
+            <span class="selected-count" id="selectedCount">0 items</span>
+            <button
+              type="button"
+              class="clear-selection-btn"
+              onclick="clearSelections()"
+            >
+              Clear marks
+            </button>
+          </div>
+        </div>
+
+        <!-- PDF PAGES -->
+        <div class="pdf-canvas-wrapper">
+          <div class="pdf-pages" id="pdfPages"></div>
+        </div>
+      </div>
+
+      <input type="hidden" name="redact_data" id="redactData" />
+
+      <!-- Buttons -->
+      <div class="actions">
+        <button type="submit" class="btn primary">Redact & Download</button>
+
+        <button type="button" class="btn ghost" onclick="clearAll()">
+          Clear All
+        </button>
+      </div>
+    </form>
+
+    <!-- Note -->
+    <div class="upload-note">
+      <span class="note-icon">Secure</span>
+      Selected text will be permanently hidden from PDF.
+    </div>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<script src="{{ url_for('static', filename='scripts/redact_pdf.js') }}"></script>
+
+{% endblock %}
