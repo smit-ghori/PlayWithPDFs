@@ -268,7 +268,8 @@
 }
 
 .merge-page .merge-card.uploaded .compare-wrapper {
-  max-height: 1200px;
+  max-height: none;
+  overflow: visible;
 }
 
 .merge-page .merge-card.uploaded .pdf-preview,
@@ -805,11 +806,17 @@
    RESPONSIVE
 ========================================= */
 
-@media (max-width: 1400px) {
+@media (max-width: 1150px) {
+
   .compare-wrapper {
     grid-template-columns: 1fr;
   }
 
+  .compare-sidebar {
+    min-height: 420px;
+    max-height: 420px;
+  }
+}
   .compare-toolbar {
     justify-content: flex-start;
   }
@@ -836,5 +843,287 @@
   .mode-btn {
     font-size: 15px;
     padding: 18px 8px;
+  }
+}
+
+/* =========================================
+   LARGE LAPTOP FIX
+========================================= */
+
+@media (max-width: 1350px) {
+  .merge-page .compare-layout-card.uploaded {
+    max-width: calc(100vw - 30px) !important;
+    padding: 18px;
+  }
+
+  .compare-wrapper {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .compare-sidebar {
+    min-height: 420px;
+    max-height: 420px;
+  }
+
+  .compare-preview {
+    height: 620px;
+  }
+}
+
+/* =========================================
+   TABLET FIX
+========================================= */
+
+@media (max-width: 992px) {
+  .merge-page {
+    padding: 30px 10px;
+  }
+
+  .merge-page .compare-layout-card.uploaded {
+    max-width: 100% !important;
+    padding: 16px;
+  }
+
+  .compare-toolbar {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .compare-preview {
+    height: 520px;
+  }
+
+  .compare-sidebar {
+    max-height: none;
+    min-height: auto;
+  }
+
+  .compare-title {
+    font-size: 26px;
+    padding: 16px;
+  }
+
+  .changes-title {
+    font-size: 22px;
+  }
+
+  .search-box input {
+    padding: 13px;
+  }
+}
+
+/* =========================================
+   MOBILE FIX
+========================================= */
+
+@media (max-width: 768px) {
+  .merge-page {
+    padding: 20px 8px;
+  }
+
+  .merge-page .merge-card {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .merge-page .compare-layout-card.uploaded {
+    padding: 12px;
+  }
+
+  .compare-wrapper {
+    gap: 14px;
+  }
+
+  .compare-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .zoom-controls {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .sync-toggle {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .pdf-header {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .compare-preview {
+    height: 420px;
+    border-radius: 10px;
+  }
+
+.compare-preview canvas {
+  max-width: 100%;
+  height: auto;
+}
+  .compare-sidebar {
+    border-radius: 10px;
+  }
+  .compare-wrapper {
+  align-items: start;
+}
+.compare-sidebar {
+  height: fit-content;
+}
+.merge-page {
+  overflow-x: hidden;
+}
+
+  .compare-title {
+    font-size: 22px;
+    padding: 14px;
+  }
+
+  .compare-mode {
+    grid-template-columns: 1fr;
+  }
+
+  .mode-btn {
+    font-size: 14px;
+    padding: 14px;
+  }
+
+  .changes-wrapper {
+    padding: 10px;
+  }
+
+  .changes-title {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .change-item {
+    border-radius: 10px;
+  }
+
+  .change-type {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .change-box {
+    padding: 10px;
+  }
+
+  .change-old,
+  .change-new {
+    padding: 9px;
+    font-size: 13px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+
+/* =========================================
+   SMALL MOBILE FIX
+========================================= */
+
+@media (max-width: 520px) {
+  .merge-page .merge-card {
+    padding: 10px;
+  }
+
+  .merge-page h2 {
+    font-size: 26px;
+  }
+
+  .merge-page .muted {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .merge-page .compare-layout-card.uploaded .drop-zone {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .merge-page .compare-layout-card.uploaded .drop-content {
+    justify-content: center;
+  }
+
+  .merge-page .compare-layout-card.uploaded .file-list {
+    max-height: 120px;
+  }
+
+  .compare-preview {
+    height: 340px;
+  }
+
+  .compare-title {
+    font-size: 20px;
+  }
+
+  .changes-title {
+    font-size: 18px;
+  }
+
+  .zoom-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .zoom-value {
+    font-size: 13px;
+  }
+
+  .search-box {
+    padding: 10px;
+  }
+
+  .search-box input {
+    font-size: 13px;
+    padding: 12px;
+  }
+
+  .upload-note {
+    flex-direction: column;
+    text-align: center;
+    line-height: 1.5;
+  }
+}
+
+/* =========================================
+   VERY SMALL DEVICES
+========================================= */
+
+@media (max-width: 380px) {
+  .compare-preview {
+    height: 280px;
+  }
+
+  .compare-title {
+    font-size: 18px;
+  }
+
+  .mode-btn {
+    font-size: 12px;
+  }
+
+  .changes-title {
+    font-size: 16px;
+  }
+
+  .change-old,
+  .change-new {
+    font-size: 12px;
+  }
+
+  .zoom-controls {
+    gap: 4px;
   }
 }
