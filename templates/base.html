@@ -266,8 +266,14 @@
                   >
                 </li>
                 <li><a href="{{url_for('sign_pdf.sign_pdf')}}">Sign PDF</a></li>
-                <li><a href="{{url_for('redact_pdf.redact_pdf')}}">Redact PDF</a></li>
-                <li><a href="#">Compare PDF</a></li>
+                <li>
+                  <a href="{{url_for('redact_pdf.redact_pdf')}}">Redact PDF</a>
+                </li>
+                <li>
+                  <a href="{{url_for('compare_pdf.compare_pdf')}}"
+                    >Compare PDF</a
+                  >
+                </li>
               </ul>
             </div>
           </div>

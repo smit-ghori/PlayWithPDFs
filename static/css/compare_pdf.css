@@ -1,0 +1,840 @@
+/* =========================================
+   MERGE PAGE - COMPONENT SCOPED
+   ========================================= */
+
+.merge-page {
+  display: flex;
+  justify-content: center;
+  padding: 42px 16px;
+}
+
+/* Card */
+.merge-page .merge-card {
+  width: 100%;
+  max-width: 550px;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 16, 24, 0.96),
+    rgba(15, 24, 36, 0.96)
+  );
+  border: 1px solid rgba(125, 211, 252, 0.08);
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow:
+    0 25px 60px rgba(2, 6, 23, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  color: #e6eef8;
+  -webkit-border-radius: 18px;
+  -moz-border-radius: 18px;
+  -ms-border-radius: 18px;
+  -o-border-radius: 18px;
+}
+
+.merge-page .compare-layout-card {
+  transition:
+    max-width 0.5s ease,
+    padding 0.3s ease;
+}
+
+.merge-page .compare-layout-card.uploaded {
+  max-width: min(1420px, calc(100vw - 48px)) !important;
+  padding: 22px;
+}
+
+.merge-page .compare-layout-card.uploaded,
+.merge-page .compare-layout-card.uploaded * {
+  box-sizing: border-box;
+}
+
+/* Titles */
+.merge-page h2 {
+  margin-bottom: 10px;
+  color: #f1fbff;
+}
+
+.merge-page .muted {
+  margin-bottom: 20px;
+  color: rgba(230, 238, 248, 0.6);
+}
+
+/* Form */
+.merge-page .merge-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* =========================================
+   Drop Zone
+   ========================================= */
+
+.merge-page .drop-zone {
+  border: 2px dashed rgba(125, 211, 252, 0.2);
+  background: rgba(125, 211, 252, 0.05);
+  padding: 30px;
+  border-radius: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 120px;
+}
+
+.merge-page .compare-layout-card.uploaded .drop-zone {
+  display: grid;
+  grid-template-columns: minmax(200px, 300px) minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  min-height: 70px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.merge-page .compare-layout-card.uploaded .drop-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.merge-page .compare-layout-card.uploaded .upload-icon {
+  display: none;
+}
+
+.merge-page .compare-layout-card.uploaded .drop-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.merge-page .compare-layout-card.uploaded .drop-text span {
+  display: inline;
+  margin-left: 4px;
+}
+
+.merge-page .compare-layout-card.uploaded .file-list {
+  margin-top: 0;
+  max-height: 86px;
+}
+
+.merge-page .compare-layout-card.uploaded .file-list li {
+  margin-bottom: 6px;
+  padding: 7px 11px;
+}
+
+.merge-page .drop-zone:hover {
+  background: rgba(125, 211, 252, 0.08);
+}
+
+.merge-page .drop-zone.drag-over {
+  border-color: #7dd3fc;
+  background: rgba(125, 211, 252, 0.12);
+}
+
+.merge-page .drop-text {
+  font-size: 14px;
+  color: rgba(230, 238, 248, 0.8);
+}
+
+.merge-page .drop-text span {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* =========================================
+   File List
+   ========================================= */
+
+.merge-page .file-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 15px;
+  max-height: 180px;
+  overflow-y: auto;
+  text-align: left;
+}
+
+/* Hide scrollbar but keep scrolling functionality */
+.merge-page .file-list::-webkit-scrollbar {
+  display: none;
+}
+.merge-page .file-list {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.merge-page .file-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #dff6ff;
+}
+
+.merge-page .file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 80%;
+}
+
+/* Remove Button */
+.merge-page .remove-btn {
+  background: none;
+  border: none;
+  color: #ff6b6b;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.merge-page .remove-btn:hover {
+  transform: scale(1.2);
+  color: #ff3b3b;
+}
+
+/* =========================================
+   Buttons
+   ========================================= */
+
+.merge-page .actions {
+  display: flex;
+  gap: 12px;
+}
+
+.merge-page .merge-card:has(.drop-zone):not(.uploaded) .actions,
+.merge-page .merge-card:has(.drop-zone):not(.uploaded) .split-options,
+.merge-page .merge-card:has(.drop-zone):not(.uploaded) .split-wrapper,
+.merge-page .merge-card:has(.drop-zone):not(.uploaded) .custom-dropdown,
+.merge-page .merge-card:has(.drop-zone):not(.uploaded) .excel-options,
+.merge-page .merge-card:has(.drop-zone):not(.uploaded) .options,
+.merge-page .merge-card:has(.drop-zone):not(.uploaded) .compare-wrapper,
+.merge-page .merge-card:has(.drop-zone):not(.uploaded) .pdf-preview,
+.merge-page .merge-card:has(.drop-zone):not(.uploaded) .image-preview {
+  max-height: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  filter: blur(2px);
+  transform: translateY(-14px) scale(0.985);
+  transition:
+    max-height 1.8s cubic-bezier(0.16, 1, 0.3, 1),
+    margin 1.35s ease,
+    padding 1.35s ease,
+    opacity 1.25s ease,
+    filter 1.25s ease,
+    transform 1.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.merge-page .merge-card.uploaded .actions,
+.merge-page .merge-card.uploaded .split-options,
+.merge-page .merge-card.uploaded .split-wrapper,
+.merge-page .merge-card.uploaded .custom-dropdown,
+.merge-page .merge-card.uploaded .excel-options,
+.merge-page .merge-card.uploaded .options,
+.merge-page .merge-card.uploaded .compare-wrapper,
+.merge-page .merge-card.uploaded .pdf-preview,
+.merge-page .merge-card.uploaded .image-preview {
+  opacity: 1;
+  filter: blur(0);
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+  animation: uploadReveal 1.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.merge-page .merge-card.uploaded .actions {
+  max-height: 90px;
+}
+
+.merge-page .merge-card.uploaded .split-options,
+.merge-page .merge-card.uploaded .custom-dropdown,
+.merge-page .merge-card.uploaded .options {
+  max-height: 120px;
+}
+
+.merge-page .merge-card.uploaded .excel-options {
+  max-height: 340px;
+}
+
+.merge-page .merge-card.uploaded .split-wrapper {
+  max-height: 220px;
+}
+
+.merge-page .merge-card.uploaded .compare-wrapper {
+  max-height: 1200px;
+}
+
+.merge-page .merge-card.uploaded .pdf-preview,
+.merge-page .merge-card.uploaded .image-preview {
+  max-height: 1100px;
+}
+
+@keyframes uploadReveal {
+  0% {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translateY(18px) scale(0.98);
+  }
+
+  45% {
+    opacity: 0.55;
+    filter: blur(2px);
+  }
+
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+.merge-page .btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 12px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: 0.3s ease;
+}
+
+.merge-page .btn.primary {
+  background: linear-gradient(90deg, #60c9e8, #7dd3fc);
+  color: #04202a;
+}
+
+.merge-page .btn.primary:hover {
+  transform: translateY(-2px);
+}
+
+.merge-page .btn.ghost {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(230, 238, 248, 0.7);
+}
+
+.merge-page .btn.ghost:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 520px) {
+  .merge-page .actions {
+    flex-direction: column;
+  }
+}
+
+/* =========================================
+   Upload Note Styling
+   ========================================= */
+
+.merge-page .upload-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  margin-top: 18px;
+  padding: 10px 14px;
+
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 10px;
+
+  color: rgba(230, 238, 248, 0.85);
+
+  backdrop-filter: blur(6px);
+  transition: all 0.3s ease;
+}
+
+.merge-page .note-icon {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* =========================================
+   RESPONSIVE DESIGN
+========================================= */
+
+/* Laptop */
+@media (max-width: 1024px) {
+  .merge-page {
+    padding: 50px 14px;
+  }
+
+  .merge-page .merge-card {
+    max-width: 90%;
+    padding: 28px;
+  }
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  .merge-page {
+    padding: 40px 12px;
+  }
+
+  .merge-page .merge-card {
+    max-width: 100%;
+    padding: 24px;
+    border-radius: 16px;
+  }
+
+  .merge-page h2 {
+    font-size: 26px;
+  }
+
+  .merge-page .muted {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .merge-page .drop-zone {
+    padding: 24px;
+    min-height: 110px;
+  }
+
+  .merge-page .actions {
+    flex-direction: column;
+  }
+
+  .merge-page .btn {
+    width: 100%;
+  }
+}
+
+/* Mobile */
+@media (max-width: 520px) {
+  .merge-page {
+    padding: 28px 10px;
+  }
+
+  .merge-page .merge-card {
+    padding: 20px;
+    border-radius: 14px;
+  }
+
+  .merge-page h2 {
+    font-size: 22px;
+  }
+
+  .merge-page .drop-zone {
+    padding: 20px 16px;
+  }
+
+  .merge-page .drop-text {
+    font-size: 13px;
+  }
+
+  .merge-page .drop-text span {
+    font-size: 11px;
+  }
+
+  .merge-page .btn {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .merge-page .file-list li {
+    font-size: 12px;
+  }
+
+  .merge-page .upload-note {
+    font-size: 12px;
+    padding: 10px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 380px) {
+  .merge-page .merge-card {
+    padding: 16px;
+  }
+
+  .merge-page h2 {
+    font-size: 20px;
+  }
+
+  .merge-page .drop-zone {
+    padding: 18px 12px;
+  }
+
+  .merge-page .btn {
+    font-size: 12px;
+  }
+
+  .merge-page .upload-note {
+    font-size: 11px;
+  }
+}
+
+/* =========================================
+   COMPARE PDF
+========================================= */
+
+.compare-layout-card:not(.uploaded) {
+  max-width: 550px !important;
+}
+
+.compare-wrapper {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(280px, 320px);
+  gap: 18px;
+  margin-top: 16px;
+}
+
+.compare-toolbar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  min-width: 0;
+}
+
+.zoom-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.zoom-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e6eef8;
+  cursor: pointer;
+  font-size: 17px;
+  line-height: 1;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+.zoom-btn:hover:not(:disabled) {
+  background: rgba(125, 211, 252, 0.18);
+  color: #ffffff;
+}
+
+.zoom-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.zoom-value {
+  min-width: 46px;
+  color: rgba(230, 238, 248, 0.72);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.sync-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(230, 238, 248, 0.72);
+  font-size: 13px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  user-select: none;
+}
+
+.sync-toggle input {
+  accent-color: #7dd3fc;
+}
+
+.pdf-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pdf-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 12px 16px;
+
+  border-radius: 8px;
+
+  background: rgba(255, 255, 255, 0.04);
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  color: #f1fbff;
+
+  font-weight: 600;
+}
+
+.compare-preview {
+  position: relative;
+
+  overflow: auto;
+
+  height: min(58vh, 560px);
+
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.04);
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.compare-preview canvas {
+  display: block;
+  background: #ffffff;
+}
+
+.highlight-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+
+.text-layer .pdf-word {
+  position: absolute;
+  overflow: hidden;
+  color: transparent;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.text-layer .word-delete,
+.text-layer .word-edit-old {
+  background: rgba(248, 113, 113, 0.28);
+  outline: 1px solid rgba(220, 38, 38, 0.5);
+  box-shadow: inset 0 -2px 0 rgba(220, 38, 38, 0.75);
+}
+
+.text-layer .word-insert,
+.text-layer .word-edit-new {
+  background: rgba(52, 211, 153, 0.3);
+  outline: 1px solid rgba(5, 150, 105, 0.5);
+  box-shadow: inset 0 -2px 0 rgba(16, 185, 129, 0.75);
+}
+
+.compare-sidebar {
+  display: flex;
+  flex-direction: column;
+
+  border-radius: 10px;
+
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.04);
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  min-height: min(58vh, 560px);
+  max-height: min(58vh, 560px);
+}
+
+.compare-title {
+  padding: 18px;
+
+  font-size: 25px;
+
+  font-weight: 700;
+
+  text-align: center;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  color: #f1fbff;
+}
+
+.compare-mode {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.mode-btn {
+  border: none;
+
+  background: transparent;
+
+  color: rgba(255, 255, 255, 0.65);
+
+  padding: 16px 8px;
+
+  font-size: 14px;
+
+  cursor: pointer;
+
+  transition: 0.3s ease;
+}
+
+.mode-btn.active {
+  background: rgba(125, 211, 252, 0.08);
+
+  color: #ffffff;
+}
+
+.mode-btn:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.search-box {
+  padding: 14px;
+}
+
+.search-box input {
+  width: 100%;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  background: rgba(255, 255, 255, 0.04);
+
+  color: #fff;
+
+  padding: 16px;
+
+  border-radius: 14px;
+
+  outline: none;
+
+  font-size: 14px;
+}
+
+.changes-wrapper {
+  flex: 1;
+
+  overflow-y: auto;
+
+  padding: 14px;
+}
+
+.changes-title {
+  font-size: 22px;
+
+  font-weight: 700;
+
+  margin-bottom: 18px;
+
+  color: #f1fbff;
+}
+
+.change-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.change-item {
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.04);
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  overflow: hidden;
+
+  animation: uploadReveal 0.8s ease;
+}
+
+.change-type {
+  padding: 10px 14px;
+
+  font-weight: 700;
+
+  background: rgba(255, 255, 255, 0.04);
+
+  color: #ffffff;
+}
+
+.change-box {
+  padding: 12px;
+}
+
+.change-label {
+  font-size: 13px;
+
+  margin-bottom: 6px;
+
+  opacity: 0.65;
+}
+
+.change-old {
+  background: rgba(255, 0, 0, 0.1);
+
+  border: 1px solid rgba(255, 0, 0, 0.18);
+
+  padding: 10px;
+
+  border-radius: 12px;
+
+  margin-bottom: 14px;
+}
+
+.change-new {
+  background: rgba(0, 255, 120, 0.08);
+
+  border: 1px solid rgba(0, 255, 120, 0.15);
+
+  padding: 10px;
+
+  border-radius: 12px;
+}
+
+.empty-report {
+  color: rgba(230, 238, 248, 0.58);
+  padding: 16px;
+  text-align: center;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 1400px) {
+  .compare-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .compare-toolbar {
+    justify-content: flex-start;
+  }
+
+  .compare-sidebar {
+    min-height: auto;
+    max-height: 520px;
+  }
+}
+
+@media (max-width: 768px) {
+  .compare-preview {
+    height: 600px;
+  }
+
+  .compare-title {
+    font-size: 28px;
+  }
+
+  .changes-title {
+    font-size: 24px;
+  }
+
+  .mode-btn {
+    font-size: 15px;
+    padding: 18px 8px;
+  }
+}

@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block main_title %} Compare PDF {% endblock %}
+
+{% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/compare_pdf.css') }}"
+/>
+{% endblock %}
+
+{% block main_content %}
+
+<section class="merge-page">
+  <div class="merge-card compare-layout-card">
+    <h2>Compare PDF Files</h2>
+
+    <p class="muted">Upload two PDF files and compare text changes visually.</p>
+
+    <form
+      class="merge-form ajax-upload-form"
+      action="{{ url_for('compare_pdf.compare_pdf') }}"
+      method="POST"
+      enctype="multipart/form-data"
+      id="mergeForm"
+    >
+      <!-- Upload Zone -->
+      <div class="drop-zone" id="dropZone" data-type="pdf">
+        <input
+          type="file"
+          name="pdfs"
+          accept="application/pdf"
+          multiple
+          id="pdfInput"
+          hidden
+        />
+
+        <div class="drop-content">
+          <div class="upload-icon">PDF</div>
+
+          <p class="drop-text">
+            Drag & Drop 2 PDF files here <br />
+            <span>or click to browse</span>
+          </p>
+        </div>
+
+        <ul class="file-list" id="fileList"></ul>
+      </div>
+
+      <!-- COMPARE VIEW -->
+      <div class="compare-wrapper">
+        <div class="compare-toolbar">
+          <div class="zoom-controls" aria-label="PDF preview zoom">
+            <button
+              type="button"
+              class="zoom-btn"
+              id="zoomOutBtn"
+              onclick="zoomComparePdf(-0.15)"
+            >
+              -
+            </button>
+            <span class="zoom-value" id="zoomValue">130%</span>
+            <button
+              type="button"
+              class="zoom-btn"
+              id="zoomInBtn"
+              onclick="zoomComparePdf(0.15)"
+            >
+              +
+            </button>
+          </div>
+
+          <label class="sync-toggle">
+            <input type="checkbox" id="syncScrollToggle" checked />
+            <span>Sync scroll</span>
+          </label>
+        </div>
+
+        <!-- LEFT PDF -->
+        <div class="pdf-column">
+          <div class="pdf-header">
+            <span>Original PDF</span>
+          </div>
+
+          <div class="pdf-preview compare-preview">
+            <canvas id="leftCanvas"></canvas>
+
+            <div class="highlight-layer text-layer" id="leftHighlights"></div>
+          </div>
+        </div>
+
+        <!-- RIGHT PDF -->
+        <div class="pdf-column">
+          <div class="pdf-header">
+            <span>Modified PDF</span>
+          </div>
+
+          <div class="pdf-preview compare-preview">
+            <canvas id="rightCanvas"></canvas>
+
+            <div class="highlight-layer text-layer" id="rightHighlights"></div>
+          </div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="compare-sidebar">
+          <div class="compare-title">Compare Report</div>
+
+          <div class="compare-mode">
+            <button type="button" class="mode-btn active">Semantic Text</button>
+
+            <button type="button" class="mode-btn">Content Overlay</button>
+          </div>
+
+          <div class="search-box">
+            <input type="text" placeholder="Search text" id="searchChanges" />
+          </div>
+
+          <div class="changes-wrapper">
+            <div class="changes-title">
+              Change report
+              <span id="changeCount">(0)</span>
+            </div>
+
+            <div class="change-list" id="changeList">
+              <!-- Dynamic Changes -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="actions">
+        <button type="submit" class="btn primary">Recompare</button>
+
+        <button type="button" class="btn ghost" onclick="clearAll()">
+          Clear All
+        </button>
+      </div>
+    </form>
+
+    <!-- Note -->
+    <div class="upload-note">
+      <span class="note-icon">🔍</span>
+
+      Compare text differences, missing content and edits between PDFs.
+    </div>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<script src="{{ url_for('static', filename='scripts/compare_pdf.js') }}"></script>
+
+{% endblock %}

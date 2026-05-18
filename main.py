@@ -29,6 +29,7 @@ from routes.unlock_pdf import unlock_pdf_bp
 from routes.protect_pdf import protect_pdf_bp
 from routes.sign_pdf import sign_pdf_bp
 from routes.redact_pdf import redact_pdf_bp
+from routes.compare_pdf import compare_pdf_bp
 from utils.file_utils import cleanup_worker
 
 app = Flask(__name__)
@@ -66,6 +67,7 @@ app.register_blueprint(unlock_pdf_bp)
 app.register_blueprint(protect_pdf_bp)
 app.register_blueprint(sign_pdf_bp)
 app.register_blueprint(redact_pdf_bp)
+app.register_blueprint(compare_pdf_bp)
 
 # start cleanup thread
 threading.Thread(target=cleanup_worker, daemon=True).start()
