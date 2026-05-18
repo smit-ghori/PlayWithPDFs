@@ -1,15 +1,10 @@
-{% extends 'base.html' %}
-
-{% block main_title %} Compare PDF {% endblock %}
-
-{% block extra_css %}
+{% extends 'base.html' %} {% block main_title %} Compare PDF {% endblock %} {%
+block extra_css %}
 <link
   rel="stylesheet"
   href="{{ url_for('static', filename='css/compare_pdf.css') }}"
 />
-{% endblock %}
-
-{% block main_content %}
+{% endblock %} {% block main_content %}
 
 <section class="merge-page">
   <div class="merge-card compare-layout-card">
@@ -106,11 +101,11 @@
         <div class="compare-sidebar">
           <div class="compare-title">Compare Report</div>
 
-          <div class="compare-mode">
+          <!-- <div class="compare-mode">
             <button type="button" class="mode-btn active">Semantic Text</button>
 
             <button type="button" class="mode-btn">Content Overlay</button>
-          </div>
+          </div> -->
 
           <div class="search-box">
             <input type="text" placeholder="Search text" id="searchChanges" />
