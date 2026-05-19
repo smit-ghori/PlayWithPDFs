@@ -1,11 +1,12 @@
 import os
-from flask import Blueprint, render_template, request, redirect, url_for
-from pypdf import PdfWriter
-from utils.file_utils import save_uploaded_files
+from io import BytesIO
+from flask import Blueprint, render_template, request, send_file
+from pypdf import PdfWriter, PdfReader
 
 merge_bp = Blueprint("merge", __name__)
 
 UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "uploads")
+
 
 @merge_bp.route("/merge", methods=["GET", "POST"])
 def merge():
@@ -14,23 +15,41 @@ def merge():
 
         files = request.files.getlist("pdfs")
 
-        if not files:
-            return "No files uploaded", 400
+        # Check if files are uploaded
+        if not files or files[0].filename == "":
+            return render_template("merge.html", error="Please upload PDF files.")
 
-        folder_id, saved_files = save_uploaded_files(files)
+        merger = PdfWriter()
 
-        writer = PdfWriter()
+        try:
 
-        for pdf in saved_files:
-            writer.append(pdf)
+            # Merge all uploaded PDFs
+            for file in files:
 
-        # result folder
-        result_folder = os.path.join(UPLOAD_FOLDER, folder_id, "result")
-        os.makedirs(result_folder, exist_ok=True)
+                pdf = PdfReader(file)
 
-        output_path = os.path.join(result_folder, "merged.pdf")
+                for page in pdf.pages:
+                    merger.add_page(page)
 
-        writer.write(output_path)
-        writer.close()
+            # Store merged PDF in memory
+            pdf_buffer = BytesIO()
+
+            merger.write(pdf_buffer)
+            merger.close()
+
+            pdf_buffer.seek(0)
+
+            # Send merged PDF directly
+            return send_file(
+                pdf_buffer,
+                as_attachment=True,
+                download_name="merged.pdf",
+                mimetype="application/pdf",
+            )
+
+        except Exception as e:
+            return render_template(
+                "merge.html", error=f"Error while merging PDFs: {str(e)}"
+            )
 
     return render_template("merge.html")
