@@ -1,0 +1,720 @@
+/* =========================================
+   ORGANIZE PDF PAGE
+========================================= */
+
+.org-page {
+  display: flex;
+  justify-content: center;
+  padding: 60px 16px;
+}
+
+/* =========================================
+   CARD
+========================================= */
+
+.org-card {
+  width: 100%;
+  max-width: 550px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(10, 16, 24, 0.96),
+    rgba(15, 24, 36, 0.96)
+  );
+
+  border: 1px solid rgba(125, 211, 252, 0.08);
+
+  padding: 30px;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 25px 60px rgba(2, 6, 23, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+
+  color: #e6eef8;
+
+  transition:
+    max-width 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+    padding 0.35s ease,
+    border-radius 0.35s ease;
+}
+
+/* =========================================
+   EXPAND AFTER PDF UPLOAD
+========================================= */
+
+.org-card.has-pdf {
+  max-width: 1180px;
+}
+
+/* =========================================
+   TITLES
+========================================= */
+
+.org-card h2 {
+  margin-bottom: 10px;
+  color: #f1fbff;
+  font-size: 26px;
+}
+
+.org-card .muted {
+  margin-bottom: 22px;
+  color: rgba(230, 238, 248, 0.6);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* =========================================
+   FORM
+========================================= */
+
+.merge-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* =========================================
+   DROP ZONE
+========================================= */
+
+.drop-zone {
+  border: 2px dashed rgba(125, 211, 252, 0.2);
+
+  background: rgba(125, 211, 252, 0.05);
+
+  padding: 30px;
+
+  border-radius: 16px;
+
+  text-align: center;
+
+  cursor: pointer;
+
+  transition: all 0.35s ease;
+
+  min-height: 120px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+}
+
+.drop-zone:hover {
+  background: rgba(125, 211, 252, 0.08);
+}
+
+.drop-zone.drag-over {
+  border-color: #7dd3fc;
+  background: rgba(125, 211, 252, 0.12);
+}
+
+.drop-icon {
+  font-size: 30px;
+  opacity: 0.55;
+
+  transition: all 0.35s ease;
+}
+
+.drop-text {
+  font-size: 14px;
+  color: rgba(230, 238, 248, 0.82);
+  line-height: 1.6;
+}
+
+.drop-text span {
+  display: block;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* =========================================
+   COMPACT DROP ZONE AFTER UPLOAD
+========================================= */
+
+.org-card.has-pdf .drop-zone {
+  flex-direction: row;
+
+  justify-content: flex-start;
+
+  text-align: left;
+
+  min-height: auto;
+
+  padding: 14px 18px;
+
+  gap: 12px;
+}
+
+.org-card.has-pdf .drop-icon {
+  font-size: 18px;
+  opacity: 0.75;
+}
+
+.org-card.has-pdf .drop-text span {
+  display: inline;
+  margin-left: 5px;
+}
+
+/* =========================================
+   LOADING BAR
+========================================= */
+
+#loadingBar {
+  display: grid;
+
+  grid-template-rows: 0fr;
+
+  overflow: hidden;
+
+  margin-top: 0;
+
+  transition:
+    grid-template-rows 0.5s ease,
+    margin-top 0.5s ease;
+}
+
+#loadingBar.show {
+  grid-template-rows: 1fr;
+
+  margin-top: 18px;
+}
+
+#loadingBar > div {
+  overflow: hidden;
+}
+
+.progress-track {
+  height: 4px;
+
+  background: rgba(125, 211, 252, 0.08);
+
+  border-radius: 999px;
+
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+
+  background: linear-gradient(90deg, #60c9e8, #7dd3fc);
+
+  border-radius: 999px;
+
+  transition: width 0.3s ease;
+}
+
+.progress-label {
+  margin-top: 8px;
+
+  text-align: center;
+
+  font-size: 12px;
+
+  color: rgba(230, 238, 248, 0.45);
+}
+
+/* =========================================
+   GRID REVEAL
+========================================= */
+
+#gridReveal {
+  display: grid;
+
+  grid-template-rows: 0fr;
+
+  overflow: hidden;
+
+  transition:
+    grid-template-rows 1s cubic-bezier(0.16, 1, 0.3, 1),
+    margin-top 0.8s ease;
+
+  margin-top: 0;
+}
+
+#gridReveal.visible {
+  grid-template-rows: 1fr;
+
+  margin-top: 24px;
+}
+
+.grid-inner {
+  overflow: hidden;
+}
+
+/* =========================================
+   GRID SCROLL
+========================================= */
+
+/* =========================================
+   GRID SCROLL
+========================================= */
+
+.grid-scroll {
+  height: 430px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding-right: 6px;
+
+  transition: height 0.35s ease;
+}
+
+/* Smaller height after upload */
+.org-card.has-pdf .grid-scroll {
+  height: 400px;
+}
+
+@media (max-width: 768px) {
+
+  .grid-scroll {
+    height: 360px;
+  }
+}
+
+@media (max-width: 520px) {
+
+  .grid-scroll {
+    height: 320px;
+  }
+}
+
+@media (max-width: 380px) {
+
+  .grid-scroll {
+    height: 280px;
+  }
+}
+
+.grid-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.grid-scroll::-webkit-scrollbar-track {
+  background: rgba(125, 211, 252, 0.05);
+  border-radius: 999px;
+}
+
+.grid-scroll::-webkit-scrollbar-thumb {
+  background: rgba(125, 211, 252, 0.2);
+  border-radius: 999px;
+}
+
+.grid-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(125, 211, 252, 0.35);
+}
+
+/* =========================================
+   PAGES GRID
+========================================= */
+
+#pagesGrid {
+  display: grid;
+
+  grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+
+  gap: 14px;
+}
+
+/* =========================================
+   PAGE CARD
+========================================= */
+
+.page-item {
+  position: relative;
+
+  border-radius: 12px;
+
+  border: 2px solid rgba(125, 211, 252, 0.06);
+
+  background: rgba(15, 25, 40, 0.85);
+
+  padding: 6px;
+
+  cursor: grab;
+
+  user-select: none;
+
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.page-item:hover {
+  border-color: rgba(125, 211, 252, 0.28);
+
+  box-shadow: 0 5px 22px rgba(0, 0, 0, 0.45);
+
+  transform: translateY(-2px);
+}
+
+.page-item.is-dragging {
+  opacity: 0.35;
+  cursor: grabbing;
+
+  border-color: #7dd3fc;
+}
+
+.page-item.drop-target {
+  border-color: #60c9e8;
+
+  transform: translateY(-2px);
+}
+
+/* =========================================
+   THUMBNAIL
+========================================= */
+
+.thumb-box {
+  width: 100%;
+
+  height: 165px;
+
+  background: #fff;
+
+  border-radius: 7px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+}
+
+.page-thumb {
+  max-width: 100%;
+  max-height: 100%;
+
+  object-fit: contain;
+
+  display: block;
+}
+
+/* =========================================
+   PAGE LABEL
+========================================= */
+
+.page-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-top: 6px;
+
+  padding: 0 2px;
+}
+
+.page-num {
+  font-size: 11px;
+
+  color: rgba(230, 238, 248, 0.42);
+}
+
+.drag-grip {
+  font-size: 13px;
+
+  color: rgba(125, 211, 252, 0.35);
+}
+
+/* =========================================
+   TOOLBAR
+========================================= */
+
+#toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  opacity: 0;
+
+  transform: translateY(10px);
+
+  pointer-events: none;
+
+  margin-top: 0;
+
+  max-height: 0;
+
+  overflow: hidden;
+
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease,
+    margin-top 0.5s ease,
+    max-height 0.5s ease;
+}
+
+#toolbar.visible {
+  opacity: 1;
+
+  transform: translateY(0);
+
+  pointer-events: auto;
+
+  margin-top: 22px;
+
+  max-height: 120px;
+}
+
+.page-count {
+  margin-right: auto;
+
+  font-size: 13px;
+
+  color: rgba(230, 238, 248, 0.42);
+}
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+.btn {
+  padding: 10px 18px;
+
+  border-radius: 12px;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  border: none;
+
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease;
+}
+
+.btn.primary {
+  background: linear-gradient(90deg, #60c9e8, #7dd3fc);
+
+  color: #04202a;
+}
+
+.btn.primary:hover {
+  transform: translateY(-2px);
+}
+
+.btn.ghost {
+  background: transparent;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  color: rgba(230, 238, 248, 0.7);
+}
+
+.btn.ghost:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.btn.subtle {
+  background: rgba(255, 255, 255, 0.05);
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  color: rgba(230, 238, 248, 0.7);
+}
+
+.btn.subtle:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* =========================================
+   NOTE
+========================================= */
+
+.upload-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  margin-top: 18px;
+
+  padding: 10px 14px;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  border-radius: 10px;
+
+  color: rgba(230, 238, 248, 0.82);
+}
+
+/* =========================================
+   LAPTOP
+========================================= */
+
+@media (max-width: 1024px) {
+  .org-page {
+    padding: 50px 14px;
+  }
+
+  .org-card.has-pdf {
+    max-width: 96%;
+  }
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 768px) {
+  .org-page {
+    padding: 40px 12px;
+  }
+
+  .org-card,
+  .org-card.has-pdf {
+    max-width: 100%;
+  }
+
+  .org-card {
+    padding: 24px;
+    border-radius: 16px;
+  }
+
+  .org-card h2 {
+    font-size: 24px;
+  }
+
+  .drop-zone {
+    padding: 24px;
+    min-height: 110px;
+  }
+
+  #pagesGrid {
+    grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+
+    gap: 10px;
+  }
+
+  .thumb-box {
+    height: 145px;
+  }
+
+  .grid-scroll {
+    height: 460px;
+  }
+
+  #toolbar {
+    gap: 8px;
+  }
+
+  .btn {
+    flex: 1;
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 520px) {
+  .org-page {
+    padding: 28px 10px;
+  }
+
+  .org-card {
+    padding: 20px;
+    border-radius: 14px;
+  }
+
+  .org-card h2 {
+    font-size: 22px;
+  }
+
+  .drop-zone {
+    padding: 20px 16px;
+  }
+
+  .drop-text {
+    font-size: 13px;
+  }
+
+  .drop-text span {
+    font-size: 11px;
+  }
+
+  #pagesGrid {
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 8px;
+  }
+
+  .thumb-box {
+    height: 135px;
+  }
+
+  .grid-scroll {
+    height: 400px;
+  }
+
+  #toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .page-count {
+    margin-right: 0;
+    margin-bottom: 6px;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .upload-note {
+    font-size: 12px;
+    padding: 10px;
+  }
+}
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 380px) {
+  .org-card {
+    padding: 16px;
+  }
+
+  .org-card h2 {
+    font-size: 20px;
+  }
+
+  .drop-zone {
+    padding: 18px 12px;
+  }
+
+  .thumb-box {
+    height: 120px;
+  }
+
+  .grid-scroll {
+    height: 360px;
+  }
+
+  .btn {
+    font-size: 12px;
+  }
+
+  .upload-note {
+    font-size: 11px;
+  }
+}
+
+

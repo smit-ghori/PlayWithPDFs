@@ -1,0 +1,106 @@
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/organize_pdf.css') }}"
+/>
+
+{% extends 'base.html' %} {% block main_title %} Organize PDF {% endblock %} {%
+block main_content %}
+
+<section class="org-page">
+  <div class="org-card" id="orgCard">
+    <h2>Organize PDF Pages</h2>
+    <p class="muted">
+      Upload a PDF, drag pages to reorder them, then download.
+    </p>
+
+    <!-- FORM -->
+    <form
+      class="merge-form ajax-upload-form"
+      action="{{ url_for('organize_pdf.organize_pdf') }}"
+      method="POST"
+      enctype="multipart/form-data"
+      id="organizeForm"
+      target="downloadFrame"
+    >
+      <!-- DROP ZONE -->
+      <div class="drop-zone" id="dropZone">
+        <input
+          type="file"
+          name="pdf"
+          accept="application/pdf"
+          id="pdfInput"
+          hidden
+        />
+
+        <div class="drop-icon">📄</div>
+
+        <p class="drop-text" id="dropLabel">
+          Drag & Drop a PDF here
+          <span>or click to browse</span>
+        </p>
+      </div>
+
+      <!-- LOADING -->
+      <div id="loadingBar">
+        <div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+
+          <p class="progress-label" id="progressLabel">Loading PDF...</p>
+        </div>
+      </div>
+
+      <!-- PREVIEW GRID -->
+      <div id="gridReveal">
+        <div class="grid-inner">
+          <div class="grid-scroll" id="gridScroll">
+            <div id="pagesGrid"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOOLBAR -->
+      <div id="toolbar">
+        <span class="page-count" id="pageCount"></span>
+
+        <button type="button" class="btn subtle" id="undoBtn" disabled>
+          ↩ Undo
+        </button>
+
+        <button type="button" class="btn ghost" onclick="resetOrder()">
+          Reset
+        </button>
+
+        <!-- hidden order input -->
+        <input type="hidden" name="page_order" id="pageOrderInput" />
+
+        <button type="submit" class="btn primary" id="downloadBtn">
+          Organize & Download
+        </button>
+
+        <button type="button" class="btn ghost" onclick="clearAll()">
+          Clear
+        </button>
+      </div>
+    </form>
+
+    <iframe
+      name="downloadFrame"
+      id="downloadFrame"
+      style="display: none"
+    ></iframe>
+
+    <!-- NOTE -->
+    <div class="upload-note">
+      <span>📄</span>
+      Rearrange pages visually before downloading the organized PDF.
+    </div>
+  </div>
+</section>
+
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="{{ url_for('static', filename='scripts/organize_pdf.js') }}"></script>
+
+{% endblock %}
