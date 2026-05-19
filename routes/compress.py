@@ -1,19 +1,94 @@
 import os
+import zipfile
+import shutil
+import platform
+import tempfile
 import subprocess
-from flask import Blueprint, render_template, request, redirect, url_for
-from utils.file_utils import save_uploaded_files
+
+from io import BytesIO
+
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    send_file,
+)
 
 compress_bp = Blueprint("compress", __name__)
 
-UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "uploads")
+
+# =====================================================
+# GET GHOSTSCRIPT PATH
+# =====================================================
 
 
-def compress_pdf(input_path, output_path, quality="screen"):
+def get_gs_path():
 
-    # gs_path = "C:\\Program Files (x86)\\gs\gs10.07.0\\bin\\gswin32"  # ✅ Linux compatible
+    # WINDOWS
+    if platform.system() == "Windows":
 
-    gs_path = "gs"
-    result = subprocess.run([
+        gs = shutil.which("gswin64c")
+
+        if gs:
+            return gs
+
+        gs = shutil.which("gswin32c")
+
+        if gs:
+            return gs
+
+        possible_paths = [
+            r"C:\Program Files\gs\gs10.07.0\bin\gswin64c.exe",
+            r"C:\Program Files\gs\gs10.06.0\bin\gswin64c.exe",
+            r"C:\Program Files (x86)\gs\gs10.07.0\bin\gswin32c.exe",
+            r"C:\Program Files (x86)\gs\gs10.06.0\bin\gswin32c.exe",
+        ]
+
+        for path in possible_paths:
+
+            if os.path.exists(path):
+                return path
+
+        raise Exception("Ghostscript not found")
+
+    # RENDER / LINUX
+    return "gs"
+
+
+# =====================================================
+# COMPRESS SINGLE PDF
+# =====================================================
+
+
+def compress_pdf(file, quality="ebook"):
+
+    gs_path = get_gs_path()
+
+    # -----------------------------------------
+    # INPUT TEMP FILE
+    # -----------------------------------------
+
+    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as input_temp:
+
+        input_temp.write(file.read())
+
+        input_path = input_temp.name
+
+    # -----------------------------------------
+    # OUTPUT TEMP FILE
+    # -----------------------------------------
+
+    output_temp = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
+
+    output_path = output_temp.name
+
+    output_temp.close()
+
+    # -----------------------------------------
+    # GHOSTSCRIPT COMMAND
+    # -----------------------------------------
+
+    command = [
         gs_path,
         "-sDEVICE=pdfwrite",
         f"-dPDFSETTINGS=/{quality}",
@@ -22,18 +97,45 @@ def compress_pdf(input_path, output_path, quality="screen"):
         "-dQUIET",
         "-dBATCH",
         f"-sOutputFile={output_path}",
-        input_path
-    ])
+        input_path,
+    ]
+
+    result = subprocess.run(command)
+
+    # -----------------------------------------
+    # ERROR CHECK
+    # -----------------------------------------
 
     if result.returncode != 0:
+
+        os.remove(input_path)
+
+        if os.path.exists(output_path):
+            os.remove(output_path)
+
         raise RuntimeError("Ghostscript compression failed")
 
-    if not os.path.exists(output_path):
-        raise RuntimeError("Output PDF not created")
+    # -----------------------------------------
+    # READ COMPRESSED PDF
+    # -----------------------------------------
 
-    if os.path.getsize(output_path) == 0:
-        os.remove(output_path)
-        raise RuntimeError("Compressed file is empty")
+    with open(output_path, "rb") as f:
+
+        compressed_data = f.read()
+
+    # -----------------------------------------
+    # CLEANUP
+    # -----------------------------------------
+
+    os.remove(input_path)
+    os.remove(output_path)
+
+    return compressed_data
+
+
+# =====================================================
+# COMPRESS ROUTE
+# =====================================================
 
 
 @compress_bp.route("/compress", methods=["GET", "POST"])
@@ -44,42 +146,80 @@ def compress():
         files = request.files.getlist("pdfs")
 
         if not files:
-            return "No files uploaded", 400
+            return "No PDF uploaded", 400
 
-        folder_id, saved_files = save_uploaded_files(files)
-
-        result_folder = os.path.join(UPLOAD_FOLDER, folder_id, "result")
-        os.makedirs(result_folder, exist_ok=True)
+        # -----------------------------------------
+        # QUALITY
+        # -----------------------------------------
 
         compression_type = request.form.get("compression", "recommended")
 
         quality_map = {
             "extreme": "screen",
             "recommended": "ebook",
-            "low": "printer"
+            "low": "printer",
         }
 
         quality = quality_map.get(compression_type, "ebook")
 
-        successful_files = []
+        # =====================================================
+        # SINGLE FILE
+        # =====================================================
 
-        for pdf in saved_files:
+        if len(files) == 1:
 
-            filename = os.path.basename(pdf)
-            output_path = os.path.join(result_folder, filename)
+            pdf = files[0]
 
             try:
-                compress_pdf(pdf, output_path, quality)
 
-                if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
-                    successful_files.append(output_path)
+                compressed_pdf = compress_pdf(pdf, quality)
+
+                return send_file(
+                    BytesIO(compressed_pdf),
+                    as_attachment=True,
+                    download_name=f"compressed_{pdf.filename}",
+                    mimetype="application/pdf",
+                )
 
             except Exception as e:
-                print("Compression failed:", filename, e)
 
-        if not successful_files:
-            return "Compression failed for all files", 500
+                return f"Compression failed: {str(e)}", 500
 
-        return redirect(url_for("download.download_file", folder_id=folder_id))
+        # =====================================================
+        # MULTIPLE FILES -> ZIP
+        # =====================================================
+
+        zip_buffer = BytesIO()
+
+        try:
+
+            with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+
+                for pdf in files:
+
+                    try:
+
+                        compressed_pdf = compress_pdf(pdf, quality)
+
+                        compressed_name = f"compressed_{pdf.filename}"
+
+                        zip_file.writestr(compressed_name, compressed_pdf)
+
+                    except Exception as e:
+
+                        print(f"Failed: {pdf.filename}", str(e))
+
+            zip_buffer.seek(0)
+
+            return send_file(
+                zip_buffer,
+                as_attachment=True,
+                download_name="compressed_pdfs.zip",
+                mimetype="application/zip",
+            )
+
+        except Exception as e:
+
+            return f"ZIP creation failed: {str(e)}", 500
 
     return render_template("compress.html")
