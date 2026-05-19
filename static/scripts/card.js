@@ -14,6 +14,16 @@ function updateUploadState() {
     uploadCard.classList.toggle("uploaded", selectedFiles.length > 0);
 }
 
+function notifyUploadStateChanged() {
+    uploadForm.dispatchEvent(
+        new CustomEvent("upload-files-changed", {
+            detail: {
+                fileCount: selectedFiles.length,
+            },
+        })
+    );
+}
+
 // Open file picker when clicking drop zone
 dropZone.addEventListener("click", () => input.click());
 
@@ -121,6 +131,7 @@ function renderFileList() {
     });
 
     updateUploadState();
+    notifyUploadStateChanged();
 }
 
 function removeFile(event, index) {
@@ -134,6 +145,9 @@ function clearAll() {
     renderFileList();
     input.value = "";
 }
+
+window.clearAll = clearAll;
+window.removeFile = removeFile;
 
 // Allow external scripts (like the AJAX loader) to reset the form state after an upload
 window.resetUploadForm = function () {

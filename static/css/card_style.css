@@ -153,6 +153,7 @@
 .merge-page .merge-card:has(.drop-zone):not(.uploaded) .custom-dropdown,
 .merge-page .merge-card:has(.drop-zone):not(.uploaded) .excel-options,
 .merge-page .merge-card:has(.drop-zone):not(.uploaded) .options,
+.merge-page .merge-card:has(.drop-zone):not(.uploaded) .pdfa-options,
 .merge-page .merge-card:has(.drop-zone):not(.uploaded) .pdf-preview,
 .merge-page .merge-card:has(.drop-zone):not(.uploaded) .image-preview {
   max-height: 0;
@@ -180,6 +181,7 @@
 .merge-page .merge-card.uploaded .custom-dropdown,
 .merge-page .merge-card.uploaded .excel-options,
 .merge-page .merge-card.uploaded .options,
+.merge-page .merge-card.uploaded .pdfa-options,
 .merge-page .merge-card.uploaded .pdf-preview,
 .merge-page .merge-card.uploaded .image-preview {
   opacity: 1;
@@ -188,7 +190,9 @@
   transform: translateY(0) scale(1);
   animation: uploadReveal 1.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-
+.merge-page .merge-card.uploaded .pdfa-options {
+  max-height: 500px;
+}
 .merge-page .merge-card.uploaded .actions {
   max-height: 90px;
 }

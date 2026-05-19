@@ -1,0 +1,424 @@
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/card_style.css') }}"
+/>
+
+{% extends 'base.html' %} {% block main_title %} PDF to PDF/A {% endblock %} {%
+block main_content %}
+
+<style>
+  /* ==========================================
+     PDF/A OPTIONS
+  ========================================== */
+
+  .pdfa-options {
+    margin-top: 28px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+
+    width: 100%;
+  }
+
+  .pdfa-card input[type="radio"] {
+    display: none;
+  }
+
+  .pdfa-card {
+    position: relative;
+
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    padding: 22px 24px;
+
+    border-radius: 22px;
+
+    cursor: pointer;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(80, 125, 255, 0.12);
+
+    background: linear-gradient(
+      145deg,
+      rgba(18, 28, 48, 0.96),
+      rgba(8, 15, 30, 0.98)
+    );
+
+    transition: all 0.25s ease;
+  }
+
+  .pdfa-card:hover {
+    transform: translateY(-2px);
+
+    border-color: rgba(90, 140, 255, 0.24);
+  }
+
+  .pdfa-card:has(input[type="radio"]:checked) {
+    border-color: rgba(90, 140, 255, 0.45);
+
+    background: linear-gradient(
+      145deg,
+      rgba(22, 36, 66, 0.98),
+      rgba(10, 18, 36, 1)
+    );
+
+    box-shadow:
+      0 0 0 1px rgba(90, 140, 255, 0.1),
+      0 12px 28px rgba(0, 0, 0, 0.34);
+  }
+
+  .pdfa-card:has(input[type="radio"]:checked)::after {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 18%;
+
+    width: 4px;
+    height: 64%;
+
+    border-radius: 20px;
+
+    background: linear-gradient(to bottom, #4f8cff, #7aa7ff);
+  }
+
+  .pdfa-content h3 {
+    margin: 0;
+
+    font-size: 20px;
+    color: white;
+  }
+
+  .pdfa-content p {
+    margin-top: 8px;
+
+    color: rgba(214, 223, 255, 0.72);
+  }
+
+  /* ==========================================
+     PASSWORD BOX
+  ========================================== */
+
+  .password-box {
+    display: none;
+
+    margin-top: 20px;
+  }
+
+  .password-box.show {
+    display: block;
+
+    animation: fadeIn 0.35s ease;
+  }
+
+  .password-box input {
+    width: 100%;
+
+    padding: 14px 16px;
+
+    border-radius: 14px;
+
+    border: 1px solid rgba(90, 140, 255, 0.18);
+
+    background: rgba(255, 255, 255, 0.04);
+
+    color: white;
+
+    outline: none;
+
+    font-size: 14px;
+  }
+
+  .password-box input:focus {
+    border-color: #4f8cff;
+  }
+
+  .password-message {
+    margin-top: 10px;
+
+    color: #ff8b8b;
+
+    font-size: 13px;
+  }
+
+  .conversion-message {
+    display: none;
+
+    margin-top: 16px;
+
+    color: #ff8b8b;
+
+    font-size: 13px;
+
+    line-height: 1.45;
+  }
+
+  .conversion-message.show {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<section class="merge-page">
+  <div class="merge-card">
+    <h2>Convert PDF to PDF/A</h2>
+
+    <p class="muted">
+      Upload your PDF file and convert it into long-term archival PDF/A format.
+    </p>
+
+    <form
+      class="merge-form"
+      action="{{ url_for('pdf_to_pdfA.pdf_to_pdfA') }}"
+      method="POST"
+      enctype="multipart/form-data"
+      id="pdfaForm"
+      data-no-loader="true"
+    >
+      <!-- Drop Zone -->
+
+      <div class="drop-zone" id="dropZone" data-type="pdf">
+        <input
+          type="file"
+          name="pdf_file"
+          accept="application/pdf"
+          id="pdfInput"
+          hidden
+        />
+
+        <p class="drop-text">
+          Drag & Drop PDF file here <br />
+          <span>or click to browse</span>
+        </p>
+
+        <ul class="file-list" id="fileList"></ul>
+      </div>
+
+      <!-- PDF/A OPTIONS -->
+
+      <div class="pdfa-options">
+        <label class="pdfa-card">
+          <input type="radio" name="pdfa_version" value="2" checked />
+
+          <div class="pdfa-content">
+            <h3>PDF/A-2b</h3>
+            <p>Recommended modern archival format</p>
+          </div>
+        </label>
+
+        <label class="pdfa-card">
+          <input type="radio" name="pdfa_version" value="1" />
+
+          <div class="pdfa-content">
+            <h3>PDF/A-1b</h3>
+            <p>Basic and strict archival compatibility</p>
+          </div>
+        </label>
+
+        <label class="pdfa-card">
+          <input type="radio" name="pdfa_version" value="3" />
+
+          <div class="pdfa-content">
+            <h3>PDF/A-3b</h3>
+            <p>Supports embedded attachments</p>
+          </div>
+        </label>
+      </div>
+
+      <!-- PASSWORD BOX -->
+
+      <div class="password-box" id="passwordBox">
+        <input
+          type="password"
+          name="pdf_password"
+          id="pdfPassword"
+          placeholder="Enter PDF Password"
+        />
+
+        <div class="password-message" id="passwordMessage"></div>
+      </div>
+
+      <div class="conversion-message" id="conversionMessage"></div>
+
+      <!-- BUTTONS -->
+
+      <div class="actions">
+        <button type="submit" class="btn primary">Convert to PDF/A</button>
+
+        <button type="button" class="btn ghost" onclick="clearAll()">
+          Clear All
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script src="{{ url_for('static', filename='scripts/card.js') }}"></script>
+
+<script>
+  const pdfaForm = document.getElementById("pdfaForm");
+
+  const passwordBox = document.getElementById("passwordBox");
+
+  const passwordInput = document.getElementById("pdfPassword");
+
+  const passwordMessage = document.getElementById("passwordMessage");
+
+  const pdfInput = document.getElementById("pdfInput");
+
+  const conversionMessage = document.getElementById("conversionMessage");
+
+  function hidePasswordPrompt() {
+    passwordBox.classList.remove("show");
+    passwordInput.required = false;
+    passwordMessage.textContent = "";
+  }
+
+  function showConversionError(message) {
+    hidePasswordPrompt();
+
+    if (!conversionMessage) {
+      return;
+    }
+
+    conversionMessage.classList.add("show");
+    conversionMessage.textContent = message || "Conversion failed. Please try again.";
+  }
+
+  function resetPdfAFeedback() {
+    hidePasswordPrompt();
+    passwordInput.value = "";
+    conversionMessage.classList.remove("show");
+    conversionMessage.textContent = "";
+  }
+
+  async function downloadPdfAResponse(response) {
+    if (typeof downloadFromResponse === "function") {
+      await downloadFromResponse(response);
+      return;
+    }
+
+    const blob = await response.blob();
+    const downloadUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = downloadUrl;
+    link.download = "converted_pdfa.pdf";
+    link.style.display = "none";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+  }
+
+  if (
+    pdfaForm &&
+    passwordBox &&
+    passwordInput &&
+    passwordMessage &&
+    conversionMessage
+  ) {
+    pdfaForm.addEventListener("upload-files-changed", (event) => {
+      if (event.detail.fileCount === 0) {
+        resetPdfAFeedback();
+      }
+    });
+
+    pdfaForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      if (pdfInput && pdfInput.files.length === 0) {
+        return;
+      }
+
+      passwordMessage.textContent = "";
+      conversionMessage.classList.remove("show");
+      conversionMessage.textContent = "";
+
+      if (typeof showLoader === "function") {
+        showLoader();
+      }
+
+      try {
+        const response = await fetch(pdfaForm.action, {
+          method: "POST",
+          body: new FormData(pdfaForm),
+          credentials: "same-origin",
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+          },
+        });
+
+        const contentType = response.headers.get("Content-Type") || "";
+        const disposition = response.headers.get("Content-Disposition") || "";
+
+        if (contentType.includes("application/json")) {
+          const data = await response.json();
+
+          if (data.status === "password_required") {
+            conversionMessage.classList.remove("show");
+            passwordBox.classList.add("show");
+            passwordInput.required = true;
+            passwordMessage.textContent =
+              data.message || "Enter the PDF password to continue.";
+            passwordInput.focus();
+            return;
+          }
+        }
+
+        if (
+          response.ok &&
+          (disposition || contentType.includes("application/pdf"))
+        ) {
+          await downloadPdfAResponse(response);
+          pdfaForm.reset();
+
+          if (typeof resetUploadForm === "function") {
+            resetUploadForm();
+          }
+
+          resetPdfAFeedback();
+          return;
+        }
+
+        const errorText = await response.text();
+        const isHtmlError = errorText.trim().startsWith("<");
+
+        showConversionError(
+          isHtmlError
+            ? "Conversion failed. Please check that Ghostscript is installed and available on PATH."
+            : errorText
+        );
+      } catch (error) {
+        console.error("PDF/A conversion failed", error);
+        showConversionError("Conversion failed. Please try again.");
+      } finally {
+        if (typeof hideLoader === "function") {
+          hideLoader();
+        }
+      }
+    });
+  }
+</script>
+
+{% endblock %}
