@@ -3,19 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>{% block main_title %}{% endblock %}</title>
+
+    <!-- CSS -->
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/navbar.css') }}"
     />
+
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/footer.css') }}"
     />
+
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/loader.css') }}"
     />
+
+    <!-- LUCIDE ICONS -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
       .flash-wrapper {
         width: min(960px, 92%);
@@ -55,237 +64,400 @@
         }
       }
     </style>
+
     {% block extra_css %}{% endblock %}
   </head>
+
   <body>
+    <!-- ========================================= -->
+    <!-- NAVBAR -->
+    <!-- ========================================= -->
+
     <nav class="navbar">
+      <!-- LOGO -->
+
       <div class="logo">PlayWithPDFs</div>
+
+      <!-- MOBILE MENU -->
+
       <div class="menu-toggle" id="menuToggle">☰</div>
+
+      <!-- NAV LINKS -->
+
       <ul class="nav-links">
-        <!-- url_for("blueprint_name.function_name") -->
-        <li><a href="{{ url_for('home.home') }}">HOME</a></li>
-        <li><a href="{{ url_for('merge.merge') }}">MERGE PDF</a></li>
-        <li><a href="{{ url_for('compress.compress') }}">COMPRESS PDF</a></li>
+        <!-- HOME -->
+
+        <li>
+          <a href="{{ url_for('home.home') }}"> HOME </a>
+        </li>
+
+        <!-- MERGE -->
+
+        <li>
+          <a href="{{ url_for('merge.merge') }}"> MERGE PDF </a>
+        </li>
+
+        <!-- COMPRESS -->
+
+        <li>
+          <a href="{{ url_for('compress.compress') }}"> COMPRESS PDF </a>
+        </li>
+
+        <!-- ========================================= -->
+        <!-- CONVERT PDF -->
+        <!-- ========================================= -->
 
         <li class="dropdown">
-          <a href="javascript:;">CONVERT PDF ▾</a>
+          <a href="javascript:;"> CONVERT PDF ▾ </a>
+
           <div class="mega-menu">
+            <!-- COLUMN 1 -->
+
             <div class="mega-column">
               <h4>CONVERT TO PDF</h4>
+
               <ul>
-                <!-- url_for("blueprint_name.function_name") -->
-                <li><a href="{{ url_for('jpg_to_pdf.jpg_to_pdf') }}">JPG to PDF</a></li>
                 <li>
-                  <a href="{{ url_for('word_to_pdf.word_to_pdf') }}"
-                    >WORD to PDF</a
-                  >
+                  <a href="{{ url_for('jpg_to_pdf.jpg_to_pdf') }}">
+                    <i data-lucide="image"></i>
+                    JPG to PDF
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('ppt_to_pdf.convert_ppt_to_pdf') }}"
-                    >POWERPOINT to PDF</a
-                  >
+                  <a href="{{ url_for('word_to_pdf.word_to_pdf') }}">
+                    <i data-lucide="file-text"></i>
+                    WORD to PDF
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('excel_to_pdf.convert_excel_to_pdf') }}"
-                    >EXCEL to PDF</a
-                  >
+                  <a href="{{ url_for('ppt_to_pdf.convert_ppt_to_pdf') }}">
+                    <i data-lucide="presentation"></i>
+                    POWERPOINT to PDF
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('html_to_pdf.html_to_pdf') }}"
-                    >HTML to PDF</a
-                  >
+                  <a href="{{ url_for('excel_to_pdf.convert_excel_to_pdf') }}">
+                    <i data-lucide="sheet"></i>
+                    EXCEL to PDF
+                  </a>
+                </li>
+
+                <li>
+                  <a href="{{ url_for('html_to_pdf.html_to_pdf') }}">
+                    <i data-lucide="code-2"></i>
+                    HTML to PDF
+                  </a>
                 </li>
               </ul>
             </div>
+
+            <!-- COLUMN 2 -->
+
             <div class="mega-column">
               <h4>CONVERT FROM PDF</h4>
+
               <ul>
-                <!-- url_for("blueprint_name.function_name") -->
                 <li>
-                  <a href="{{ url_for('jpg_to_pdf.jpg_to_pdf') }}"
-                    >PDF to JPG</a
-                  >
+                  <a href="{{ url_for('pdf_to_jpg.pdf_to_jpg') }}">
+                    <i data-lucide="image-down"></i>
+                    PDF to JPG
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('pdf_to_word.convert_pdf_to_word') }}"
-                    >PDF to WORD</a
-                  >
+                  <a href="{{ url_for('pdf_to_word.convert_pdf_to_word') }}">
+                    <i data-lucide="file-text"></i>
+                    PDF to WORD
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('pdf_to_ppt.convert_pdf_to_ppt') }}"
-                    >PDF to POWERPOINT</a
-                  >
+                  <a href="{{ url_for('pdf_to_ppt.convert_pdf_to_ppt') }}">
+                    <i data-lucide="presentation"></i>
+                    PDF to POWERPOINT
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('pdf_to_excel.pdf_to_excel') }}"
-                    >PDF to EXCEL</a
-                  >
+                  <a href="{{ url_for('pdf_to_excel.pdf_to_excel') }}">
+                    <i data-lucide="sheet"></i>
+                    PDF to EXCEL
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('pdf_to_pdfA.pdf_to_pdfA') }}"
-                    >PDF to PDF/A</a
-                  >
+                  <a href="{{ url_for('pdf_to_pdfA.pdf_to_pdfA') }}">
+                    <i data-lucide="badge-check"></i>
+                    PDF to PDF/A
+                  </a>
                 </li>
               </ul>
             </div>
           </div>
         </li>
 
+        <!-- ========================================= -->
+        <!-- MORE SERVICES -->
+        <!-- ========================================= -->
+
         <li class="dropdown more-dropdown">
-          <a href="javascript:;">MORE SERVICES ▾</a>
+          <a href="javascript:;"> MORE SERVICES ▾ </a>
+
           <div class="more-menu">
+            <!-- ORGANIZE -->
+
             <div class="more-column">
               <h4>ORGANIZE PDF</h4>
+
               <ul>
-                <!-- url_for("blueprint_name.function_name") -->
-                <li><a href="{{ url_for('merge.merge') }}">Merge PDF</a></li>
-                <li><a href="{{ url_for('split.split') }}">Split PDF</a></li>
                 <li>
-                  <a href="{{url_for('remove_pages.remove_pages')}}"
-                    >Remove pages</a
-                  >
+                  <a href="{{ url_for('merge.merge') }}">
+                    <i data-lucide="combine"></i>
+                    Merge PDF
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{url_for('extract_pages.extract_pages')}}"
-                    >Extract pages</a
-                  >
+                  <a href="{{ url_for('split.split') }}">
+                    <i data-lucide="scissors"></i>
+                    Split PDF
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('organize_pdf.organize_pdf') }}"
-                    >Organize PDF</a
-                  >
+                  <a href="{{url_for('remove_pages.remove_pages')}}">
+                    <i data-lucide="trash-2"></i>
+                    Remove pages
+                  </a>
                 </li>
-                <!-- <li><a href="#">Scan to PDF</a></li> -->
+
+                <li>
+                  <a href="{{url_for('extract_pages.extract_pages')}}">
+                    <i data-lucide="file-output"></i>
+                    Extract pages
+                  </a>
+                </li>
+
+                <li>
+                  <a href="{{ url_for('organize_pdf.organize_pdf') }}">
+                    <i data-lucide="folders"></i>
+                    Organize PDF
+                  </a>
+                </li>
               </ul>
+
               <h4 style="margin-top: 18px">PDF INTELLIGENCE</h4>
+
               <ul>
                 <li>
-                  <a href="{{url_for('translate.translate')}}">Translate PDF</a>
+                  <a href="{{url_for('translate.translate')}}">
+                    <i data-lucide="languages"></i>
+                    Translate PDF
+                  </a>
                 </li>
               </ul>
             </div>
+
+            <!-- OPTIMIZE -->
+
             <div class="more-column">
               <h4>OPTIMIZE PDF</h4>
+
               <ul>
-                <!-- url_for("blueprint_name.function_name") -->
                 <li>
-                  <a href="{{ url_for('compress.compress') }}">Compress PDF</a>
+                  <a href="{{ url_for('compress.compress') }}">
+                    <i data-lucide="minimize-2"></i>
+                    Compress PDF
+                  </a>
                 </li>
-                <li><a href="{{ url_for('repair.repair') }}">Repair PDF</a></li>
+
                 <li>
-                  <a href="{{ url_for('ocr_to_pdf.convert_ocr_to_pdf') }}"
-                    >OCR PDF</a
-                  >
+                  <a href="{{ url_for('repair.repair') }}">
+                    <i data-lucide="wrench"></i>
+                    Repair PDF
+                  </a>
+                </li>
+
+                <li>
+                  <a href="{{ url_for('ocr_to_pdf.convert_ocr_to_pdf') }}">
+                    <i data-lucide="scan-text"></i>
+                    OCR PDF
+                  </a>
                 </li>
               </ul>
             </div>
+
+            <!-- CONVERT TO PDF -->
+
             <div class="more-column">
               <h4>CONVERT TO PDF</h4>
+
               <ul>
                 <li>
-                  <a href="{{ url_for('jpg_to_pdf.jpg_to_pdf') }}"
-                    >JPG to PDF</a
-                  >
+                  <a href="{{ url_for('jpg_to_pdf.jpg_to_pdf') }}">
+                    <i data-lucide="image"></i>
+                    JPG to PDF
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('word_to_pdf.word_to_pdf') }}"
-                    >WORD to PDF</a
-                  >
+                  <a href="{{ url_for('word_to_pdf.word_to_pdf') }}">
+                    <i data-lucide="file-text"></i>
+                    WORD to PDF
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('ppt_to_pdf.convert_ppt_to_pdf') }}"
-                    >POWERPOINT to PDF</a
-                  >
+                  <a href="{{ url_for('ppt_to_pdf.convert_ppt_to_pdf') }}">
+                    <i data-lucide="presentation"></i>
+                    POWERPOINT to PDF
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('excel_to_pdf.convert_excel_to_pdf') }}"
-                    >EXCEL to PDF</a
-                  >
+                  <a href="{{ url_for('excel_to_pdf.convert_excel_to_pdf') }}">
+                    <i data-lucide="sheet"></i>
+                    EXCEL to PDF
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('html_to_pdf.html_to_pdf') }}"
-                    >HTML to PDF</a
-                  >
+                  <a href="{{ url_for('html_to_pdf.html_to_pdf') }}">
+                    <i data-lucide="code-2"></i>
+                    HTML to PDF
+                  </a>
                 </li>
               </ul>
             </div>
+
+            <!-- CONVERT FROM PDF -->
+
             <div class="more-column">
               <h4>CONVERT FROM PDF</h4>
+
               <ul>
                 <li>
-                  <a href="{{ url_for('pdf_to_jpg.pdf_to_jpg') }}"
-                    >PDF to JPG</a
-                  >
+                  <a href="{{ url_for('pdf_to_jpg.pdf_to_jpg') }}">
+                    <i data-lucide="image-down"></i>
+                    PDF to JPG
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('pdf_to_word.convert_pdf_to_word') }}"
-                    >PDF to WORD</a
-                  >
+                  <a href="{{ url_for('pdf_to_word.convert_pdf_to_word') }}">
+                    <i data-lucide="file-text"></i>
+                    PDF to WORD
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('pdf_to_ppt.convert_pdf_to_ppt') }}"
-                    >PDF to POWERPOINT</a
-                  >
+                  <a href="{{ url_for('pdf_to_ppt.convert_pdf_to_ppt') }}">
+                    <i data-lucide="presentation"></i>
+                    PDF to POWERPOINT
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('pdf_to_excel.pdf_to_excel') }}"
-                    >PDF to EXCEL</a
-                  >
+                  <a href="{{ url_for('pdf_to_excel.pdf_to_excel') }}">
+                    <i data-lucide="sheet"></i>
+                    PDF to EXCEL
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('pdf_to_pdfA.pdf_to_pdfA') }}"
-                    >PDF to PDF/A</a
-                  >
+                  <a href="{{ url_for('pdf_to_pdfA.pdf_to_pdfA') }}">
+                    <i data-lucide="badge-check"></i>
+                    PDF to PDF/A
+                  </a>
                 </li>
               </ul>
             </div>
+
+            <!-- EDIT PDF -->
+
             <div class="more-column">
               <h4>EDIT PDF</h4>
+
               <ul>
                 <li>
-                  <a href="{{ url_for('rotate_pdf.rotate_pdf') }}"
-                    >Rotate PDF</a
-                  >
+                  <a href="{{ url_for('rotate_pdf.rotate_pdf') }}">
+                    <i data-lucide="rotate-cw"></i>
+                    Rotate PDF
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('add_page_number.add_page_number') }}"
-                    >Add page numbers</a
-                  >
+                  <a href="{{ url_for('add_page_number.add_page_number') }}">
+                    <i data-lucide="hash"></i>
+                    Add page numbers
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('add_watermark.add_watermark') }}"
-                    >Add watermark</a
-                  >
+                  <a href="{{ url_for('add_watermark.add_watermark') }}">
+                    <i data-lucide="stamp"></i>
+                    Add watermark
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('crop_pdf.crop_pdf') }}">Crop PDF</a>
+                  <a href="{{ url_for('crop_pdf.crop_pdf') }}">
+                    <i data-lucide="crop"></i>
+                    Crop PDF
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('edit_pdf.edit_pdf') }}">Edit PDF</a>
+                  <a href="{{ url_for('edit_pdf.edit_pdf') }}">
+                    <i data-lucide="pen-tool"></i>
+                    Edit PDF
+                  </a>
                 </li>
               </ul>
             </div>
+
+            <!-- SECURITY -->
+
             <div class="more-column">
               <h4>PDF SECURITY</h4>
+
               <ul>
                 <li>
-                  <a href="{{ url_for('unlock_pdf.unlock_pdf') }}"
-                    >Unlock PDF</a
-                  >
+                  <a href="{{ url_for('unlock_pdf.unlock_pdf') }}">
+                    <i data-lucide="lock-open"></i>
+                    Unlock PDF
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{ url_for('protect_pdf.protect_pdf') }}"
-                    >Protect PDF</a
-                  >
+                  <a href="{{ url_for('protect_pdf.protect_pdf') }}">
+                    <i data-lucide="shield"></i>
+                    Protect PDF
+                  </a>
                 </li>
-                <li><a href="{{url_for('sign_pdf.sign_pdf')}}">Sign PDF</a></li>
+
                 <li>
-                  <a href="{{url_for('redact_pdf.redact_pdf')}}">Redact PDF</a>
+                  <a href="{{url_for('sign_pdf.sign_pdf')}}">
+                    <i data-lucide="signature"></i>
+                    Sign PDF
+                  </a>
                 </li>
+
                 <li>
-                  <a href="{{url_for('compare_pdf.compare_pdf')}}"
-                    >Compare PDF</a
-                  >
+                  <a href="{{url_for('redact_pdf.redact_pdf')}}">
+                    <i data-lucide="eye-off"></i>
+                    Redact PDF
+                  </a>
+                </li>
+
+                <li>
+                  <a href="{{url_for('compare_pdf.compare_pdf')}}">
+                    <i data-lucide="git-compare"></i>
+                    Compare PDF
+                  </a>
                 </li>
               </ul>
             </div>
@@ -294,55 +466,65 @@
       </ul>
     </nav>
 
+    <!-- FLASH -->
+
     <div id="flash-container" class="flash-wrapper">
       {% with messages = get_flashed_messages(with_categories=true) %} {% if
       messages %} {% for category, message in messages %}
+
       <div class="flash-message {{ category }}">{{ message }}</div>
+
       {% endfor %} {% endif %} {% endwith %}
     </div>
 
+    <!-- MAIN -->
+
     <div class="main_content">{% block main_content %} {% endblock %}</div>
+
+    <!-- FOOTER -->
 
     <footer class="footer">
       <div class="footer-content">
         <div class="footer-logo">PlayWithPDFs</div>
+
         <ul class="footer-links">
-          <li><a href="{{ url_for('home.home') }}">Home</a></li>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Services</a></li>
-          <li><a href="#">Contact</a></li>
+          <li>
+            <a href="{{ url_for('home.home') }}"> Home </a>
+          </li>
+
+          <li>
+            <a href="#"> About </a>
+          </li>
+
+          <li>
+            <a href="#"> Services </a>
+          </li>
+
+          <li>
+            <a href="#"> Contact </a>
+          </li>
         </ul>
+
         <p class="copyright">© 2026 YourCompany. All rights reserved.</p>
       </div>
     </footer>
 
-    <!-- loader overlay (hidden by default) -->
+    <!-- LOADER -->
+
     <div id="loader-overlay" class="loader-overlay" style="display: none">
       <div class="loader-spinner"></div>
     </div>
 
+    <!-- JS -->
+
     <script src="{{ url_for('static', filename='scripts/navbar.js') }}"></script>
-    <!-- scripts -->
+
     <script src="{{ url_for('static', filename='scripts/loader.js') }}"></script>
 
+    <!-- LUCIDE INIT -->
+
     <script>
-      window.addEventListener("load", function () {
-        const flashMessages = document.querySelectorAll(".flash-message");
-
-        flashMessages.forEach(function (message) {
-          setTimeout(function () {
-            message.style.transition = "opacity 0.4s ease, transform 0.4s ease";
-
-            message.style.opacity = "0";
-
-            message.style.transform = "translateY(-10px)";
-
-            setTimeout(function () {
-              message.remove();
-            }, 400);
-          }, 4000);
-        });
-      });
+      lucide.createIcons();
     </script>
   </body>
 </html>

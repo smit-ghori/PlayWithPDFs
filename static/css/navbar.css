@@ -932,3 +932,206 @@ body {
 .dropdown:hover .mega-column:nth-child(2) {
   transition-delay: 0.12s;
 }
+
+/* ========================================= */
+/* NAVBAR ICONS */
+/* ========================================= */
+
+.more-column ul li a,
+.mega-column ul li a {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+}
+
+/* ICON */
+
+.more-column ul li a svg,
+.mega-column ul li a svg {
+  width: 16px;
+
+  height: 16px;
+
+  stroke-width: 2.2;
+
+  color: #7dd3fc;
+
+  flex-shrink: 0;
+
+  transition:
+    transform 0.25s ease,
+    color 0.25s ease;
+}
+
+/* HOVER */
+
+.more-column ul li a:hover svg,
+.mega-column ul li a:hover svg {
+  transform: scale(1.12) rotate(-6deg);
+
+  color: #38bdf8;
+}
+
+/* ===================================================== */
+/* MOBILE DROPDOWN FIX — add at bottom of navbar.css    */
+/* ===================================================== */
+
+@media (max-width: 768px) {
+  /* Force single-column on both menus (overrides 900px / 1200px rules) */
+  .mega-menu,
+  .more-menu {
+    position: static !important;
+    display: none;
+    width: 100% !important;
+    min-width: unset !important;
+    max-width: 100% !important;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
+    grid-template-columns: 1fr !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    max-height: none !important;
+  }
+
+  /* Show when parent li has .active */
+  .dropdown.active .mega-menu,
+  .dropdown.active .more-menu {
+    display: grid !important;
+  }
+
+  /* Prevent long link text from overflowing the 300px sidebar */
+  .mega-column ul li a,
+  .more-column ul li a {
+    white-space: normal !important;
+    word-break: break-word;
+  }
+  .more-dropdown:hover .more-menu,
+  .more-menu:hover {
+    display: grid; /* ← this re-shows it on mobile touch after JS hides it */
+    opacity: 1;
+    visibility: visible;
+  }
+}
+@media (max-width: 768px) {
+  /* Disable sticky hover — JS class controls visibility on mobile */
+  .more-dropdown:hover .more-menu,
+  .more-menu:hover {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+
+  /* Only show when JS adds .active */
+  .dropdown.active .more-menu {
+    display: grid !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+}
+
+/* ===================================================== */
+/* MOBILE DROPDOWN — TADAKTA BHADAKTA ANIMATION 🔥      */
+/* ===================================================== */
+
+@keyframes mobileDropIn {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.6) translateY(-20px);
+    filter: blur(6px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scaleY(1.04) translateY(4px);
+    filter: blur(1px);
+  }
+  70% {
+    transform: scaleY(0.97) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleY(1) translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes mobileItemsIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-22px) scale(0.93);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes glowPulse {
+  0%   { box-shadow: 0 0 0px rgba(125, 211, 252, 0); }
+  40%  { box-shadow: 0 0 18px rgba(125, 211, 252, 0.35), 0 0 40px rgba(125, 211, 252, 0.15); }
+  100% { box-shadow: 0 0 8px rgba(125, 211, 252, 0.1); }
+}
+
+@media (max-width: 768px) {
+
+  /* DROPDOWN CONTAINER ANIMATION */
+  .dropdown.active .mega-menu,
+  .dropdown.active .more-menu {
+    transform-origin: top center;
+    animation:
+      mobileDropIn 0.52s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+      glowPulse 0.7s ease forwards;
+    border: 1px solid rgba(125, 211, 252, 0.18);
+  }
+
+  /* ITEMS STAGGER ANIMATION */
+  .dropdown.active .mega-column,
+  .dropdown.active .more-column {
+    animation: mobileItemsIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* STAGGER EACH COLUMN */
+  .dropdown.active .mega-column:nth-child(1),
+  .dropdown.active .more-column:nth-child(1) { animation-delay: 0.10s; }
+
+  .dropdown.active .mega-column:nth-child(2),
+  .dropdown.active .more-column:nth-child(2) { animation-delay: 0.16s; }
+
+  .dropdown.active .mega-column:nth-child(3),
+  .dropdown.active .more-column:nth-child(3) { animation-delay: 0.22s; }
+
+  .dropdown.active .mega-column:nth-child(4),
+  .dropdown.active .more-column:nth-child(4) { animation-delay: 0.28s; }
+
+  .dropdown.active .mega-column:nth-child(5),
+  .dropdown.active .more-column:nth-child(5) { animation-delay: 0.34s; }
+
+  .dropdown.active .mega-column:nth-child(6),
+  .dropdown.active .more-column:nth-child(6) { animation-delay: 0.40s; }
+
+  /* INDIVIDUAL LINKS POP IN */
+  .dropdown.active .mega-column ul li,
+  .dropdown.active .more-column ul li {
+    animation: mobileItemsIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* LINK STAGGER */
+  .dropdown.active .mega-column ul li:nth-child(1),
+  .dropdown.active .more-column ul li:nth-child(1) { animation-delay: 0.20s; }
+
+  .dropdown.active .mega-column ul li:nth-child(2),
+  .dropdown.active .more-column ul li:nth-child(2) { animation-delay: 0.26s; }
+
+  .dropdown.active .mega-column ul li:nth-child(3),
+  .dropdown.active .more-column ul li:nth-child(3) { animation-delay: 0.32s; }
+
+  .dropdown.active .mega-column ul li:nth-child(4),
+  .dropdown.active .more-column ul li:nth-child(4) { animation-delay: 0.38s; }
+
+  .dropdown.active .mega-column ul li:nth-child(5),
+  .dropdown.active .more-column ul li:nth-child(5) { animation-delay: 0.44s; }
+}

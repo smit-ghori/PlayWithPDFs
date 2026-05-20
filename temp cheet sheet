@@ -3,3 +3,8 @@ pip install something → requirements.txt
 apt-get install something → Dockerfile
 
 environment/config → render.yaml
+
+----command for count lines of code
+Get-ChildItem -Recurse -Include *.py,*.html,*.css,*.js |
+Get-Content |
+Measure-Object -Line
