@@ -166,6 +166,7 @@ body::before {
   color: white;
   font-size: 20px;
   font-weight: bold;
+  text-decoration: none;
 } /* Nav Links */
 .nav-links {
   list-style: none;
