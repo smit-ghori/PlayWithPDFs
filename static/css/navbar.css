@@ -4,10 +4,122 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+/* ========================================= */
+/* BODY */
+/* ========================================= */
+
 body {
-  background: #cfc2e4;
-  font-family: Arial, sans-serif;
+  min-height: 100vh;
+
   overflow-x: hidden;
+
+  font-family: Arial, sans-serif;
+
+  background: linear-gradient(
+    135deg,
+    #020617 0%,
+    #030712 35%,
+    #050b16 65%,
+    #02050d 100%
+  );
+
+  color: #e6eef8;
+
+  position: relative;
+}
+
+/* ========================================= */
+/* PREMIUM SUBTLE LIGHTING */
+/* ========================================= */
+
+body::before {
+  content: "";
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: -1;
+
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      circle at 18% 22%,
+      rgba(59, 130, 246, 0.1),
+      transparent 24%
+    ),
+    radial-gradient(
+      circle at 82% 30%,
+      rgba(125, 211, 252, 0.06),
+      transparent 26%
+    ),
+    radial-gradient(circle at 50% 88%, rgba(37, 99, 235, 0.06), transparent 28%);
+
+  filter: blur(70px);
+
+  opacity: 0.65;
+}
+/* ========================================= */
+/* BLUR GLOW BACKGROUND */
+/* ========================================= */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(59, 130, 246, 0.22),
+      transparent 24%
+    ),
+    radial-gradient(
+      circle at 80% 30%,
+      rgba(125, 211, 252, 0.18),
+      transparent 26%
+    ),
+    radial-gradient(
+      circle at 50% 85%,
+      rgba(37, 99, 235, 0.18),
+      transparent 28%
+    ),
+    radial-gradient(circle at 30% 70%, rgba(168, 85, 247, 0.1), transparent 24%);
+  filter: blur(90px);
+  opacity: 0.9;
+  animation: backgroundMove 16s ease-in-out infinite alternate;
+  -webkit-animation: backgroundMove 16s ease-in-out infinite alternate;
+}
+
+/* ========================================= */
+/* ANIMATION */
+/* ========================================= */
+
+@keyframes backgroundMove {
+  from {
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    transform: translateY(-30px) scale(1.08);
+  }
+}
+
+/* ========================================= */
+/* ANIMATION */
+/* ========================================= */
+
+@keyframes backgroundFloat {
+  from {
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    transform: translateY(-20px) scale(1.03);
+  }
 }
 /* ========================= */ /* NAVBAR */ /* ========================= */
 .navbar {
@@ -1071,13 +1183,20 @@ body {
 }
 
 @keyframes glowPulse {
-  0%   { box-shadow: 0 0 0px rgba(125, 211, 252, 0); }
-  40%  { box-shadow: 0 0 18px rgba(125, 211, 252, 0.35), 0 0 40px rgba(125, 211, 252, 0.15); }
-  100% { box-shadow: 0 0 8px rgba(125, 211, 252, 0.1); }
+  0% {
+    box-shadow: 0 0 0px rgba(125, 211, 252, 0);
+  }
+  40% {
+    box-shadow:
+      0 0 18px rgba(125, 211, 252, 0.35),
+      0 0 40px rgba(125, 211, 252, 0.15);
+  }
+  100% {
+    box-shadow: 0 0 8px rgba(125, 211, 252, 0.1);
+  }
 }
 
 @media (max-width: 768px) {
-
   /* DROPDOWN CONTAINER ANIMATION */
   .dropdown.active .mega-menu,
   .dropdown.active .more-menu {
@@ -1096,22 +1215,34 @@ body {
 
   /* STAGGER EACH COLUMN */
   .dropdown.active .mega-column:nth-child(1),
-  .dropdown.active .more-column:nth-child(1) { animation-delay: 0.10s; }
+  .dropdown.active .more-column:nth-child(1) {
+    animation-delay: 0.1s;
+  }
 
   .dropdown.active .mega-column:nth-child(2),
-  .dropdown.active .more-column:nth-child(2) { animation-delay: 0.16s; }
+  .dropdown.active .more-column:nth-child(2) {
+    animation-delay: 0.16s;
+  }
 
   .dropdown.active .mega-column:nth-child(3),
-  .dropdown.active .more-column:nth-child(3) { animation-delay: 0.22s; }
+  .dropdown.active .more-column:nth-child(3) {
+    animation-delay: 0.22s;
+  }
 
   .dropdown.active .mega-column:nth-child(4),
-  .dropdown.active .more-column:nth-child(4) { animation-delay: 0.28s; }
+  .dropdown.active .more-column:nth-child(4) {
+    animation-delay: 0.28s;
+  }
 
   .dropdown.active .mega-column:nth-child(5),
-  .dropdown.active .more-column:nth-child(5) { animation-delay: 0.34s; }
+  .dropdown.active .more-column:nth-child(5) {
+    animation-delay: 0.34s;
+  }
 
   .dropdown.active .mega-column:nth-child(6),
-  .dropdown.active .more-column:nth-child(6) { animation-delay: 0.40s; }
+  .dropdown.active .more-column:nth-child(6) {
+    animation-delay: 0.4s;
+  }
 
   /* INDIVIDUAL LINKS POP IN */
   .dropdown.active .mega-column ul li,
@@ -1121,17 +1252,27 @@ body {
 
   /* LINK STAGGER */
   .dropdown.active .mega-column ul li:nth-child(1),
-  .dropdown.active .more-column ul li:nth-child(1) { animation-delay: 0.20s; }
+  .dropdown.active .more-column ul li:nth-child(1) {
+    animation-delay: 0.2s;
+  }
 
   .dropdown.active .mega-column ul li:nth-child(2),
-  .dropdown.active .more-column ul li:nth-child(2) { animation-delay: 0.26s; }
+  .dropdown.active .more-column ul li:nth-child(2) {
+    animation-delay: 0.26s;
+  }
 
   .dropdown.active .mega-column ul li:nth-child(3),
-  .dropdown.active .more-column ul li:nth-child(3) { animation-delay: 0.32s; }
+  .dropdown.active .more-column ul li:nth-child(3) {
+    animation-delay: 0.32s;
+  }
 
   .dropdown.active .mega-column ul li:nth-child(4),
-  .dropdown.active .more-column ul li:nth-child(4) { animation-delay: 0.38s; }
+  .dropdown.active .more-column ul li:nth-child(4) {
+    animation-delay: 0.38s;
+  }
 
   .dropdown.active .mega-column ul li:nth-child(5),
-  .dropdown.active .more-column ul li:nth-child(5) { animation-delay: 0.44s; }
+  .dropdown.active .more-column ul li:nth-child(5) {
+    animation-delay: 0.44s;
+  }
 }
