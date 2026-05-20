@@ -1,4 +1,453 @@
-{% extends 'base.html' %} {% block main_title %} Home {% endblock %} {% block
-main_content %}
-<h1>Home page</h1>
+{% extends 'base.html' %} {% block main_title %}Home{% endblock %} {% block
+extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/index.css') }}"
+/>
+{% endblock %} {% block main_content %}
+<section class="home-tools">
+  <div class="home-tools__header">
+    <!-- <p class="home-tools__eyebrow">PDF tools</p> -->
+    <h1>Choose a feature and get to work</h1>
+    <p class="typewriter-line">
+      Fast shortcuts for
+      <span
+        id="homeTypewriter"
+        data-words="organizing,converting,editing,securing,optimizing"
+      ></span>
+      <span class="typewriter-caret" aria-hidden="true"></span>
+    </p>
+  </div>
+
+  <div class="tool-categories">
+    <section class="tool-category">
+      <div class="tool-category__header">
+        <i data-lucide="folders"></i>
+        <h2>Organize PDF</h2>
+      </div>
+
+      <div class="feature-grid">
+        <a class="feature-card" href="{{ url_for('merge.merge') }}">
+          <span class="feature-card__icon"><i data-lucide="combine"></i></span>
+          <span class="feature-card__name">Merge PDF</span>
+          <span class="feature-card__note"
+            >Combine multiple PDF files into one clean document.</span
+          >
+        </a>
+
+        <a class="feature-card" href="{{ url_for('split.split') }}">
+          <span class="feature-card__icon"><i data-lucide="scissors"></i></span>
+          <span class="feature-card__name">Split PDF</span>
+          <span class="feature-card__note"
+            >Separate pages or ranges into independent PDF files.</span
+          >
+        </a>
+
+        <a
+          class="feature-card"
+          href="{{ url_for('remove_pages.remove_pages') }}"
+        >
+          <span class="feature-card__icon"><i data-lucide="trash-2"></i></span>
+          <span class="feature-card__name">Remove Pages</span>
+          <span class="feature-card__note"
+            >Delete unwanted pages before saving the final file.</span
+          >
+        </a>
+
+        <a
+          class="feature-card"
+          href="{{ url_for('extract_pages.extract_pages') }}"
+        >
+          <span class="feature-card__icon"
+            ><i data-lucide="file-output"></i
+          ></span>
+          <span class="feature-card__name">Extract Pages</span>
+          <span class="feature-card__note"
+            >Pull selected pages out into a new PDF document.</span
+          >
+        </a>
+
+        <a
+          class="feature-card"
+          href="{{ url_for('organize_pdf.organize_pdf') }}"
+        >
+          <span class="feature-card__icon"><i data-lucide="folders"></i></span>
+          <span class="feature-card__name">Organize PDF</span>
+          <span class="feature-card__note"
+            >Reorder pages visually and rebuild your PDF flow.</span
+          >
+        </a>
+      </div>
+    </section>
+
+    <section class="tool-category">
+      <div class="tool-category__header">
+        <i data-lucide="minimize-2"></i>
+        <h2>Optimize PDF</h2>
+      </div>
+
+      <div class="feature-grid">
+        <a class="feature-card" href="{{ url_for('compress.compress') }}">
+          <span class="feature-card__icon"
+            ><i data-lucide="minimize-2"></i
+          ></span>
+          <span class="feature-card__name">Compress PDF</span>
+          <span class="feature-card__note"
+            >Reduce file size while keeping documents sharp.</span
+          >
+        </a>
+
+        <a class="feature-card" href="{{ url_for('repair.repair') }}">
+          <span class="feature-card__icon"><i data-lucide="wrench"></i></span>
+          <span class="feature-card__name">Repair PDF</span>
+          <span class="feature-card__note"
+            >Try to recover damaged or unreadable PDF files.</span
+          >
+        </a>
+
+        <a
+          class="feature-card"
+          href="{{ url_for('ocr_to_pdf.convert_ocr_to_pdf') }}"
+        >
+          <span class="feature-card__icon"
+            ><i data-lucide="scan-text"></i
+          ></span>
+          <span class="feature-card__name">OCR PDF</span>
+          <span class="feature-card__note"
+            >Make scanned pages searchable with text recognition.</span
+          >
+        </a>
+      </div>
+    </section>
+
+    <section class="tool-category">
+      <div class="tool-category__header">
+        <i data-lucide="file-plus-2"></i>
+        <h2>Convert to PDF</h2>
+      </div>
+
+      <div class="feature-grid">
+        <a class="feature-card" href="{{ url_for('jpg_to_pdf.jpg_to_pdf') }}">
+          <span class="feature-card__icon"><i data-lucide="image"></i></span>
+          <span class="feature-card__name">JPG to PDF</span>
+          <span class="feature-card__note"
+            >Convert images into a polished PDF file.</span
+          >
+        </a>
+
+        <a class="feature-card" href="{{ url_for('word_to_pdf.word_to_pdf') }}">
+          <span class="feature-card__icon"
+            ><i data-lucide="file-text"></i
+          ></span>
+          <span class="feature-card__name">Word to PDF</span>
+          <span class="feature-card__note"
+            >Turn DOC and DOCX files into easy-to-share PDFs.</span
+          >
+        </a>
+
+        <a
+          class="feature-card"
+          href="{{ url_for('ppt_to_pdf.convert_ppt_to_pdf') }}"
+        >
+          <span class="feature-card__icon"
+            ><i data-lucide="presentation"></i
+          ></span>
+          <span class="feature-card__name">PowerPoint to PDF</span>
+          <span class="feature-card__note"
+            >Convert PPT and PPTX slideshows into PDF format.</span
+          >
+        </a>
+
+        <a
+          class="feature-card"
+          href="{{ url_for('excel_to_pdf.convert_excel_to_pdf') }}"
+        >
+          <span class="feature-card__icon"><i data-lucide="sheet"></i></span>
+          <span class="feature-card__name">Excel to PDF</span>
+          <span class="feature-card__note"
+            >Save spreadsheets as clean, portable PDF files.</span
+          >
+        </a>
+
+        <a class="feature-card" href="{{ url_for('html_to_pdf.html_to_pdf') }}">
+          <span class="feature-card__icon"><i data-lucide="code-2"></i></span>
+          <span class="feature-card__name">HTML to PDF</span>
+          <span class="feature-card__note"
+            >Create a PDF from an HTML page or markup.</span
+          >
+        </a>
+      </div>
+    </section>
+
+    <section class="tool-category">
+      <div class="tool-category__header">
+        <i data-lucide="file-output"></i>
+        <h2>Convert from PDF</h2>
+      </div>
+
+      <div class="feature-grid">
+        <a class="feature-card" href="{{ url_for('pdf_to_jpg.pdf_to_jpg') }}">
+          <span class="feature-card__icon"
+            ><i data-lucide="image-down"></i
+          ></span>
+          <span class="feature-card__name">PDF to JPG</span>
+          <span class="feature-card__note"
+            >Export PDF pages as high-quality JPG images.</span
+          >
+        </a>
+
+        <a
+          class="feature-card"
+          href="{{ url_for('pdf_to_word.convert_pdf_to_word') }}"
+        >
+          <span class="feature-card__icon"
+            ><i data-lucide="file-text"></i
+          ></span>
+          <span class="feature-card__name">PDF to Word</span>
+          <span class="feature-card__note"
+            >Convert PDFs into editable DOC and DOCX documents.</span
+          >
+        </a>
+
+        <a
+          class="feature-card"
+          href="{{ url_for('pdf_to_ppt.convert_pdf_to_ppt') }}"
+        >
+          <span class="feature-card__icon"
+            ><i data-lucide="presentation"></i
+          ></span>
+          <span class="feature-card__name">PDF to PowerPoint</span>
+          <span class="feature-card__note"
+            >Turn PDF pages into editable presentation slides.</span
+          >
+        </a>
+
+        <a
+          class="feature-card"
+          href="{{ url_for('pdf_to_excel.pdf_to_excel') }}"
+        >
+          <span class="feature-card__icon"><i data-lucide="sheet"></i></span>
+          <span class="feature-card__name">PDF to Excel</span>
+          <span class="feature-card__note"
+            >Extract tables from PDFs into spreadsheet files.</span
+          >
+        </a>
+
+        <a class="feature-card" href="{{ url_for('pdf_to_pdfA.pdf_to_pdfA') }}">
+          <span class="feature-card__icon"
+            ><i data-lucide="badge-check"></i
+          ></span>
+          <span class="feature-card__name">PDF to PDF/A</span>
+          <span class="feature-card__note"
+            >Convert documents into long-term archival format.</span
+          >
+        </a>
+      </div>
+    </section>
+
+    <section class="tool-category">
+      <div class="tool-category__header">
+        <i data-lucide="pen-tool"></i>
+        <h2>Edit PDF</h2>
+      </div>
+
+      <div class="feature-grid">
+        <a class="feature-card" href="{{ url_for('rotate_pdf.rotate_pdf') }}">
+          <span class="feature-card__icon"
+            ><i data-lucide="rotate-cw"></i
+          ></span>
+          <span class="feature-card__name">Rotate PDF</span>
+          <span class="feature-card__note"
+            >Fix page orientation before saving your PDF.</span
+          >
+        </a>
+
+        <a
+          class="feature-card"
+          href="{{ url_for('add_page_number.add_page_number') }}"
+        >
+          <span class="feature-card__icon"><i data-lucide="hash"></i></span>
+          <span class="feature-card__name">Add Page Numbers</span>
+          <span class="feature-card__note"
+            >Place page numbers with custom position and style.</span
+          >
+        </a>
+
+        <a
+          class="feature-card"
+          href="{{ url_for('add_watermark.add_watermark') }}"
+        >
+          <span class="feature-card__icon"><i data-lucide="stamp"></i></span>
+          <span class="feature-card__name">Add Watermark</span>
+          <span class="feature-card__note"
+            >Apply text or image watermarks across your PDF.</span
+          >
+        </a>
+
+        <a class="feature-card" href="{{ url_for('crop_pdf.crop_pdf') }}">
+          <span class="feature-card__icon"><i data-lucide="crop"></i></span>
+          <span class="feature-card__name">Crop PDF</span>
+          <span class="feature-card__note"
+            >Trim margins and focus each page on the content.</span
+          >
+        </a>
+
+        <a class="feature-card" href="{{ url_for('edit_pdf.edit_pdf') }}">
+          <span class="feature-card__icon"><i data-lucide="pen-tool"></i></span>
+          <span class="feature-card__name">Edit PDF</span>
+          <span class="feature-card__note"
+            >Add text, marks, and annotations to your PDF.</span
+          >
+        </a>
+      </div>
+    </section>
+
+    <section class="tool-category">
+      <div class="tool-category__header">
+        <i data-lucide="shield"></i>
+        <h2>PDF Security</h2>
+      </div>
+
+      <div class="feature-grid">
+        <a class="feature-card" href="{{ url_for('unlock_pdf.unlock_pdf') }}">
+          <span class="feature-card__icon"
+            ><i data-lucide="lock-open"></i
+          ></span>
+          <span class="feature-card__name">Unlock PDF</span>
+          <span class="feature-card__note"
+            >Remove password protection when you have access.</span
+          >
+        </a>
+
+        <a class="feature-card" href="{{ url_for('protect_pdf.protect_pdf') }}">
+          <span class="feature-card__icon"><i data-lucide="shield"></i></span>
+          <span class="feature-card__name">Protect PDF</span>
+          <span class="feature-card__note"
+            >Add password protection to sensitive documents.</span
+          >
+        </a>
+
+        <a class="feature-card" href="{{ url_for('sign_pdf.sign_pdf') }}">
+          <span class="feature-card__icon"
+            ><i data-lucide="signature"></i
+          ></span>
+          <span class="feature-card__name">Sign PDF</span>
+          <span class="feature-card__note"
+            >Place a signature image exactly where it belongs.</span
+          >
+        </a>
+
+        <a class="feature-card" href="{{ url_for('redact_pdf.redact_pdf') }}">
+          <span class="feature-card__icon"><i data-lucide="eye-off"></i></span>
+          <span class="feature-card__name">Redact PDF</span>
+          <span class="feature-card__note"
+            >Hide private text or areas before sharing a file.</span
+          >
+        </a>
+
+        <a class="feature-card" href="{{ url_for('compare_pdf.compare_pdf') }}">
+          <span class="feature-card__icon"
+            ><i data-lucide="git-compare"></i
+          ></span>
+          <span class="feature-card__name">Compare PDF</span>
+          <span class="feature-card__note"
+            >Check two PDFs side by side and review changes.</span
+          >
+        </a>
+      </div>
+    </section>
+
+    <section class="tool-category">
+      <div class="tool-category__header">
+        <i data-lucide="languages"></i>
+        <h2>PDF Intelligence</h2>
+      </div>
+
+      <div class="feature-grid">
+        <a class="feature-card" href="{{ url_for('translate.translate') }}">
+          <span class="feature-card__icon"
+            ><i data-lucide="languages"></i
+          ></span>
+          <span class="feature-card__name">Translate PDF</span>
+          <span class="feature-card__note"
+            >Translate PDF content into another language.</span
+          >
+        </a>
+      </div>
+    </section>
+  </div>
+</section>
+
+<script>
+  const typewriterText = document.getElementById("homeTypewriter");
+
+  if (typewriterText) {
+    const words = typewriterText.dataset.words.split(",");
+    let wordIndex = 0;
+    let index = 0;
+    let isDeleting = false;
+
+    const typeLoop = () => {
+      const word = words[wordIndex];
+      typewriterText.textContent = word.slice(0, index);
+
+      if (!isDeleting && index < word.length) {
+        index += 1;
+        setTimeout(typeLoop, 45);
+        return;
+      }
+
+      if (!isDeleting && index === word.length) {
+        isDeleting = true;
+        setTimeout(typeLoop, 900);
+        return;
+      }
+
+      if (isDeleting && index > 0) {
+        index -= 1;
+        setTimeout(typeLoop, 22);
+        return;
+      }
+
+      isDeleting = false;
+      wordIndex = (wordIndex + 1) % words.length;
+      setTimeout(typeLoop, 450);
+    };
+
+    typeLoop();
+  }
+</script>
+<script>
+  // =========================================
+  // SCROLL REVEAL ANIMATION
+  // =========================================
+
+  const revealElements = document.querySelectorAll(
+    ".tool-category, .feature-card",
+  );
+
+  // delay for cards
+
+  document.querySelectorAll(".feature-card").forEach((card, index) => {
+    card.style.setProperty("--delay", index % 4);
+  });
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("show");
+        }
+      });
+    },
+
+    {
+      threshold: 0.12,
+    },
+  );
+
+  revealElements.forEach((el) => {
+    observer.observe(el);
+  });
+</script>
 {% endblock %}
