@@ -1277,3 +1277,78 @@ body::before {
     animation-delay: 0.44s;
   }
 }
+
+/* ===================================================== */
+/* MID-SIZE VIEWPORT FIX (tablet / small desktop)        */
+/* ===================================================== */
+
+@media (min-width: 769px) and (max-width: 1100px) {
+  .more-menu {
+    position: fixed;
+    left: 10px !important;
+    right: 10px !important;
+    width: auto !important;
+    max-width: calc(100vw - 20px) !important;
+    transform: none !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 16px !important;
+    padding: 20px !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 860px) {
+  .more-menu {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Prevent text overflow in tight columns */
+  .more-column ul li a {
+    white-space: normal !important;
+    font-size: 13px !important;
+  }
+
+  .mega-menu {
+    min-width: unset !important;
+    width: calc(100vw - 80px) !important;
+    left: 40px !important;
+    transform: none !important;
+  }
+}
+
+/* ===================================================== */
+/* CONVERT PDF MEGA-MENU — COMPLETE VIEWPORT FIX         */
+/* ===================================================== */
+
+@media (min-width: 769px) and (max-width: 1100px) {
+  /* Switch to fixed positioning so it's viewport-relative */
+  .mega-menu {
+    position: fixed !important;
+    top: 70px !important; /* just below navbar */
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) translateY(-10px) scale(0.96) !important;
+    width: min(520px, calc(100vw - 40px)) !important;
+    min-width: unset !important;
+    max-width: calc(100vw - 40px) !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 20px !important;
+    padding: 18px !important;
+    z-index: 9999 !important;
+  }
+
+  /* Show state */
+  .dropdown:hover .mega-menu {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: translateX(-50%) translateY(0) scale(1) !important;
+  }
+
+  /* Wrap text in tight columns */
+  .mega-column ul li a {
+    white-space: normal !important;
+    font-size: 13px !important;
+  }
+}

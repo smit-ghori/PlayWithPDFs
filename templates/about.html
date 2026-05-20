@@ -1,0 +1,223 @@
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/about.css') }}"
+/>
+
+{% extends 'base.html' %} {% block main_title %} About {% endblock %} {% block
+extra_css %}
+
+{% endblock %} {% block main_content %}
+
+<section class="about-page">
+  <!-- HERO -->
+
+  <div class="about-hero">
+    <p class="about-eyebrow">About PlayWithPDFs</p>
+
+    <h1>Built to simplify your PDF workflow</h1>
+
+    <p>
+      PlayWithPDFs is a modern PDF toolkit created to make working with PDF
+      documents simple, fast, and accessible for everyone.
+    </p>
+  </div>
+
+  <!-- GRID -->
+
+  <div class="about-grid">
+    <!-- CARD 1 -->
+
+    <div class="about-card">
+      <h2>The Story</h2>
+
+      <p>
+        PlayWithPDFs was independently designed and developed by a solo
+        developer with a passion for building clean, modern, and useful web
+        applications.
+        <br /><br />
+        Every feature — from PDF merging and compression to conversion and
+        security tools — has been carefully created to provide a smooth and
+        reliable experience.
+      </p>
+    </div>
+
+    <!-- CARD 2 -->
+
+    <div class="about-card">
+      <h2>What You Can Do</h2>
+
+      <ul class="about-list">
+        <li>
+          <i data-lucide="combine"></i>
+          Merge and organize PDF files
+        </li>
+
+        <li>
+          <i data-lucide="minimize-2"></i>
+          Compress PDF documents
+        </li>
+
+        <li>
+          <i data-lucide="refresh-cw"></i>
+          Convert files to and from PDF
+        </li>
+
+        <li>
+          <i data-lucide="shield"></i>
+          Protect and unlock PDFs
+        </li>
+
+        <li>
+          <i data-lucide="scan-text"></i>
+          OCR and intelligent PDF tools
+        </li>
+
+        <li>
+          <i data-lucide="pen-tool"></i>
+          Edit, sign, crop, and watermark PDFs
+        </li>
+      </ul>
+    </div>
+
+    <!-- CARD 3 -->
+
+    <div class="about-card">
+      <h2>Focused on Simplicity</h2>
+
+      <p>
+        The goal of PlayWithPDFs is to offer powerful PDF tools with a modern
+        interface, fast performance, and an easy workflow without unnecessary
+        complexity.
+        <br /><br />
+        Everything is designed to feel clean, responsive, and professional
+        across desktop and mobile devices.
+      </p>
+    </div>
+
+    <!-- CARD 4 -->
+
+    <div class="about-card">
+      <h2>Built with Passion</h2>
+
+      <p>
+        PlayWithPDFs is not backed by a large company or team. It is a
+        continuously evolving project built with dedication, learning, and
+        attention to detail.
+        <br /><br />
+        Every improvement is focused on creating a better experience for users
+        worldwide.
+      </p>
+    </div>
+  </div>
+
+  <!-- ========================================= -->
+  <!-- FOUNDER SECTION -->
+  <!-- ========================================= -->
+
+  <div class="founder-section">
+    <div class="founder-badge">DEVELOPER</div>
+
+    <h2 class="typing-title">
+      <span id="typingText" class="typing-white"></span>
+    </h2>
+
+    <p>
+      PlayWithPDFs was fully designed and developed as a solo project with a
+      focus on modern UI, performance, and user experience.
+    </p>
+  </div>
+</section>
+
+
+<script>
+  // TYPEWRITER ON SCROLL
+
+  const fullText = "Crafted independently by ";
+
+  const nameText = "Smit Ghori";
+
+  const typingTarget = document.getElementById("typingText");
+
+  let index = 0;
+
+  let nameIndex = 0;
+
+  let started = false;
+
+  // TYPE MAIN TEXT
+
+  function typeMainText() {
+    if (index < fullText.length) {
+      typingTarget.innerHTML += fullText.charAt(index);
+
+      index++;
+
+      setTimeout(typeMainText, 45);
+    } else {
+      // create span first
+
+      const span = document.createElement("span");
+
+      span.classList.add("highlight-name");
+
+      span.id = "typedName";
+
+      typingTarget.appendChild(span);
+
+      typeName();
+    }
+
+    // remove cursor after typing finished
+
+    if (nameIndex >= nameText.length) {
+      document.querySelector(".typing-title").classList.add("typing-complete");
+    }
+  }
+
+  // TYPE NAME
+
+  function typeName() {
+    const nameTarget = document.getElementById("typedName");
+
+    if (nameIndex < nameText.length) {
+      nameTarget.innerHTML += nameText.charAt(nameIndex);
+
+      nameIndex++;
+
+      setTimeout(typeName, 55);
+    }
+
+    // remove cursor after typing finished
+
+    if (nameIndex >= nameText.length) {
+      document.querySelector(".typing-title").classList.add("typing-complete");
+    }
+  }
+
+  // START ONLY WHEN SECTION VISIBLE
+
+  const founderSection = document.querySelector(".founder-section");
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && !started) {
+          started = true;
+
+          typeMainText();
+        }
+      });
+    },
+
+    {
+      threshold: 0.5,
+    },
+  );
+
+  observer.observe(founderSection);
+</script>
+<script>
+  lucide.createIcons();
+</script>
+
+{% endblock %}
