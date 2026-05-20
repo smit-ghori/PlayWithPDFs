@@ -60,6 +60,7 @@
   <body>
     <nav class="navbar">
       <div class="logo">PlayWithPDFs</div>
+      <div class="menu-toggle" id="menuToggle">☰</div>
       <ul class="nav-links">
         <!-- url_for("blueprint_name.function_name") -->
         <li><a href="{{ url_for('home.home') }}">HOME</a></li>
@@ -73,7 +74,7 @@
               <h4>CONVERT TO PDF</h4>
               <ul>
                 <!-- url_for("blueprint_name.function_name") -->
-                <li><a href="#">JPG to PDF</a></li>
+                <li><a href="{{ url_for('jpg_to_pdf.jpg_to_pdf') }}">JPG to PDF</a></li>
                 <li>
                   <a href="{{ url_for('word_to_pdf.word_to_pdf') }}"
                     >WORD to PDF</a
@@ -320,8 +321,7 @@
       <div class="loader-spinner"></div>
     </div>
 
-    <!-- scripts -->
-    <script src="{{ url_for('static', filename='scripts/loader.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/navbar.js') }}"></script>
     <!-- scripts -->
     <script src="{{ url_for('static', filename='scripts/loader.js') }}"></script>
 
