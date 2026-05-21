@@ -1,6 +1,7 @@
 import os
 import threading
 from flask import Flask
+from extensions import mail
 from routes.home import home_bp
 from routes.merge import merge_bp
 from routes.download import download_bp
@@ -33,9 +34,20 @@ from routes.compare_pdf import compare_pdf_bp
 from routes.pdf_to_pdfA import pdf_to_pdfA_bp
 from routes.organize_pdf import organize_pdf_bp
 from routes.about import about_bp
+from routes.contact_us import contact_us_bp
 from utils.file_utils import cleanup_worker
 
 app = Flask(__name__)
+
+# MAIL CONFIG
+app.config["MAIL_SERVER"] = "smtp.gmail.com"
+app.config["MAIL_PORT"] = 587
+app.config["MAIL_USE_TLS"] = True
+app.config["MAIL_USERNAME"] = os.environ.get("MAIL_USERNAME")
+app.config["MAIL_PASSWORD"] = os.environ.get("MAIL_PASSWORD")
+mail.init_app(app)
+
+
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "fallback-secret")
 
 UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "uploads")
@@ -74,6 +86,7 @@ app.register_blueprint(compare_pdf_bp)
 app.register_blueprint(pdf_to_pdfA_bp)
 app.register_blueprint(about_bp)
 app.register_blueprint(organize_pdf_bp)
+app.register_blueprint(contact_us_bp)
 
 # start cleanup thread
 threading.Thread(target=cleanup_worker, daemon=True).start()

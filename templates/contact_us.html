@@ -1,0 +1,112 @@
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/contact_us.css') }}"
+/>
+
+{% extends 'base.html' %} {% block main_title %} Contact Us {% endblock %} {%
+block extra_css %} {% endblock %} {% block main_content %}
+
+<section class="contact-page">
+  <div class="contact-hero">
+    <p class="contact-eyebrow">CONTACT PLAYWITHPDFS</p>
+
+    <h1>Get in Touch</h1>
+
+    <p>
+      Have questions, feedback, feature ideas, or collaboration opportunities?
+      Feel free to contact anytime.
+    </p>
+  </div>
+
+  <div class="contact-grid">
+    <!-- LEFT -->
+
+    <div class="contact-card">
+      <h2>Send a Message</h2>
+
+      <form class="contact-form" id="contactForm" method="POST">
+        <input
+          type="text"
+          class="contact-input"
+          name="name"
+          placeholder="Your Name"
+          required
+        />
+
+        <input
+          type="email"
+          class="contact-input"
+          name="email"
+          placeholder="Your Email"
+          required
+        />
+
+        <input
+          type="text"
+          class="contact-input"
+          name="subject"
+          placeholder="Subject"
+          required
+        />
+
+        <textarea
+          class="contact-textarea"
+          name="message"
+          placeholder="Write your message..."
+          required
+        ></textarea>
+
+        <button type="submit" class="contact-btn">Send Message</button>
+      </form>
+      <div class="contact-success{% if success %} show{% endif %}" id="successMessage">
+        Message sent successfully. Our team will contact you within 24-48 hours.
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+
+    <div class="contact-info">
+      <!-- DEVELOPER -->
+
+      <div class="info-box">
+        <h3>Developer</h3>
+
+        <p>
+          PlayWithPDFs is independently designed and developed by
+          <span class="developer-name"> Smit Ghori </span>.
+        </p>
+      </div>
+
+      <!-- EMAIL -->
+
+      <div class="info-box">
+        <h3>Contact Email</h3>
+
+        <p>
+          <!-- <a href="mailto:info@playwithpdfs.com"> info@playwithpdfs.com </a> -->
+          <a href="mailto:smitghori83@gmail.com"> smitghori83@gmail.com </a>
+        </p>
+      </div>
+
+      <!-- RESPONSE -->
+
+      <div class="info-box">
+        <h3>Response Time</h3>
+
+        <p>Usually replies within 24-48 hours.</p>
+      </div>
+
+      <!-- ABOUT -->
+
+      <div class="info-box">
+        <h3>About This Project</h3>
+
+        <p>
+          Built with a focus on modern UI, smooth performance, and a clean PDF
+          workflow experience.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
