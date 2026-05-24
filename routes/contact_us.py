@@ -50,7 +50,9 @@ Message:
 """
 
             # Send email in background thread
-            thread = threading.Thread(target=send_email_async, args=(current_app._get_current_object(), msg))
+            thread = threading.Thread(
+                target=send_email_async, args=(current_app._get_current_object(), msg)
+            )
             thread.daemon = True
             thread.start()
 
