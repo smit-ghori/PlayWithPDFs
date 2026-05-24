@@ -7,6 +7,10 @@
 block extra_css %} {% endblock %} {% block main_content %}
 
 <section class="contact-page">
+  <div class="contact-success{% if success %} show{% endif %}" id="successMessage">
+    Message sent successfully. Our team will contact you within 24-48 hours.
+  </div>
+
   <div class="contact-hero">
     <p class="contact-eyebrow">CONTACT PLAYWITHPDFS</p>
 
@@ -58,9 +62,6 @@ block extra_css %} {% endblock %} {% block main_content %}
 
         <button type="submit" class="contact-btn">Send Message</button>
       </form>
-      <div class="contact-success{% if success %} show{% endif %}" id="successMessage">
-        Message sent successfully. Our team will contact you within 24-48 hours.
-      </div>
     </div>
 
     <!-- RIGHT -->

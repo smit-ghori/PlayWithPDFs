@@ -267,9 +267,11 @@
   /* ========================================= */
 
   .contact-success {
-    margin-top: 16px;
+    width: min(840px, 100%);
 
-    padding: 14px 18px;
+    margin: 0 auto 26px;
+
+    padding: 16px 22px;
 
     border-radius: 12px;
 
@@ -280,6 +282,14 @@
     color: #86efac;
 
     display: none;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    line-height: 1.5;
+
+    text-align: center;
   }
 
   .contact-success.show {
