@@ -134,7 +134,7 @@ body::before {
   border-radius: 0 0 20px 20px;
   overflow: visible;
 }
-/* Animated Glow (Fixed) */
+/* Ambient Glow */
 .navbar::before {
   content: "";
   position: absolute;
@@ -144,19 +144,11 @@ body::before {
     rgba(255, 255, 255, 0.06) 10%,
     transparent 70%
   );
-  animation: rotateGlow 8s linear infinite;
   z-index: 0;
-  border-radius: 0 0 20px 20px; /* Clip the animated glow to the navbar's rounded shape so it doesn't paint outside */
+  border-radius: 0 0 20px 20px; /* Clip the glow to the navbar's rounded shape */
   clip-path: inset(0 round 20px);
-}
-@keyframes rotateGlow {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-} /* Keep content above animation */
+  pointer-events: none;
+} /* Keep content above background */
 .logo,
 .nav-links {
   position: relative;
