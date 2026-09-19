@@ -991,16 +991,6 @@ body::before {
 
     margin-right: auto !important;
   }
-
-  /* FOOTER */
-
-  .footer {
-    width: calc(100% - 28px);
-
-    margin-left: auto;
-
-    margin-right: auto;
-  }
 }
 
 /* ========================================= */

@@ -493,7 +493,7 @@
 
     <footer class="footer">
       <div class="footer-content">
-        <div class="footer-logo">PlayWithPDFs</div>
+        <a class="footer-logo" href="{{ url_for('home.home') }}">PlayWithPDFs</a>
 
         <ul class="footer-links">
           <li>
@@ -505,7 +505,7 @@
           </li>
 
           <li>
-            <a href=""> Services </a>
+            <a href="{{ url_for('home.home') }}"> Services </a>
           </li>
 
           <li>
@@ -513,7 +513,7 @@
           </li>
         </ul>
 
-        <p class="copyright">© 2026 YourCompany. All rights reserved.</p>
+        <p class="copyright">© 2026 PlayWithPDFs. All rights reserved.</p>
       </div>
     </footer>
 
