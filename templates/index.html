@@ -19,6 +19,54 @@ extra_css %}
     </p>
   </div>
 
+  <!-- SEARCH BAR -->
+  <div class="home-search-wrapper">
+    <div class="home-search-bar">
+      <span class="home-search-bar__icon">
+        <i data-lucide="search"></i>
+      </span>
+      <input
+        type="text"
+        id="homeToolSearch"
+        class="home-search-bar__input"
+        placeholder="Search all PDF tools... (Press '/' to focus)"
+        value="{{ initial_query or '' }}"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <span id="homeSearchKbd" class="home-search-bar__kbd">/</span>
+      <button
+        type="button"
+        id="homeSearchClear"
+        class="home-search-bar__clear"
+        title="Clear search"
+        style="display: none;"
+      >
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <!-- Quick search tag chips -->
+    <div class="home-search-tags">
+      <span class="home-search-tags__label">Popular:</span>
+      <button type="button" class="home-search-chip" data-search="merge">Merge</button>
+      <button type="button" class="home-search-chip" data-search="compress">Compress</button>
+      <button type="button" class="home-search-chip" data-search="word to pdf">Word to PDF</button>
+      <button type="button" class="home-search-chip" data-search="jpg to pdf">JPG to PDF</button>
+      <button type="button" class="home-search-chip" data-search="split">Split</button>
+      <button type="button" class="home-search-chip" data-search="watermark">Watermark</button>
+      <button type="button" class="home-search-chip" data-search="organize">Organize</button>
+    </div>
+
+    <!-- Active search summary bar -->
+    <div id="homeSearchSummary" class="home-search-summary" style="display: none;">
+      <span id="homeSearchCount"></span>
+      <button type="button" id="homeSearchResetBtn" class="home-search-reset-btn" onclick="clearHomeSearch()">
+        Show all tools
+      </button>
+    </div>
+  </div>
+
   <div class="tool-categories">
     <section class="tool-category">
       <div class="tool-category__header">
@@ -376,6 +424,18 @@ extra_css %}
       </div>
     </section>
   </div>
+
+  <!-- NO SEARCH RESULTS FOUND -->
+  <div id="homeSearchNoResults" class="home-search-no-results" style="display: none;">
+    <div class="home-search-no-results__icon">
+      <i data-lucide="search-x"></i>
+    </div>
+    <h3>No PDF tools found</h3>
+    <p>We couldn't find any tool matching "<strong><span id="homeSearchQueryDisplay"></span></strong>".</p>
+    <p class="home-search-no-results__hint">Try searching for terms like <em>merge</em>, <em>compress</em>, <em>convert</em>, or <em>split</em>.</p>
+    <button type="button" class="home-search-action-btn" onclick="clearHomeSearch()">Browse all tools</button>
+  </div>
+
   <!-- ========================================= -->
   <!-- TRUST SECTION -->
   <!-- ========================================= -->
@@ -393,6 +453,219 @@ extra_css %}
     </div>
   </section>
 </section>
+
+<script>
+  // =========================================
+  // HOME TOOL SEARCH FUNCTIONALITY
+  // =========================================
+  (function() {
+    const searchInput = document.getElementById("homeToolSearch");
+    const clearBtn = document.getElementById("homeSearchClear");
+    const kbdBadge = document.getElementById("homeSearchKbd");
+    const summaryBar = document.getElementById("homeSearchSummary");
+    const countText = document.getElementById("homeSearchCount");
+    const noResults = document.getElementById("homeSearchNoResults");
+    const queryDisplay = document.getElementById("homeSearchQueryDisplay");
+    const chips = document.querySelectorAll(".home-search-chip");
+    const categories = Array.from(document.querySelectorAll(".tool-category"));
+    const allCards = Array.from(document.querySelectorAll(".feature-card"));
+    const totalTools = allCards.length;
+
+    // Synonyms / aliases dictionary for natural search queries
+    const toolAliases = {
+      "combine": ["merge", "organize"],
+      "join": ["merge"],
+      "shrink": ["compress"],
+      "reduce": ["compress"],
+      "cut": ["split"],
+      "separate": ["split"],
+      "delete": ["remove pages"],
+      "remove": ["remove pages"],
+      "doc": ["word to pdf", "pdf to word"],
+      "docx": ["word to pdf", "pdf to word"],
+      "xls": ["excel to pdf", "pdf to excel"],
+      "xlsx": ["excel to pdf", "pdf to excel"],
+      "ppt": ["powerpoint to pdf", "pdf to powerpoint"],
+      "pptx": ["powerpoint to pdf", "pdf to powerpoint"],
+      "photo": ["jpg to pdf", "pdf to jpg"],
+      "image": ["jpg to pdf", "pdf to jpg"],
+      "picture": ["jpg to pdf", "pdf to jpg"],
+      "lock": ["protect pdf"],
+      "secure": ["protect pdf"],
+      "password": ["unlock pdf", "protect pdf"],
+      "decrypt": ["unlock pdf"],
+      "encrypt": ["protect pdf"],
+      "sign": ["sign pdf"],
+      "signature": ["sign pdf"],
+      "censor": ["redact pdf"],
+      "blackout": ["redact pdf"],
+      "diff": ["compare pdf"],
+      "ocr": ["ocr pdf"],
+      "language": ["translate pdf"]
+    };
+
+    function updateClearButton() {
+      const hasValue = searchInput && searchInput.value.trim().length > 0;
+      if (clearBtn) clearBtn.style.display = hasValue ? "inline-flex" : "none";
+      if (kbdBadge) kbdBadge.style.display = hasValue ? "none" : "inline-block";
+    }
+
+    function filterTools() {
+      if (!searchInput) return;
+      const rawQuery = searchInput.value.trim();
+      const q = rawQuery.toLowerCase();
+      updateClearButton();
+
+      // Highlight active chip if matches
+      chips.forEach(chip => {
+        const chipVal = chip.getAttribute("data-search").toLowerCase();
+        chip.style.borderColor = (q === chipVal) ? "rgba(125, 211, 252, 0.6)" : "";
+        chip.style.background = (q === chipVal) ? "rgba(125, 211, 252, 0.18)" : "";
+      });
+
+      if (!q) {
+        // Reset all
+        categories.forEach(cat => cat.style.display = "");
+        allCards.forEach(card => card.style.display = "");
+        if (summaryBar) summaryBar.style.display = "none";
+        if (noResults) noResults.style.display = "none";
+
+        // Update URL
+        const url = new URL(window.location.href);
+        url.searchParams.delete("q");
+        window.history.replaceState({}, "", url.pathname + (url.search || ""));
+        return;
+      }
+
+      // Check alias terms
+      const aliasMatches = [];
+      for (const [key, targets] of Object.entries(toolAliases)) {
+        if (q.includes(key) || key.includes(q)) {
+          aliasMatches.push(...targets);
+        }
+      }
+
+      let totalMatches = 0;
+
+      categories.forEach(cat => {
+        const cards = Array.from(cat.querySelectorAll(".feature-card"));
+        let catMatches = 0;
+
+        cards.forEach(card => {
+          const nameEl = card.querySelector(".feature-card__name");
+          const noteEl = card.querySelector(".feature-card__note");
+          const name = nameEl ? nameEl.textContent.toLowerCase() : "";
+          const note = noteEl ? noteEl.textContent.toLowerCase() : "";
+
+          const isDirectMatch = name.includes(q) || note.includes(q);
+          const isAliasMatch = aliasMatches.some(alias => name.includes(alias));
+
+          if (isDirectMatch || isAliasMatch) {
+            card.style.display = "";
+            card.classList.add("show");
+            catMatches++;
+            totalMatches++;
+          } else {
+            card.style.display = "none";
+          }
+        });
+
+        if (catMatches > 0) {
+          cat.style.display = "";
+          cat.classList.add("show");
+        } else {
+          cat.style.display = "none";
+        }
+      });
+
+      // Update summary bar
+      if (summaryBar) {
+        summaryBar.style.display = "flex";
+        if (countText) {
+          countText.textContent = totalMatches === 1
+            ? `Found 1 PDF tool matching "${rawQuery}"`
+            : `Found ${totalMatches} PDF tools matching "${rawQuery}"`;
+        }
+      }
+
+      // Handle no results
+      if (totalMatches === 0) {
+        if (noResults) {
+          noResults.style.display = "block";
+          if (queryDisplay) queryDisplay.textContent = rawQuery;
+        }
+      } else {
+        if (noResults) noResults.style.display = "none";
+      }
+
+      // Update URL without reload
+      const url = new URL(window.location.href);
+      url.searchParams.set("q", rawQuery);
+      window.history.replaceState({}, "", url.toString());
+
+      if (window.lucide && typeof window.lucide.createIcons === "function") {
+        window.lucide.createIcons();
+      }
+    }
+
+    window.clearHomeSearch = function() {
+      if (searchInput) {
+        searchInput.value = "";
+        filterTools();
+        searchInput.focus();
+      }
+    };
+
+    if (searchInput) {
+      searchInput.addEventListener("input", filterTools);
+    }
+
+    if (clearBtn) {
+      clearBtn.addEventListener("click", clearHomeSearch);
+    }
+
+    chips.forEach(chip => {
+      chip.addEventListener("click", function() {
+        const val = this.getAttribute("data-search");
+        if (searchInput) {
+          searchInput.value = val;
+          filterTools();
+          searchInput.focus();
+        }
+      });
+    });
+
+    // Keyboard shortcut: '/' or 'Ctrl+K' focuses search input
+    document.addEventListener("keydown", function(e) {
+      const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
+      const isInputActive = ["input", "textarea", "select"].includes(activeTag);
+
+      if ((e.key === "/" && !isInputActive) || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k")) {
+        e.preventDefault();
+        if (searchInput) {
+          searchInput.focus();
+          searchInput.select();
+        }
+      } else if (e.key === "Escape" && document.activeElement === searchInput) {
+        if (searchInput.value) {
+          clearHomeSearch();
+        } else {
+          searchInput.blur();
+        }
+      }
+    });
+
+    // Initial check from initial_query or URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialQ = urlParams.get("q") || (searchInput ? searchInput.value : "");
+    if (initialQ && searchInput) {
+      searchInput.value = initialQ;
+      filterTools();
+    } else {
+      updateClearButton();
+    }
+  })();
+</script>
 
 <script>
   const typewriterText = document.getElementById("homeTypewriter");

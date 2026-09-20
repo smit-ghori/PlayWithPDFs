@@ -25,11 +25,9 @@
 .merge-page .merge-card {
   width: 100%;
 
-  background: linear-gradient(
-    180deg,
-    rgba(10, 16, 24, 0.97),
-    rgba(14, 24, 38, 0.97)
-  );
+  background: linear-gradient(180deg,
+      rgba(10, 16, 24, 0.97),
+      rgba(14, 24, 38, 0.97));
 
   border: 1px solid rgba(125, 211, 252, 0.08);
 
@@ -41,7 +39,7 @@
 
   box-shadow:
     0 30px 80px rgba(2, 6, 23, 0.65),
-    inset 0 1px 0 rgba(255,255,255,0.03);
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
 
   transition:
     max-width 0.45s ease,
@@ -86,7 +84,7 @@
 .merge-page .muted {
   margin-bottom: 22px;
 
-  color: rgba(230,238,248,0.65);
+  color: rgba(230, 238, 248, 0.65);
 
   font-size: 15px;
   line-height: 1.5;
@@ -111,14 +109,12 @@
 .merge-page .drop-zone {
   position: relative;
 
-  border: 2px dashed rgba(125,211,252,0.22);
+  border: 2px dashed rgba(125, 211, 252, 0.22);
 
   background:
-    linear-gradient(
-      135deg,
-      rgba(125,211,252,0.05),
-      rgba(125,211,252,0.02)
-    );
+    linear-gradient(135deg,
+      rgba(125, 211, 252, 0.05),
+      rgba(125, 211, 252, 0.02));
 
   padding: 38px 26px;
 
@@ -135,29 +131,25 @@
 
 .merge-page .drop-zone:hover {
   background:
-    linear-gradient(
-      135deg,
-      rgba(125,211,252,0.08),
-      rgba(125,211,252,0.03)
-    );
+    linear-gradient(135deg,
+      rgba(125, 211, 252, 0.08),
+      rgba(125, 211, 252, 0.03));
 
-  border-color: rgba(125,211,252,0.38);
+  border-color: rgba(125, 211, 252, 0.38);
 }
 
 .merge-page .drop-zone.drag-over {
   border-color: #7dd3fc;
 
   background:
-    linear-gradient(
-      135deg,
-      rgba(125,211,252,0.12),
-      rgba(125,211,252,0.04)
-    );
+    linear-gradient(135deg,
+      rgba(125, 211, 252, 0.12),
+      rgba(125, 211, 252, 0.04));
 }
 
 .merge-page .drop-text {
   font-size: 17px;
-  color: rgba(230,238,248,0.92);
+  color: rgba(230, 238, 248, 0.92);
 }
 
 .merge-page .drop-text span {
@@ -196,7 +188,7 @@
 
   gap: 10px;
 
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
 
   padding: 10px 14px;
 
@@ -256,17 +248,15 @@
   border-radius: 22px;
 
   background:
-    linear-gradient(
-      145deg,
-      rgba(20,30,55,0.90),
-      rgba(12,20,40,0.84)
-    );
+    linear-gradient(145deg,
+      rgba(20, 30, 55, 0.90),
+      rgba(12, 20, 40, 0.84));
 
-  border: 1px solid rgba(97,218,251,0.08);
+  border: 1px solid rgba(97, 218, 251, 0.08);
 
   box-shadow:
-    0 12px 32px rgba(0,0,0,0.22),
-    inset 0 1px 0 rgba(255,255,255,0.03);
+    0 12px 32px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .global-controls.visible {
@@ -317,15 +307,15 @@
 /* Left */
 
 .rotate-buttons .rotate-btn:first-child {
-  background: rgba(71,207,255,0.12);
+  background: rgba(71, 207, 255, 0.12);
 
   color: #47cfff;
 
-  border: 1px solid rgba(71,207,255,0.25);
+  border: 1px solid rgba(71, 207, 255, 0.25);
 }
 
 .rotate-buttons .rotate-btn:first-child:hover {
-  background: rgba(71,207,255,0.22);
+  background: rgba(71, 207, 255, 0.22);
 
   transform: translateY(-2px);
 }
@@ -333,15 +323,15 @@
 /* Right */
 
 .rotate-buttons .rotate-btn:nth-child(2) {
-  background: rgba(79,109,255,0.14);
+  background: rgba(79, 109, 255, 0.14);
 
   color: #8fa4ff;
 
-  border: 1px solid rgba(79,109,255,0.28);
+  border: 1px solid rgba(79, 109, 255, 0.28);
 }
 
 .rotate-buttons .rotate-btn:nth-child(2):hover {
-  background: rgba(79,109,255,0.24);
+  background: rgba(79, 109, 255, 0.24);
 
   transform: translateY(-2px);
 }
@@ -349,15 +339,15 @@
 /* Reset */
 
 .rotate-buttons .reset-btn {
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
 
   color: #9cb0d0;
 
-  border: 1px solid rgba(255,255,255,0.10);
+  border: 1px solid rgba(255, 255, 255, 0.10);
 }
 
 .rotate-buttons .reset-btn:hover {
-  background: rgba(255,255,255,0.10);
+  background: rgba(255, 255, 255, 0.10);
 }
 
 
@@ -393,13 +383,11 @@
   border-radius: 22px;
 
   background:
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,0.02),
-      rgba(255,255,255,0.01)
-    );
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0.02),
+      rgba(255, 255, 255, 0.01));
 
-  border: 1px solid rgba(255,255,255,0.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .preview-container.visible {
@@ -428,13 +416,11 @@
   border-radius: 22px;
 
   background:
-    linear-gradient(
-      180deg,
-      rgba(18,28,48,0.96),
-      rgba(10,18,35,0.96)
-    );
+    linear-gradient(180deg,
+      rgba(18, 28, 48, 0.96),
+      rgba(10, 18, 35, 0.96));
 
-  border: 1px solid rgba(97,218,251,0.10);
+  border: 1px solid rgba(97, 218, 251, 0.10);
 
   transition:
     transform 0.28s ease,
@@ -445,10 +431,10 @@
 .preview-page:hover {
   transform: translateY(-4px);
 
-  border-color: rgba(71,207,255,0.25);
+  border-color: rgba(71, 207, 255, 0.25);
 
   box-shadow:
-    0 18px 40px rgba(0,0,0,0.34);
+    0 18px 40px rgba(0, 0, 0, 0.34);
 }
 
 
@@ -467,9 +453,9 @@
 
   border-radius: 999px;
 
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
 
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 
   color: #a8bcdb;
 
@@ -511,7 +497,7 @@
 
   border-radius: 16px;
 
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 
   transition:
     box-shadow 0.3s ease,
@@ -542,7 +528,7 @@
   transform: scale(1.01);
 
   box-shadow:
-    0 0 26px rgba(71,207,255,0.18);
+    0 0 26px rgba(71, 207, 255, 0.18);
 }
 
 
@@ -574,27 +560,27 @@
 }
 
 .page-controls .rotate-btn:first-child {
-  background: rgba(71,207,255,0.12);
+  background: rgba(71, 207, 255, 0.12);
 
   color: #47cfff;
 
-  border: 1px solid rgba(71,207,255,0.22);
+  border: 1px solid rgba(71, 207, 255, 0.22);
 }
 
 .page-controls .rotate-btn:nth-child(2) {
-  background: rgba(79,109,255,0.14);
+  background: rgba(79, 109, 255, 0.14);
 
   color: #8fa4ff;
 
-  border: 1px solid rgba(79,109,255,0.26);
+  border: 1px solid rgba(79, 109, 255, 0.26);
 }
 
 .page-controls .reset-btn {
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
 
   color: #9cb0d0;
 
-  border: 1px solid rgba(255,255,255,0.10);
+  border: 1px solid rgba(255, 255, 255, 0.10);
 }
 
 
@@ -657,16 +643,14 @@
 
 .merge-page .btn.primary {
   background:
-    linear-gradient(
-      90deg,
+    linear-gradient(90deg,
       #58d7ff,
-      #7dd3fc
-    );
+      #7dd3fc);
 
   color: #03141d;
 
   box-shadow:
-    0 10px 24px rgba(71,207,255,0.18);
+    0 10px 24px rgba(71, 207, 255, 0.18);
 }
 
 .merge-page .btn.primary:hover {
@@ -676,13 +660,13 @@
 .merge-page .btn.ghost {
   background: transparent;
 
-  border: 1px solid rgba(255,255,255,0.10);
+  border: 1px solid rgba(255, 255, 255, 0.10);
 
-  color: rgba(230,238,248,0.78);
+  color: rgba(230, 238, 248, 0.78);
 }
 
 .merge-page .btn.ghost:hover {
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 
@@ -699,7 +683,7 @@
 
   margin-top: 10px;
 
-  color: rgba(230,238,248,0.82);
+  color: rgba(230, 238, 248, 0.82);
 
   font-size: 14px;
 }
@@ -714,18 +698,16 @@
 }
 
 .preview-container::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
 
   border-radius: 999px;
 }
 
 .preview-container::-webkit-scrollbar-thumb {
   background:
-    linear-gradient(
-      180deg,
-      rgba(71,207,255,0.95),
-      rgba(45,159,255,0.95)
-    );
+    linear-gradient(180deg,
+      rgba(71, 207, 255, 0.95),
+      rgba(45, 159, 255, 0.95));
 
   border-radius: 999px;
 }

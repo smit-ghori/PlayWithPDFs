@@ -1,0 +1,66 @@
+{% extends "admin/_layout.html" %}{% block title %}Overview{% endblock %}
+{% block body %}
+<h2>Last 24 hours</h2>
+<p class="sub">Every conversion, merge and download that ran on the site.</p>
+
+<div class="metrics">
+  <div class="metric"><b>{{ runs }}</b><span>tool runs</span></div>
+  <div class="metric {{ 'bad' if failures }}"><b>{{ failures }}</b><span>failed runs</span></div>
+  <div class="metric"><b>{{ avg_ms }}<small>ms</small></b><span>average time</span></div>
+  <div class="metric"><b>{{ (in_bytes / 1048576) | round(1) }}<small>MB</small></b><span>uploaded</span></div>
+  <div class="metric"><b>{{ visitors }}</b><span>unique visitors</span></div>
+  <div class="metric"><b>{{ new_messages }}</b><span>unread messages</span></div>
+</div>
+
+{% if daily %}
+{% set peak = daily | map(attribute=1) | max %}
+<div class="chart">
+  <svg viewBox="0 0 {{ daily|length * 40 }} 120" preserveAspectRatio="none" role="img"
+       aria-label="Daily tool runs over the last two weeks">
+    {% for d, n in daily %}
+      {% set h = (n / peak * 100) | round %}
+      <rect x="{{ loop.index0 * 40 + 8 }}" y="{{ 110 - h }}" width="24" height="{{ h if h > 1 else 1 }}" fill="#0f5c52"></rect>
+      <title>{{ d.strftime('%d %b') }}: {{ n }}</title>
+    {% endfor %}
+  </svg>
+  <p class="sub" style="margin:10px 0 0">Runs per day, past two weeks. Peak {{ peak }}.</p>
+</div>
+{% endif %}
+
+<h2>Busiest tools this week</h2>
+<table>
+  <tr><th>Tool</th><th class="num">Runs</th><th class="num">Failed</th><th class="num">Avg time</th><th></th></tr>
+  {% for t, n, bad, ms in top %}
+  <tr>
+    <td>{{ t.replace('_',' ').title() }}</td>
+    <td class="num">{{ n }}</td>
+    <td class="num" {% if bad %}style="color:#9c3b22"{% endif %}>{{ bad }}</td>
+    <td class="num">{{ ms|int }} ms</td>
+    <td class="num"><a href="{{ url_for('admin.events', tool=t) }}">Activity</a></td>
+  </tr>
+  {% else %}<tr><td colspan="5">No runs recorded yet. Use a tool on the site and refresh.</td></tr>{% endfor %}
+</table>
+
+<h2>Working folder</h2>
+<p class="sub">Temporary uploads waiting for the 10-minute cleanup sweep.</p>
+<div class="row">
+  <span class="pill">{{ storage.folders }} folders</span>
+  <span class="pill">{{ (storage.bytes / 1048576) | round(1) }} MB</span>
+  <span class="pill">oldest {{ storage.oldest_min }} min</span>
+  <form method="post" action="{{ url_for('admin.storage_purge') }}"
+        onsubmit="return confirm('Delete every temporary upload folder now?')">
+    <button class="btn danger">Clear now</button>
+  </form>
+</div>
+
+<h2>Slowest runs this week</h2>
+<table>
+  <tr><th>When</th><th>Tool</th><th class="num">Time</th><th class="num">Upload</th></tr>
+  {% for e in slow %}
+  <tr><td class="mono">{{ e.created_at.strftime('%d %b %H:%M') }}</td>
+      <td>{{ e.tool }}</td>
+      <td class="num">{{ e.duration_ms }} ms</td>
+      <td class="num">{{ (e.input_bytes / 1048576) | round(1) }} MB</td></tr>
+  {% else %}<tr><td colspan="4">Nothing recorded yet.</td></tr>{% endfor %}
+</table>
+{% endblock %}

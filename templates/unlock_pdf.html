@@ -1,3 +1,6 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
 <link
   rel="stylesheet"
   href="{{ url_for('static', filename='css/card_style.css') }}"
@@ -6,8 +9,8 @@
   rel="stylesheet"
   href="{{ url_for('static', filename='css/unlock_pdf.css') }}"
 />
-
-{% extends 'base.html' %} {% block main_title %} Unlock PDF {% endblock %} {%
+{% endblock %}
+ {% block main_title %} Unlock PDF {% endblock %} {%
 block main_content %}
 
 <section class="merge-page">

@@ -1,0 +1,30 @@
+{% extends "admin/_layout.html" %}{% block title %}Messages{% endblock %}
+{% block body %}
+<h2>Messages</h2>
+<p class="sub">Everything submitted through the contact form, kept even if the email failed to send.</p>
+
+<div class="row">
+  {% for s in ['new','open','closed','all'] %}
+    <a class="btn {{ 'primary' if s == status }}" href="{{ url_for('admin.messages', status=s) }}">{{ s.title() }}</a>
+  {% endfor %}
+</div>
+
+<table>
+  <tr><th>Received</th><th>From</th><th>Subject</th><th>Message</th><th>Email</th><th></th></tr>
+  {% for m in rows %}
+  <tr>
+    <td class="mono">{{ m.created_at.strftime('%d %b %H:%M') }}</td>
+    <td>{{ m.name }}<br><a href="mailto:{{ m.email }}">{{ m.email }}</a></td>
+    <td>{{ m.subject }}</td>
+    <td>{{ m.message[:220] }}</td>
+    <td><span class="pill {{ 'live' if m.email_sent else 'off' }}">{{ 'Sent' if m.email_sent else 'Not sent' }}</span></td>
+    <td>
+      {% for a in ['open','closed'] if a != m.status %}
+      <form method="post" action="{{ url_for('admin.message_action', mid=m.id, action=a) }}" style="display:inline">
+        <button class="btn">Mark {{ a }}</button></form>
+      {% endfor %}
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="6">No messages here.</td></tr>{% endfor %}
+</table>
+{% endblock %}

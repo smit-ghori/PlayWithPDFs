@@ -25,6 +25,49 @@
     <!-- LUCIDE ICONS -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    <script>
+      window.TOOL_CONFIG = {{ current_tool_config | tojson if current_tool_config else 'null' }};
+
+      function autoDismissFlashMessage(elem, timeoutMs = 10000) {
+        if (!elem) return;
+        if (elem._autoDismissTimer) {
+          clearTimeout(elem._autoDismissTimer);
+        }
+        elem._autoDismissTimer = setTimeout(() => {
+          if (elem.parentNode) {
+            closeFlashMessage(elem);
+          }
+        }, timeoutMs);
+      }
+      window.autoDismissFlashMessage = autoDismissFlashMessage;
+
+      function closeFlashMessage(target) {
+        const flashMsg = target.classList && target.classList.contains("flash-message")
+          ? target
+          : (target.closest ? target.closest(".flash-message") : null);
+        if (!flashMsg) return;
+        if (flashMsg._autoDismissTimer) {
+          clearTimeout(flashMsg._autoDismissTimer);
+          flashMsg._autoDismissTimer = null;
+        }
+        flashMsg.style.transition = "opacity 0.25s ease, transform 0.25s ease";
+        flashMsg.style.opacity = "0";
+        flashMsg.style.transform = "translateY(-6px)";
+        setTimeout(() => {
+          if (flashMsg.parentNode) {
+            flashMsg.remove();
+          }
+        }, 250);
+      }
+      window.closeFlashMessage = closeFlashMessage;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll("#flash-container .flash-message").forEach((el) => {
+          autoDismissFlashMessage(el, 10000);
+        });
+      });
+    </script>
+
     <style>
       .flash-wrapper {
         width: min(960px, 92%);
@@ -32,12 +75,49 @@
       }
 
       .flash-message {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
         padding: 14px 18px;
         border-radius: 14px;
         font-size: 14px;
         font-weight: 600;
         margin-bottom: 12px;
         animation: flashIn 0.3s ease;
+      }
+
+      .flash-message span {
+        flex: 1;
+        word-break: break-word;
+      }
+
+      .flash-close {
+        background: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1;
+        padding: 4px 8px;
+        border-radius: 8px;
+        color: inherit;
+        opacity: 0.65;
+        transition: opacity 0.2s ease, background 0.2s ease, transform 0.15s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .flash-close:hover {
+        opacity: 1;
+        background: rgba(0, 0, 0, 0.08);
+        transform: scale(1.08);
+      }
+
+      .flash-close:active {
+        transform: scale(0.95);
       }
 
       .flash-message.success {
@@ -469,7 +549,27 @@
                 </li>
               </ul>
             </div>
+        </li>
+
+        <!-- NAVBAR GLOBAL SEARCH -->
+        <li class="nav-search-item">
+          <div class="nav-search-box">
+            <span class="nav-search-icon">
+              <i data-lucide="search"></i>
+            </span>
+            <input
+              type="text"
+              id="navGlobalSearch"
+              class="nav-search-input"
+              placeholder="Search tools... ( / )"
+              autocomplete="off"
+              spellcheck="false"
+              aria-label="Search tools"
+            />
+            <button type="button" id="navGlobalSearchClear" class="nav-search-clear" style="display:none;" title="Clear search">&times;</button>
           </div>
+          <!-- Quick search dropdown -->
+          <div id="navSearchDropdown" class="nav-search-dropdown" style="display:none;"></div>
         </li>
       </ul>
     </nav>
@@ -480,7 +580,10 @@
       {% with messages = get_flashed_messages(with_categories=true) %} {% if
       messages %} {% for category, message in messages %}
 
-      <div class="flash-message {{ category }}">{{ message }}</div>
+      <div class="flash-message {{ category }}">
+        <span>{{ message }}</span>
+        <button type="button" class="flash-close" aria-label="Close notification" onclick="closeFlashMessage(this)">✕</button>
+      </div>
 
       {% endfor %} {% endif %} {% endwith %}
     </div>
@@ -529,8 +632,181 @@
 
     <script src="{{ url_for('static', filename='scripts/loader.js') }}"></script>
 
-    <!-- LUCIDE INIT -->
+    <!-- GLOBAL PDF TOOLS SEARCH SCRIPT -->
+    <script>
+      window.ALL_PDF_TOOLS = [
+        { name: "Merge PDF", note: "Combine multiple PDF files into one clean document.", url: "{{ url_for('merge.merge') }}", icon: "combine", category: "Organize PDF", tags: ["merge", "combine", "join", "binder", "append"] },
+        { name: "Split PDF", note: "Separate pages or ranges into independent PDF files.", url: "{{ url_for('split.split') }}", icon: "scissors", category: "Organize PDF", tags: ["split", "cut", "separate", "extract", "divide"] },
+        { name: "Remove Pages", note: "Delete unwanted pages before saving the final file.", url: "{{ url_for('remove_pages.remove_pages') }}", icon: "trash-2", category: "Organize PDF", tags: ["delete", "remove", "pages", "erase"] },
+        { name: "Extract Pages", note: "Pull selected pages out into a new PDF document.", url: "{{ url_for('extract_pages.extract_pages') }}", icon: "file-output", category: "Organize PDF", tags: ["extract", "pull", "export", "pages"] },
+        { name: "Organize PDF", note: "Reorder pages visually and rebuild your PDF flow.", url: "{{ url_for('organize_pdf.organize_pdf') }}", icon: "folders", category: "Organize PDF", tags: ["organize", "reorder", "sort", "arrange"] },
+        { name: "Compress PDF", note: "Reduce file size while keeping documents sharp.", url: "{{ url_for('compress.compress') }}", icon: "minimize-2", category: "Optimize PDF", tags: ["compress", "shrink", "reduce", "size", "optimizer", "light"] },
+        { name: "Repair PDF", note: "Try to recover damaged or unreadable PDF files.", url: "{{ url_for('repair.repair') }}", icon: "wrench", category: "Optimize PDF", tags: ["repair", "fix", "recover", "corrupt", "damaged"] },
+        { name: "OCR PDF", note: "Make scanned pages searchable with text recognition.", url: "{{ url_for('ocr_to_pdf.convert_ocr_to_pdf') }}", icon: "scan-text", category: "Optimize PDF", tags: ["ocr", "recognize", "text", "searchable", "scan"] },
+        { name: "JPG to PDF", note: "Convert images into a polished PDF file.", url: "{{ url_for('jpg_to_pdf.jpg_to_pdf') }}", icon: "image", category: "Convert to PDF", tags: ["jpg", "jpeg", "png", "image", "photos"] },
+        { name: "Word to PDF", note: "Turn DOC and DOCX files into easy-to-share PDFs.", url: "{{ url_for('word_to_pdf.word_to_pdf') }}", icon: "file-text", category: "Convert to PDF", tags: ["word", "doc", "docx", "microsoft"] },
+        { name: "PowerPoint to PDF", note: "Convert PPT and PPTX slideshows into PDF format.", url: "{{ url_for('ppt_to_pdf.convert_ppt_to_pdf') }}", icon: "presentation", category: "Convert to PDF", tags: ["powerpoint", "ppt", "pptx", "slides"] },
+        { name: "Excel to PDF", note: "Save spreadsheets as clean, portable PDF files.", url: "{{ url_for('excel_to_pdf.convert_excel_to_pdf') }}", icon: "sheet", category: "Convert to PDF", tags: ["excel", "xls", "xlsx", "spreadsheet"] },
+        { name: "HTML to PDF", note: "Create a PDF from an HTML page or markup.", url: "{{ url_for('html_to_pdf.html_to_pdf') }}", icon: "code-2", category: "Convert to PDF", tags: ["html", "web", "website", "code"] },
+        { name: "PDF to JPG", note: "Export PDF pages as high-quality JPG images.", url: "{{ url_for('pdf_to_jpg.pdf_to_jpg') }}", icon: "image-down", category: "Convert from PDF", tags: ["jpg", "image", "photos", "picture", "export"] },
+        { name: "PDF to Word", note: "Convert PDFs into editable DOC and DOCX documents.", url: "{{ url_for('pdf_to_word.convert_pdf_to_word') }}", icon: "file-text", category: "Convert from PDF", tags: ["word", "doc", "docx", "editable"] },
+        { name: "PDF to PowerPoint", note: "Turn PDF pages into editable presentation slides.", url: "{{ url_for('pdf_to_ppt.convert_pdf_to_ppt') }}", icon: "presentation", category: "Convert from PDF", tags: ["powerpoint", "ppt", "pptx", "slides"] },
+        { name: "PDF to Excel", note: "Extract tables from PDFs into spreadsheet files.", url: "{{ url_for('pdf_to_excel.pdf_to_excel') }}", icon: "sheet", category: "Convert from PDF", tags: ["excel", "xls", "xlsx", "tables"] },
+        { name: "PDF to PDF/A", note: "Convert documents into long-term archival format.", url: "{{ url_for('pdf_to_pdfA.pdf_to_pdfA') }}", icon: "badge-check", category: "Convert from PDF", tags: ["archive", "pdfa", "iso", "compliance"] },
+        { name: "Rotate PDF", note: "Rotate pages clockwise or counterclockwise.", url: "{{ url_for('rotate_pdf.rotate_pdf') }}", icon: "rotate-cw", category: "Edit PDF", tags: ["rotate", "turn", "orientation", "landscape", "portrait"] },
+        { name: "Add Page Numbers", note: "Number pages with customized position and style.", url: "{{ url_for('add_page_number.add_page_number') }}", icon: "hash", category: "Edit PDF", tags: ["number", "page number", "footer", "header"] },
+        { name: "Add Watermark", note: "Stamp text or logo onto PDF pages.", url: "{{ url_for('add_watermark.add_watermark') }}", icon: "stamp", category: "Edit PDF", tags: ["watermark", "stamp", "brand", "confidential", "logo"] },
+        { name: "Crop PDF", note: "Trim PDF margins or crop selected areas.", url: "{{ url_for('crop_pdf.crop_pdf') }}", icon: "crop", category: "Edit PDF", tags: ["crop", "trim", "margin", "cut"] },
+        { name: "Edit PDF", note: "Add text, annotations, and shapes to PDF.", url: "{{ url_for('edit_pdf.edit_pdf') }}", icon: "pen-tool", category: "Edit PDF", tags: ["edit", "annotate", "draw", "text", "pen"] },
+        { name: "Unlock PDF", note: "Remove password protection from encrypted PDFs.", url: "{{ url_for('unlock_pdf.unlock_pdf') }}", icon: "lock-open", category: "PDF Security", tags: ["unlock", "password", "decrypt", "remove password"] },
+        { name: "Protect PDF", note: "Encrypt your PDF with a secure password.", url: "{{ url_for('protect_pdf.protect_pdf') }}", icon: "lock", category: "PDF Security", tags: ["protect", "encrypt", "secure", "lock", "password"] },
+        { name: "Redact PDF", note: "Permanently black out sensitive text and data.", url: "{{ url_for('redact_pdf.redact_pdf') }}", icon: "eye-off", category: "PDF Security", tags: ["redact", "blackout", "censor", "hide", "private"] },
+        { name: "Sign PDF", note: "Add your electronic signature to any document.", url: "{{ url_for('sign_pdf.sign_pdf') }}", icon: "signature", category: "PDF Security", tags: ["sign", "signature", "esign", "contract"] },
+        { name: "Compare PDF", note: "Compare two PDF files and view differences.", url: "{{ url_for('compare_pdf.compare_pdf') }}", icon: "git-compare", category: "PDF Security", tags: ["compare", "diff", "difference", "version"] },
+        { name: "Translate PDF", note: "Translate PDF documents to other languages.", url: "{{ url_for('translate.translate') }}", icon: "languages", category: "PDF Intelligence", tags: ["translate", "language", "multilingual"] }
+      ];
 
+      (function() {
+        const navInput = document.getElementById("navGlobalSearch");
+        const navClear = document.getElementById("navGlobalSearchClear");
+        const navDropdown = document.getElementById("navSearchDropdown");
+        const isHomePage = window.location.pathname === "/" || window.location.pathname === "";
+
+        function updateNavClear() {
+          if (!navInput || !navClear) return;
+          navClear.style.display = navInput.value.trim().length > 0 ? "inline-block" : "none";
+        }
+
+        function renderDropdown(matches, query) {
+          if (!navDropdown) return;
+          if (!query) {
+            navDropdown.style.display = "none";
+            return;
+          }
+
+          if (matches.length === 0) {
+            navDropdown.innerHTML = `
+              <div class="nav-search-no-match">
+                No tools matching "<strong>${query}</strong>"
+              </div>
+              <a href="/?q=${encodeURIComponent(query)}" class="nav-search-view-all">Search on Home Page →</a>
+            `;
+          } else {
+            const itemsHtml = matches.slice(0, 6).map(tool => `
+              <a href="${tool.url}" class="nav-search-result-item">
+                <span class="nav-search-result-icon">
+                  <i data-lucide="${tool.icon}"></i>
+                </span>
+                <div class="nav-search-result-info">
+                  <div class="nav-search-result-title">${tool.name}</div>
+                  <div class="nav-search-result-desc">${tool.note}</div>
+                </div>
+              </a>
+            `).join("");
+
+            navDropdown.innerHTML = itemsHtml + `
+              <a href="/?q=${encodeURIComponent(query)}" class="nav-search-view-all">View all ${matches.length} matching tools →</a>
+            `;
+          }
+
+          navDropdown.style.display = "block";
+          if (window.lucide && typeof window.lucide.createIcons === "function") {
+            window.lucide.createIcons();
+          }
+        }
+
+        if (navInput) {
+          navInput.addEventListener("input", function() {
+            const q = this.value.trim().toLowerCase();
+            updateNavClear();
+
+            if (isHomePage) {
+              const homeInput = document.getElementById("homeToolSearch");
+              if (homeInput && homeInput.value !== this.value) {
+                homeInput.value = this.value;
+                homeInput.dispatchEvent(new Event("input"));
+              }
+            } else {
+              if (!q) {
+                if (navDropdown) navDropdown.style.display = "none";
+                return;
+              }
+              const matches = window.ALL_PDF_TOOLS.filter(t => {
+                const name = t.name.toLowerCase();
+                const note = t.note.toLowerCase();
+                const tagMatch = t.tags && t.tags.some(tag => tag.includes(q) || q.includes(tag));
+                return name.includes(q) || note.includes(q) || tagMatch;
+              });
+              renderDropdown(matches, this.value.trim());
+            }
+          });
+
+          navInput.addEventListener("keydown", function(e) {
+            if (e.key === "Enter") {
+              const q = this.value.trim();
+              if (q) {
+                window.location.href = "/?q=" + encodeURIComponent(q);
+              }
+            } else if (e.key === "Escape") {
+              this.value = "";
+              updateNavClear();
+              if (navDropdown) navDropdown.style.display = "none";
+              this.blur();
+            }
+          });
+
+          navInput.addEventListener("focus", function() {
+            if (!isHomePage && this.value.trim()) {
+              this.dispatchEvent(new Event("input"));
+            }
+          });
+        }
+
+        if (navClear) {
+          navClear.addEventListener("click", function() {
+            if (navInput) {
+              navInput.value = "";
+              updateNavClear();
+              if (isHomePage) {
+                const homeInput = document.getElementById("homeToolSearch");
+                if (homeInput) {
+                  homeInput.value = "";
+                  homeInput.dispatchEvent(new Event("input"));
+                }
+              }
+              if (navDropdown) navDropdown.style.display = "none";
+              navInput.focus();
+            }
+          });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", function(e) {
+          if (navDropdown && !e.target.closest(".nav-search-item")) {
+            navDropdown.style.display = "none";
+          }
+        });
+
+        // Global hotkey: '/' or 'Ctrl+K' focuses search input on any page
+        document.addEventListener("keydown", function(e) {
+          const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
+          const isInputActive = ["input", "textarea", "select"].includes(activeTag);
+
+          if ((e.key === "/" && !isInputActive) || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k")) {
+            e.preventDefault();
+            const target = (isHomePage && document.getElementById("homeToolSearch"))
+              ? document.getElementById("homeToolSearch")
+              : navInput;
+            if (target) {
+              target.focus();
+              target.select();
+            }
+          }
+        });
+      })();
+    </script>
+
+    <!-- LUCIDE INIT -->
     <script>
       lucide.createIcons();
     </script>

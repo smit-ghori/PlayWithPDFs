@@ -1,10 +1,10 @@
+{% extends 'base.html' %}
+ {% block main_title %} Contact Us {% endblock %} {% block extra_css %}
 <link
   rel="stylesheet"
   href="{{ url_for('static', filename='css/contact_us.css') }}"
 />
-
-{% extends 'base.html' %} {% block main_title %} Contact Us {% endblock %} {%
-block extra_css %} {% endblock %} {% block main_content %}
+{% endblock %} {% block main_content %}
 
 <section class="contact-page">
   <div class="contact-success{% if success %} show{% endif %}" id="successMessage">

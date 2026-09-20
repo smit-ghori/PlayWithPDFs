@@ -1,7 +1,4 @@
-<link
-  rel="stylesheet"
-  href="{{ url_for('static', filename='css/rotate_pdf.css') }}"
-/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/rotate_pdf.css') }}" />
 <!-- <link
   rel="stylesheet"
   href="{{ url_for('static', filename='css/card_style.css') }}"
@@ -27,22 +24,11 @@
       Upload a PDF file and rotate all pages or individual pages.
     </p>
 
-    <form
-      class="merge-form ajax-upload-form"
-      action="{{ url_for('rotate_pdf.rotate_pdf') }}"
-      method="POST"
-      enctype="multipart/form-data"
-      id="mergeForm"
-    >
+    <form class="merge-form ajax-upload-form" action="{{ url_for('rotate_pdf.rotate_pdf') }}" method="POST"
+      enctype="multipart/form-data" id="mergeForm">
       <!-- Upload Area -->
       <div class="drop-zone" id="dropZone" data-type="pdf">
-        <input
-          type="file"
-          name="pdfs"
-          accept=".pdf,application/pdf"
-          id="pdfInput"
-          hidden
-        />
+        <input type="file" name="pdfs" accept=".pdf,application/pdf" id="pdfInput" hidden />
 
         <p class="drop-text">
           Drag & Drop PDF here <br />

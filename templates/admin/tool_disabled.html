@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tool unavailable</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}"></head>
+<body><div class="login"><div style="max-width:420px;text-align:center">
+  <h2>{{ tool.replace('_',' ').title() }} is paused</h2>
+  <p class="sub">{{ note }}</p>
+  <a class="btn" href="/">Back to all tools</a>
+</div></div></body></html>

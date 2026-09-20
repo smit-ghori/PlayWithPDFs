@@ -50,9 +50,28 @@ dropZone.addEventListener("drop", (e) => {
    HANDLE FILES
 ========================================= */
 function handleFiles(files) {
+  const maxFiles = window.TOOL_CONFIG?.max_files;
+  const currentCount = selectedFiles.filter(f => f !== null).length;
+  let imageFiles = [];
   for (let file of files) {
-    if (!file.type.startsWith("image/")) continue;
+    if (file.type.startsWith("image/")) {
+      imageFiles.push(file);
+    }
+  }
 
+  if (maxFiles && (currentCount + imageFiles.length) > maxFiles) {
+    const totalAttempted = currentCount + imageFiles.length;
+    const remaining = Math.max(0, maxFiles - currentCount);
+    const msg = `Maximum file limit is ${maxFiles}. You selected ${totalAttempted} files. Please upload up to ${maxFiles} files only.`;
+    if (typeof window.showFlashMessage === "function") {
+      window.showFlashMessage(msg, "error");
+    } else {
+      alert(msg);
+    }
+    imageFiles = imageFiles.slice(0, remaining);
+  }
+
+  for (let file of imageFiles) {
     const fileIndex = selectedFiles.length; // 🔥 FIXED INDEX
     selectedFiles.push(file);
 
@@ -120,6 +139,18 @@ form.addEventListener("submit", (e) => {
   if (boxes.length === 0) {
     e.preventDefault();
     alert("Please select images.");
+    return;
+  }
+
+  const maxFiles = window.TOOL_CONFIG?.max_files;
+  if (maxFiles && boxes.length > maxFiles) {
+    e.preventDefault();
+    const msg = `Maximum file limit is ${maxFiles}. You selected ${boxes.length} files. Please upload up to ${maxFiles} files only.`;
+    if (typeof window.showFlashMessage === "function") {
+      window.showFlashMessage(msg, "error");
+    } else {
+      alert(msg);
+    }
     return;
   }
 

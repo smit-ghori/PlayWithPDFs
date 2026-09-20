@@ -1,9 +1,12 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
 <link
   rel="stylesheet"
   href="{{ url_for('static', filename='css/organize_pdf.css') }}"
 />
-
-{% extends 'base.html' %} {% block main_title %} Organize PDF {% endblock %} {%
+{% endblock %}
+ {% block main_title %} Organize PDF {% endblock %} {%
 block main_content %}
 
 <section class="org-page">

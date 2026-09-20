@@ -1,20 +1,20 @@
 pdfjsLib.GlobalWorkerOptions.workerSrc =
-    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
 const pdfInput = document.getElementById("pdfInput");
 
 const previewContainer = document.getElementById(
-    "pdfPreviewContainer"
+  "pdfPreviewContainer"
 );
 
 const rotationDataInput =
-    document.getElementById("rotationData");
+  document.getElementById("rotationData");
 
 const globalControls =
-    document.querySelector(".global-controls");
+  document.querySelector(".global-controls");
 
 const rotateCard =
-    document.querySelector(".rotate-card");
+  document.querySelector(".rotate-card");
 
 let uploadedPDF = null;
 let pageRotations = {};
@@ -27,34 +27,34 @@ let isClearingRotatePDF = false;
 
 function showControls() {
 
-    rotateCard.classList.add("expanded");
+  rotateCard.classList.add("expanded");
 
-    globalControls.style.display = "block";
-    previewContainer.style.display = "grid";
+  globalControls.style.display = "block";
+  previewContainer.style.display = "grid";
 
-    requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
 
-        globalControls.classList.add("visible");
+    globalControls.classList.add("visible");
 
-        previewContainer.classList.add("visible");
-    });
+    previewContainer.classList.add("visible");
+  });
 }
 
 function hideControls() {
 
-    globalControls.classList.remove("visible");
+  globalControls.classList.remove("visible");
 
-    previewContainer.classList.remove("visible");
+  previewContainer.classList.remove("visible");
 
-    setTimeout(() => {
+  setTimeout(() => {
 
-        globalControls.style.display = "none";
+    globalControls.style.display = "none";
 
-        previewContainer.style.display = "none";
+    previewContainer.style.display = "none";
 
-        rotateCard.classList.remove("expanded");
+    rotateCard.classList.remove("expanded");
 
-    }, 250);
+  }, 250);
 }
 
 /* =========================================
@@ -63,38 +63,38 @@ function hideControls() {
 
 pdfInput.addEventListener("change", async (e) => {
 
-    const file = e.target.files[0];
+  const file = e.target.files[0];
 
-    if (!file) return;
+  if (!file) return;
 
-    previewContainer.innerHTML = "";
+  previewContainer.innerHTML = "";
 
-    pageRotations = {};
+  pageRotations = {};
 
-    const fileReader = new FileReader();
+  const fileReader = new FileReader();
 
-    fileReader.onload = async function () {
+  fileReader.onload = async function () {
 
-        try {
+    try {
 
-            const typedArray = new Uint8Array(this.result);
+      const typedArray = new Uint8Array(this.result);
 
-            uploadedPDF =
-                await pdfjsLib.getDocument(typedArray).promise;
+      uploadedPDF =
+        await pdfjsLib.getDocument(typedArray).promise;
 
-            showControls();
+      showControls();
 
-            await renderAllPages();
+      await renderAllPages();
 
-        } catch (error) {
+    } catch (error) {
 
-            console.error("PDF Load Error:", error);
+      console.error("PDF Load Error:", error);
 
-            alert("Failed to load PDF file.");
-        }
-    };
+      alert("Failed to load PDF file.");
+    }
+  };
 
-    fileReader.readAsArrayBuffer(file);
+  fileReader.readAsArrayBuffer(file);
 });
 
 
@@ -104,68 +104,68 @@ pdfInput.addEventListener("change", async (e) => {
 
 async function renderAllPages() {
 
-    previewContainer.innerHTML = "";
+  previewContainer.innerHTML = "";
 
-    for (let i = 1; i <= uploadedPDF.numPages; i++) {
+  for (let i = 1; i <= uploadedPDF.numPages; i++) {
 
-        pageRotations[i] = 0;
+    pageRotations[i] = 0;
 
-        const page = await uploadedPDF.getPage(i);
+    const page = await uploadedPDF.getPage(i);
 
-        const viewport = page.getViewport({
-            scale: 1.2
-        });
+    const viewport = page.getViewport({
+      scale: 1.2
+    });
 
-        const canvas = document.createElement("canvas");
+    const canvas = document.createElement("canvas");
 
-        const context = canvas.getContext("2d");
+    const context = canvas.getContext("2d");
 
-        canvas.height = viewport.height;
+    canvas.height = viewport.height;
 
-        canvas.width = viewport.width;
+    canvas.width = viewport.width;
 
-        await page.render({
-            canvasContext: context,
-            viewport
-        }).promise;
+    await page.render({
+      canvasContext: context,
+      viewport
+    }).promise;
 
-        /* =========================================
-           PAGE CARD
-        ========================================= */
+    /* =========================================
+       PAGE CARD
+    ========================================= */
 
-        const wrapper = document.createElement("div");
+    const wrapper = document.createElement("div");
 
-        wrapper.className = "preview-page";
+    wrapper.className = "preview-page";
 
-        /* PAGE NUMBER */
+    /* PAGE NUMBER */
 
-        const pageLabel = document.createElement("div");
+    const pageLabel = document.createElement("div");
 
-        pageLabel.className = "page-number";
+    pageLabel.className = "page-number";
 
-        pageLabel.textContent = `Page ${i}`;
+    pageLabel.textContent = `Page ${i}`;
 
-        wrapper.appendChild(pageLabel);
+    wrapper.appendChild(pageLabel);
 
-        /* PDF CANVAS */
+    /* PDF CANVAS */
 
-        const canvasFrame = document.createElement("div");
+    const canvasFrame = document.createElement("div");
 
-        canvasFrame.className = "canvas-frame";
+    canvasFrame.className = "canvas-frame";
 
-        canvasFrame.appendChild(canvas);
+    canvasFrame.appendChild(canvas);
 
-        wrapper.appendChild(canvasFrame);
+    wrapper.appendChild(canvasFrame);
 
-        /* =========================================
-           PAGE CONTROLS
-        ========================================= */
+    /* =========================================
+       PAGE CONTROLS
+    ========================================= */
 
-        const controls = document.createElement("div");
+    const controls = document.createElement("div");
 
-        controls.className = "page-controls";
+    controls.className = "page-controls";
 
-        controls.innerHTML = `
+    controls.innerHTML = `
       <button
         type="button"
         class="rotate-btn"
@@ -191,12 +191,12 @@ async function renderAllPages() {
       </button>
     `;
 
-        wrapper.appendChild(controls);
+    wrapper.appendChild(controls);
 
-        previewContainer.appendChild(wrapper);
-    }
+    previewContainer.appendChild(wrapper);
+  }
 
-    updateRotationInput();
+  updateRotationInput();
 }
 
 
@@ -206,9 +206,9 @@ async function renderAllPages() {
 
 function rotatePage(pageNumber, angle) {
 
-    pageRotations[pageNumber] += angle;
+  pageRotations[pageNumber] += angle;
 
-    applyRotation(pageNumber);
+  applyRotation(pageNumber);
 }
 
 
@@ -218,9 +218,9 @@ function rotatePage(pageNumber, angle) {
 
 function resetPage(pageNumber) {
 
-    pageRotations[pageNumber] = 0;
+  pageRotations[pageNumber] = 0;
 
-    applyRotation(pageNumber);
+  applyRotation(pageNumber);
 }
 
 
@@ -230,12 +230,12 @@ function resetPage(pageNumber) {
 
 function rotateAll(angle) {
 
-    Object.keys(pageRotations).forEach((page) => {
+  Object.keys(pageRotations).forEach((page) => {
 
-        pageRotations[page] += angle;
+    pageRotations[page] += angle;
 
-        applyRotation(page);
-    });
+    applyRotation(page);
+  });
 }
 
 
@@ -245,12 +245,12 @@ function rotateAll(angle) {
 
 function resetAllPages() {
 
-    Object.keys(pageRotations).forEach((page) => {
+  Object.keys(pageRotations).forEach((page) => {
 
-        pageRotations[page] = 0;
+    pageRotations[page] = 0;
 
-        applyRotation(page);
-    });
+    applyRotation(page);
+  });
 }
 
 
@@ -260,65 +260,65 @@ function resetAllPages() {
 
 function applyRotation(pageNumber) {
 
-    const previewPages =
-        document.querySelectorAll(".preview-page");
+  const previewPages =
+    document.querySelectorAll(".preview-page");
 
-    const canvas =
-        previewPages[pageNumber - 1]
-            .querySelector("canvas");
+  const canvas =
+    previewPages[pageNumber - 1]
+      .querySelector("canvas");
 
-    const frame =
-        canvas.closest(".canvas-frame");
+  const frame =
+    canvas.closest(".canvas-frame");
 
-    const normalizedRotation =
-        ((pageRotations[pageNumber] % 360) + 360) % 360;
+  const normalizedRotation =
+    ((pageRotations[pageNumber] % 360) + 360) % 360;
 
-    let scale = 1;
+  let scale = 1;
+
+  if (
+    normalizedRotation === 90 ||
+    normalizedRotation === 270
+  ) {
+
+    const frameRect =
+      frame.getBoundingClientRect();
+
+    const canvasWidth =
+      canvas.offsetWidth;
+
+    const canvasHeight =
+      canvas.offsetHeight;
 
     if (
-        normalizedRotation === 90 ||
-        normalizedRotation === 270
+      frameRect.width &&
+      frameRect.height &&
+      canvasWidth &&
+      canvasHeight
     ) {
 
-        const frameRect =
-            frame.getBoundingClientRect();
-
-        const canvasWidth =
-            canvas.offsetWidth;
-
-        const canvasHeight =
-            canvas.offsetHeight;
-
-        if (
-            frameRect.width &&
-            frameRect.height &&
-            canvasWidth &&
-            canvasHeight
-        ) {
-
-            scale = Math.min(
-                frameRect.width / canvasHeight,
-                frameRect.height / canvasWidth,
-                1
-            ) * 0.96;
-        }
+      scale = Math.min(
+        frameRect.width / canvasHeight,
+        frameRect.height / canvasWidth,
+        1
+      ) * 0.96;
     }
+  }
 
-    canvas.style.transition =
-        "transform 0.35s ease";
+  canvas.style.transition =
+    "transform 0.35s ease";
 
-    canvas.style.transform =
-        `rotate(${pageRotations[pageNumber]}deg) scale(${scale})`;
+  canvas.style.transform =
+    `rotate(${pageRotations[pageNumber]}deg) scale(${scale})`;
 
-    updateRotationInput();
+  updateRotationInput();
 }
 
 window.addEventListener("resize", () => {
 
-    Object.keys(pageRotations).forEach((page) => {
+  Object.keys(pageRotations).forEach((page) => {
 
-        applyRotation(page);
-    });
+    applyRotation(page);
+  });
 });
 
 
@@ -328,8 +328,8 @@ window.addEventListener("resize", () => {
 
 function updateRotationInput() {
 
-    rotationDataInput.value =
-        JSON.stringify(pageRotations);
+  rotationDataInput.value =
+    JSON.stringify(pageRotations);
 }
 
 
@@ -339,44 +339,44 @@ function updateRotationInput() {
 
 function clearAll() {
 
-    isClearingRotatePDF = true;
+  isClearingRotatePDF = true;
 
-    uploadedPDF = null;
+  uploadedPDF = null;
 
-    pageRotations = {};
+  pageRotations = {};
 
-    previewContainer.innerHTML = "";
+  previewContainer.innerHTML = "";
 
-    rotationDataInput.value = "";
+  rotationDataInput.value = "";
 
-    pdfInput.value = "";
+  pdfInput.value = "";
 
-    const fileList =
-        document.getElementById("fileList");
+  const fileList =
+    document.getElementById("fileList");
 
-    if (fileList) {
-        fileList.innerHTML = "";
-    }
+  if (fileList) {
+    fileList.innerHTML = "";
+  }
 
-    hideControls();
+  hideControls();
 
-    isClearingRotatePDF = false;
+  isClearingRotatePDF = false;
 }
 
 if (typeof window.removeFile === "function") {
 
-    const originalRemoveFile =
-        window.removeFile;
+  const originalRemoveFile =
+    window.removeFile;
 
-    window.removeFile = function (...args) {
+  window.removeFile = function (...args) {
 
-        originalRemoveFile.apply(this, args);
+    originalRemoveFile.apply(this, args);
 
-        if (!isClearingRotatePDF) {
+    if (!isClearingRotatePDF) {
 
-            clearAll();
-        }
-    };
+      clearAll();
+    }
+  };
 }
 
 window.resetUploadForm = clearAll;

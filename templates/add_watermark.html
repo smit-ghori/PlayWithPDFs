@@ -1,3 +1,6 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
 <link
   rel="stylesheet"
   href="{{ url_for('static', filename='css/card_style.css') }}"
@@ -8,7 +11,8 @@
 />
 
 <!-- extending base -->
-{% extends 'base.html' %}
+{% endblock %}
+
 
 <!-- Main title -->
 {% block main_title %} Watermark PDF {% endblock %}

@@ -1,9 +1,12 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
 <link
   rel="stylesheet"
   href="{{ url_for('static', filename='css/card_style.css') }}"
 />
-
-{% extends 'base.html' %} {% block main_title %} PDF to PDF/A {% endblock %} {%
+{% endblock %}
+ {% block main_title %} PDF to PDF/A {% endblock %} {%
 block main_content %}
 
 <style>

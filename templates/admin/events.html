@@ -1,0 +1,35 @@
+{% extends "admin/_layout.html" %}{% block title %}Activity{% endblock %}
+{% block body %}
+<h2>Activity</h2>
+<p class="sub">Each row is one request to a tool. Visitors are stored as a salted hash, never a raw IP.</p>
+
+<form class="row" method="get">
+  <select name="tool"><option value="">All tools</option>
+    {% for t in tools %}<option value="{{ t }}" {{ 'selected' if t == tool }}>{{ t }}</option>{% endfor %}
+  </select>
+  <select name="only"><option value="">All results</option>
+    <option value="failed" {{ 'selected' if only == 'failed' }}>Failures only</option></select>
+  <button class="btn">Apply</button>
+  <a class="btn" href="{{ url_for('admin.events_csv') }}">Download 30 days (CSV)</a>
+</form>
+
+<table>
+  <tr><th>When</th><th>Tool</th><th class="num">Status</th><th class="num">Time</th><th class="num">Files</th><th>Problem</th></tr>
+  {% for e in rows.items %}
+  <tr>
+    <td class="mono">{{ e.created_at.strftime('%d %b %H:%M:%S') }}</td>
+    <td>{{ e.tool }}</td>
+    <td class="num" {% if not e.ok %}style="color:#9c3b22"{% endif %}>{{ e.status_code }}</td>
+    <td class="num">{{ e.duration_ms }} ms</td>
+    <td class="num">{{ e.file_count }}</td>
+    <td class="mono">{{ (e.error_text or '') [:120] }}</td>
+  </tr>
+  {% else %}<tr><td colspan="6">Nothing matches that filter.</td></tr>{% endfor %}
+</table>
+
+<div class="row">
+  {% if rows.has_prev %}<a class="btn" href="?page={{ rows.prev_num }}&tool={{ tool or '' }}&only={{ only }}">Newer</a>{% endif %}
+  <span class="sub">Page {{ rows.page }} of {{ rows.pages or 1 }}</span>
+  {% if rows.has_next %}<a class="btn" href="?page={{ rows.next_num }}&tool={{ tool or '' }}&only={{ only }}">Older</a>{% endif %}
+</div>
+{% endblock %}

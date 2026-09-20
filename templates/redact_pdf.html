@@ -1,8 +1,9 @@
-<!-- extending base -->
 {% extends 'base.html' %}
+
 
 <!-- Main title -->
 {% block main_title %} Redact PDF {% endblock %} {% block extra_css %}
+<!-- extending base -->
 <link
   rel="stylesheet"
   href="{{ url_for('static', filename='css/redact_pdf.css') }}"

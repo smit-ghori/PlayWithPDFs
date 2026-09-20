@@ -1,7 +1,12 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 import os
 import threading
 from flask import Flask
-from extensions import mail
+from extensions import mail, db
+from routes.admin import admin_bp
+from utils.tracking import init_tracking, seed_tools
 from routes.home import home_bp
 from routes.merge import merge_bp
 from routes.download import download_bp
@@ -50,10 +55,32 @@ mail.init_app(app)
 
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "fallback-secret")
 
+# DATABASE & ADMIN CONFIG
+raw_url = os.environ.get("DATABASE_URL")
+if not raw_url:
+    raw_url = "sqlite:///playwithpdfs.db"
+elif raw_url.startswith("postgres://"):
+    raw_url = raw_url.replace("postgres://", "postgresql+psycopg://", 1)
+elif raw_url.startswith("postgresql://") and not raw_url.startswith("postgresql+"):
+    raw_url = raw_url.replace("postgresql://", "postgresql+psycopg://", 1)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = raw_url
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+if not raw_url.startswith("sqlite"):
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+        "pool_pre_ping": True,     # hosted Postgres drops idle connections
+        "pool_recycle": 280,
+        "pool_size": 5,
+        "max_overflow": 5,
+    }
+app.config["MAX_CONTENT_LENGTH"] = 200 * 1024 * 1024   # hard 200 MB upload ceiling
+db.init_app(app)
+
 UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # register routes
+app.register_blueprint(admin_bp)
 app.register_blueprint(home_bp)
 app.register_blueprint(merge_bp)
 app.register_blueprint(download_bp)
@@ -87,6 +114,31 @@ app.register_blueprint(pdf_to_pdfA_bp)
 app.register_blueprint(about_bp)
 app.register_blueprint(organize_pdf_bp)
 app.register_blueprint(contact_us_bp)
+
+# TRACKING & TOOL MANAGEMENT
+init_tracking(app)
+
+with app.app_context():
+    import models  # noqa: F401  (registers tables)
+    db.create_all()
+    seed_tools(app)
+
+
+# CLI COMMAND TO CREATE ADMIN
+@app.cli.command("create-admin")
+def create_admin():
+    """flask create-admin"""
+    import getpass
+    from models import AdminUser
+    email = input("Email: ").lower().strip()
+    name = input("Name: ")
+    password = getpass.getpass("Password: ")
+    user = AdminUser(email=email, name=name, role="admin")
+    user.set_password(password)
+    db.session.add(user)
+    db.session.commit()
+    print("Created admin user:", email)
+
 
 # start cleanup thread
 threading.Thread(target=cleanup_worker, daemon=True).start()

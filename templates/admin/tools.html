@@ -1,0 +1,201 @@
+{% extends "admin/_layout.html" %}{% block title %}Tools{% endblock %}
+{% block body %}
+<h2>Tools</h2>
+<p class="sub">Pause a tool, cap its uploads, or rename it. Changes go live within 20 seconds.</p>
+
+<div class="tools-toolbar">
+  <div class="tools-toolbar-left">
+    <form method="post" action="{{ url_for('admin.tools_sync') }}" style="display:inline-flex;align-items:center;gap:8px;margin:0;">
+      <button class="btn">Find new tools</button>
+      <label style="margin:0;">Sync registered blueprints</label>
+    </form>
+  </div>
+
+  <div class="tools-toolbar-right">
+    <div class="tools-filters">
+      <button type="button" class="tools-filter-btn {{ 'active' if not status_filter else '' }}" data-status="" onclick="setStatusFilter('')">All ({{ total_count }})</button>
+      <button type="button" class="tools-filter-btn {{ 'active' if status_filter == 'live' else '' }}" data-status="live" onclick="setStatusFilter('live')">Live ({{ live_count }})</button>
+      <button type="button" class="tools-filter-btn {{ 'active' if status_filter == 'paused' else '' }}" data-status="paused" onclick="setStatusFilter('paused')">Paused ({{ paused_count }})</button>
+    </div>
+
+    <div class="tools-search-box">
+      <span class="tools-search-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </span>
+      <input
+        type="text"
+        id="toolSearchInput"
+        class="tools-search-input"
+        placeholder="Search tools... (Press '/' to focus)"
+        value="{{ q or '' }}"
+        autocomplete="off"
+        spellcheck="false"
+      >
+      <span id="kbdShortcut" class="tools-kbd-shortcut">/</span>
+      <button type="button" id="clearSearchBtn" class="tools-search-clear" onclick="clearToolSearch()" title="Clear search">&times;</button>
+    </div>
+
+    <span id="toolCountBadge" class="tools-count-badge">Showing {{ rows|length }} tools</span>
+  </div>
+</div>
+
+<table>
+  <thead>
+    <tr><th>Tool</th><th>Status</th><th class="num">Runs (30d)</th><th>Max files</th><th>Max MB</th><th>Note shown when paused</th><th></th></tr>
+  </thead>
+  <tbody id="toolsTableBody">
+  {% for r in rows %}
+  <tr class="tool-row" data-tool="{{ r.tool|lower }}" data-label="{{ r.label|lower }}" data-status="{{ 'live' if r.enabled else 'paused' }}">
+    <form method="post" action="{{ url_for('admin.tool_update', tool=r.tool) }}">
+      <input type="hidden" name="_q" value="{{ q or '' }}" class="row-q-input">
+      <input type="hidden" name="_status" value="{{ status_filter or '' }}" class="row-status-input">
+      <td><input type="text" name="label" value="{{ r.label }}" size="16"><br><code>{{ r.tool }}</code></td>
+      <td>
+        <label>
+          <input type="checkbox" name="enabled" {{ 'checked' if r.enabled }} onchange="this.nextElementSibling.className='pill ' + (this.checked ? 'live':'off'); this.nextElementSibling.textContent=(this.checked ? 'Live':'Paused');">
+          <span class="pill {{ 'live' if r.enabled else 'off' }}">{{ 'Live' if r.enabled else 'Paused' }}</span>
+        </label>
+      </td>
+      <td class="num">{{ usage.get(r.tool, 0) }}</td>
+      <td><input type="number" name="max_files" value="{{ r.max_files }}"></td>
+      <td><input type="number" name="max_file_mb" value="{{ r.max_file_mb }}"></td>
+      <td><input type="text" name="note" value="{{ r.maintenance_note or '' }}" size="24"></td>
+      <td><button class="btn">Save</button></td>
+    </form>
+  </tr>
+  {% else %}
+  <tr class="no-tools-row"><td colspan="7">No tools yet. Choose "Find new tools".</td></tr>
+  {% endfor %}
+
+  <tr id="noResultsRow" style="display:none;">
+    <td colspan="7">
+      <div class="no-results-box">
+        <p>No tools found matching "<strong><span id="searchQueryEcho"></span></strong>".</p>
+        <button type="button" class="btn" onclick="clearToolSearch()">Clear filter</button>
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<script>
+(function() {
+  const searchInput = document.getElementById('toolSearchInput');
+  const clearBtn = document.getElementById('clearSearchBtn');
+  const kbdShortcut = document.getElementById('kbdShortcut');
+  const countBadge = document.getElementById('toolCountBadge');
+  const noResultsRow = document.getElementById('noResultsRow');
+  const searchQueryEcho = document.getElementById('searchQueryEcho');
+  const filterBtns = document.querySelectorAll('.tools-filter-btn');
+  const rows = Array.from(document.querySelectorAll('.tool-row'));
+  const totalTools = rows.length;
+
+  let currentStatus = "{{ status_filter or '' }}";
+
+  function updateClearButton() {
+    const hasVal = searchInput.value.trim().length > 0;
+    clearBtn.style.display = hasVal ? 'block' : 'none';
+    if (kbdShortcut) {
+      kbdShortcut.style.display = hasVal ? 'none' : 'block';
+    }
+  }
+
+  function syncHiddenParams(query, status) {
+    document.querySelectorAll('.row-q-input').forEach(el => el.value = query);
+    document.querySelectorAll('.row-status-input').forEach(el => el.value = status);
+  }
+
+  function filterTools() {
+    const query = searchInput.value.trim().toLowerCase();
+    updateClearButton();
+    syncHiddenParams(query, currentStatus);
+
+    let visibleCount = 0;
+    rows.forEach(row => {
+      const toolKey = row.getAttribute('data-tool') || '';
+      const labelInput = row.querySelector('input[name="label"]');
+      const labelVal = (labelInput ? labelInput.value : row.getAttribute('data-label') || '').toLowerCase();
+      const noteInput = row.querySelector('input[name="note"]');
+      const noteVal = (noteInput ? noteInput.value : '').toLowerCase();
+      const statusVal = row.getAttribute('data-status') || '';
+
+      const matchesStatus = !currentStatus || statusVal === currentStatus;
+      const matchesQuery = !query || toolKey.includes(query) || labelVal.includes(query) || noteVal.includes(query);
+
+      if (matchesStatus && matchesQuery) {
+        row.style.display = '';
+        visibleCount++;
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    if (visibleCount === 0 && (query || currentStatus)) {
+      noResultsRow.style.display = '';
+      searchQueryEcho.textContent = query ? query : (currentStatus ? `status: ${currentStatus}` : '');
+    } else {
+      noResultsRow.style.display = 'none';
+    }
+
+    if (query || currentStatus) {
+      countBadge.textContent = `Showing ${visibleCount} of ${totalTools} tools`;
+    } else {
+      countBadge.textContent = `Showing ${visibleCount} tools`;
+    }
+
+    // Update URL history without reload
+    const url = new URL(window.location.href);
+    if (query) url.searchParams.set('q', query); else url.searchParams.delete('q');
+    if (currentStatus) url.searchParams.set('status', currentStatus); else url.searchParams.delete('status');
+    window.history.replaceState({}, '', url.toString());
+  }
+
+  window.setStatusFilter = function(status) {
+    currentStatus = status;
+    filterBtns.forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-status') === status);
+    });
+    filterTools();
+  };
+
+  window.clearToolSearch = function() {
+    searchInput.value = '';
+    currentStatus = '';
+    filterBtns.forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-status') === '');
+    });
+    filterTools();
+    searchInput.focus();
+  };
+
+  searchInput.addEventListener('input', filterTools);
+
+  // Keyboard shortcut: '/' or 'Ctrl+K' focuses search input
+  document.addEventListener('keydown', function(e) {
+    const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+    const isInputActive = ['input', 'textarea', 'select'].includes(activeTag);
+
+    if ((e.key === '/' && !isInputActive) || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k')) {
+      e.preventDefault();
+      searchInput.focus();
+      searchInput.select();
+    } else if (e.key === 'Escape' && document.activeElement === searchInput) {
+      if (searchInput.value) {
+        clearToolSearch();
+      } else {
+        searchInput.blur();
+      }
+    }
+  });
+
+  // Initial check
+  updateClearButton();
+  if (searchInput.value || currentStatus) {
+    filterTools();
+  }
+})();
+</script>
+{% endblock %}

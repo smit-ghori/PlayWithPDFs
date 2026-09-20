@@ -5,6 +5,7 @@ const uploadCard = dropZone?.closest(".merge-card");
 const uploadForm = input?.closest("form");
 
 let selectedFiles = [];
+window.selectedFiles = selectedFiles;
 
 if (!dropZone || !input || !fileListUI || !uploadCard || !uploadForm) {
     window.clearAll = function () { };
@@ -65,52 +66,62 @@ fileListUI.addEventListener("touchmove", (e) => {
 });
 
 const fileTypes = {
-
     pdf: [
         "application/pdf"
     ],
-
     word: [
         "application/msword",
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     ],
-
     excel: [
         "application/vnd.ms-excel",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     ],
-
     ppt: [
         "application/vnd.ms-powerpoint",
         "application/vnd.openxmlformats-officedocument.presentationml.presentation"
     ]
 };
+
 function showInvalidFileMessage(type) {
-
     const messages = {
-
         pdf: "Please upload only PDF files.",
-
         word: "Please upload only Word files.",
-
         excel: "Please upload only Excel files.",
-
         ppt: "Please upload only PowerPoint files."
     };
-
     alert(messages[type] || "Invalid file type!");
 }
 
 function addFiles(files) {
     const type = dropZone.dataset.type;
     const allowed = fileTypes[type] || [];
+    const maxFiles = window.TOOL_CONFIG?.max_files;
 
+    let validFiles = [];
     for (let file of files) {
         if (allowed.includes(file.type)) {
-            selectedFiles.push(file);
+            validFiles.push(file);
         } else {
             showInvalidFileMessage(type);
         }
+    }
+
+    if (maxFiles && (selectedFiles.length + validFiles.length) > maxFiles) {
+        const attemptedTotal = selectedFiles.length + validFiles.length;
+        const remainingSlots = Math.max(0, maxFiles - selectedFiles.length);
+        const msg = `Maximum file limit is ${maxFiles}. You selected ${attemptedTotal} files. Please upload up to ${maxFiles} files only.`;
+        if (typeof window.showFlashMessage === "function") {
+            window.showFlashMessage(msg, "error");
+        } else {
+            alert(msg);
+        }
+
+        if (remainingSlots > 0) {
+            selectedFiles.push(...validFiles.slice(0, remainingSlots));
+        }
+    } else {
+        selectedFiles.push(...validFiles);
     }
 
     renderFileList();
@@ -142,6 +153,7 @@ function removeFile(event, index) {
 
 function clearAll() {
     selectedFiles = [];
+    window.selectedFiles = selectedFiles;
     renderFileList();
     input.value = "";
 }
@@ -159,6 +171,18 @@ uploadForm.addEventListener("submit", function (e) {
     if (selectedFiles.length === 0) {
         e.preventDefault();
         alert("Please select at least one PDF file.");
+        return;
+    }
+
+    const maxFiles = window.TOOL_CONFIG?.max_files;
+    if (maxFiles && selectedFiles.length > maxFiles) {
+        e.preventDefault();
+        const msg = `Maximum file limit is ${maxFiles}. You selected ${selectedFiles.length} files. Please upload up to ${maxFiles} files only.`;
+        if (typeof window.showFlashMessage === "function") {
+            window.showFlashMessage(msg, "error");
+        } else {
+            alert(msg);
+        }
         return;
     }
 

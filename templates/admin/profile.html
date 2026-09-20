@@ -1,0 +1,41 @@
+{% extends "admin/_layout.html" %}{% block title %}Account Settings{% endblock %}
+{% block body %}
+<h2>Account Settings</h2>
+<p class="sub">Update your email, name, or change your password.</p>
+
+<div style="background:var(--card);border:1px solid var(--rule);padding:24px;max-width:560px;border-radius:2px;">
+  <form method="post">
+    <div style="margin-bottom:16px;">
+      <label style="display:block;font-weight:600;margin-bottom:6px;">Email address</label>
+      <input type="email" name="email" value="{{ user.email }}" required style="width:100%;">
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <label style="display:block;font-weight:600;margin-bottom:6px;">Display Name</label>
+      <input type="text" name="name" value="{{ user.name or '' }}" placeholder="Your name" style="width:100%;">
+    </div>
+
+    <hr style="border:none;border-top:1px solid var(--rule);margin:24px 0;">
+
+    <h3 style="font-size:16px;margin:0 0 4px;font-weight:600;">Change Password</h3>
+    <p class="sub" style="margin-bottom:14px;font-size:13px;">Leave blank if you don't want to change your password.</p>
+
+    <div style="margin-bottom:14px;">
+      <label style="display:block;margin-bottom:4px;">Current password</label>
+      <input type="password" name="current_password" placeholder="Required to set new password" style="width:100%;">
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <label style="display:block;margin-bottom:4px;">New password</label>
+      <input type="password" name="new_password" placeholder="Minimum 6 characters" minlength="6" style="width:100%;">
+    </div>
+
+    <div style="margin-bottom:22px;">
+      <label style="display:block;margin-bottom:4px;">Confirm new password</label>
+      <input type="password" name="confirm_password" placeholder="Confirm new password" minlength="6" style="width:100%;">
+    </div>
+
+    <button class="btn primary" type="submit">Save Changes</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "admin/_layout.html" %}{% block title %}Team{% endblock %}
+{% block body %}
+<h2>Team</h2>
+<p class="sub">Admins can change settings. Viewers can read the panel but not edit it.</p>
+
+<table>
+  <tr>
+    <th>Email</th>
+    <th>Name</th>
+    <th>Role</th>
+    <th>Reset / New Password</th>
+    <th>Last signed in</th>
+    <th></th>
+  </tr>
+  {% for u in rows %}
+  <tr>
+    <form method="post" action="{{ url_for('admin.user_update', uid=u.id) }}">
+      <td>
+        <input type="email" name="email" value="{{ u.email }}" required size="22">
+        {% if u.id == admin_user.id %}<span class="pill live" style="margin-left:4px;">You</span>{% endif %}
+      </td>
+      <td>
+        <input type="text" name="name" value="{{ u.name or '' }}" placeholder="Name" size="14">
+      </td>
+      <td>
+        <select name="role">
+          <option value="admin" {{ 'selected' if u.role == 'admin' }}>Admin</option>
+          <option value="viewer" {{ 'selected' if u.role == 'viewer' }}>Viewer</option>
+        </select>
+      </td>
+      <td>
+        <input type="password" name="password" placeholder="New password" minlength="6" size="16">
+      </td>
+      <td class="mono" style="font-size:12.5px;white-space:nowrap;padding-top:14px;">
+        {{ u.last_login_at.strftime('%d %b %H:%M') if u.last_login_at else 'never' }}
+      </td>
+      <td style="white-space:nowrap;">
+        <button class="btn" type="submit">Save</button>
+    </form>
+    {% if u.id != admin_user.id %}
+      <form method="post" action="{{ url_for('admin.user_delete', uid=u.id) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete {{ u.email }}?');">
+        <button class="btn danger" type="submit">Delete</button>
+      </form>
+    {% endif %}
+      </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h2>Add someone</h2>
+<form method="post" class="row">
+  <input type="email" name="email" placeholder="Email" required>
+  <input type="text" name="name" placeholder="Name">
+  <input type="password" name="password" placeholder="Temporary password" required>
+  <select name="role"><option value="viewer">Viewer</option><option value="admin">Admin</option></select>
+  <button class="btn primary">Add to team</button>
+</form>
+
+<h2>Recent changes</h2>
+<table>
+  <tr><th>When</th><th>Who</th><th>Action</th><th>Target</th><th>Detail</th></tr>
+  {% for a in audit %}
+  <tr><td class="mono">{{ a.created_at.strftime('%d %b %H:%M') }}</td><td>{{ a.admin_email }}</td>
+      <td><code>{{ a.action }}</code></td><td>{{ a.target or '—' }}</td><td>{{ a.detail or '' }}</td></tr>
+  {% else %}<tr><td colspan="5">No changes logged yet.</td></tr>{% endfor %}
+</table>
+{% endblock %}
