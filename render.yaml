@@ -6,8 +6,8 @@ services:
 
     envVars:
       - key: SECRET_KEY
-        value: your-secret-key
+        generateValue: true
       - key: MAIL_USERNAME
-        fromSecret: MAIL_USERNAME
+        sync: false
       - key: MAIL_PASSWORD
-        fromSecret: MAIL_PASSWORD
+        sync: false
