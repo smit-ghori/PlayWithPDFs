@@ -1,0 +1,23 @@
+{% extends "admin/_layout.html" %}
+{% block title %}Access Denied{% endblock %}
+{% block body %}
+<div style="max-width: 620px; margin: 40px auto; background: var(--card); border: 1px solid var(--rule); border-left: 4px solid var(--rust); padding: 28px 32px; border-radius: 4px;">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+    <h2 style="color: var(--rust); margin: 0;">Access Denied</h2>
+    <span class="pill off" style="font-size: 12px; font-weight: 600;">403 Forbidden</span>
+  </div>
+  
+  <p style="font-size: 15px; line-height: 1.6; color: var(--ink); margin: 16px 0;">
+    You are signed in as a <strong>Viewer</strong>. You are not permitted to access this page or perform administrative modifications.
+  </p>
+  
+  <p style="font-size: 13.5px; color: var(--muted); margin-bottom: 24px;">
+    Only accounts with the <strong>Administrator</strong> role can view or manage team members, sync tools, and purge storage. If you require higher permissions, please contact your system administrator.
+  </p>
+  
+  <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+    <a href="{{ url_for('admin.dashboard') }}" class="btn primary">Return to Overview</a>
+    <a href="{{ url_for('admin.profile') }}" class="btn">View Your Account</a>
+  </div>
+</div>
+{% endblock %}

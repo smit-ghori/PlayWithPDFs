@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block main_title %}My Profile — PlayWithPDFs{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+{% endblock %}
+
+{% block main_content %}
+<section class="auth-page">
+  <div class="profile-container">
+    <div class="auth-card">
+      <div class="auth-header" style="text-align: left; margin-bottom: 24px;">
+        <span class="auth-badge">
+          <i data-lucide="user"></i>
+          Account Profile
+        </span>
+        <h1>User Settings</h1>
+        <p>Manage your account credentials and personal details.</p>
+      </div>
+
+      <!-- PROFILE META CARD -->
+      <div class="profile-meta-card">
+        <div class="profile-avatar">
+          {{ user.name[:1].upper() if user.name else 'U' }}
+        </div>
+        <div class="profile-info">
+          <h3>{{ user.name }}</h3>
+          <p>{{ user.email }}</p>
+          <p style="margin-top: 4px; font-size: 12px; opacity: 0.7;">
+            Member since: {{ user.created_at.strftime('%B %d, %Y') if user.created_at else 'Recently' }}
+          </p>
+        </div>
+      </div>
+
+      <form class="auth-form" method="POST" action="{{ url_for('auth.profile') }}">
+        <!-- BASIC INFO -->
+        <div class="auth-field">
+          <label class="auth-label" for="name">Full Name</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon"><i data-lucide="user"></i></span>
+            <input type="text" id="name" name="name" class="auth-input" value="{{ user.name }}" required minlength="2" />
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" for="email">Email Address (Read-only)</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon"><i data-lucide="mail"></i></span>
+            <input type="email" id="email" class="auth-input" value="{{ user.email }}" readonly disabled style="opacity: 0.65; cursor: not-allowed;" />
+          </div>
+        </div>
+
+        <!-- CHANGE PASSWORD SECTION -->
+        <div style="margin-top: 14px; padding-top: 20px; border-top: 1px solid rgba(148, 163, 184, 0.15);">
+          <h3 style="color: #f8fafc; font-size: 17px; margin-bottom: 6px;">Change Password</h3>
+          <p style="color: rgba(230, 238, 248, 0.6); font-size: 13px; margin-bottom: 16px;">Leave password fields blank if you do not wish to change your password.</p>
+
+          <div class="auth-field" style="margin-bottom: 14px;">
+            <label class="auth-label" for="current_password">Current Password</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon"><i data-lucide="lock"></i></span>
+              <input type="password" id="current_password" name="current_password" class="auth-input" placeholder="Current password" />
+            </div>
+          </div>
+
+          <div class="profile-grid">
+            <div class="auth-field">
+              <label class="auth-label" for="new_password">New Password</label>
+              <div class="auth-input-wrapper">
+                <span class="auth-input-icon"><i data-lucide="key"></i></span>
+                <input type="password" id="new_password" name="new_password" class="auth-input" placeholder="Min 6 characters" minlength="6" />
+              </div>
+            </div>
+
+            <div class="auth-field">
+              <label class="auth-label" for="confirm_password">Confirm New Password</label>
+              <div class="auth-input-wrapper">
+                <span class="auth-input-icon"><i data-lucide="check-circle-2"></i></span>
+                <input type="password" id="confirm_password" name="confirm_password" class="auth-input" placeholder="Repeat new password" minlength="6" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="auth-submit-btn" style="margin-top: 18px;">
+          <span>Save Changes</span>
+          <i data-lucide="save"></i>
+        </button>
+      </form>
+
+      <div class="auth-footer" style="display: flex; justify-content: space-between; align-items: center;">
+        <a href="{{ url_for('home.home') }}">← Back to PDF Tools</a>
+        <a href="{{ url_for('auth.logout') }}" style="color: #f87171;">Sign Out</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  });
+</script>
+{% endblock %}

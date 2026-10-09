@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% block main_title %}Create Account — PlayWithPDFs{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+{% endblock %}
+
+{% block main_content %}
+<section class="auth-page">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <span class="auth-badge">
+          <i data-lucide="sparkles"></i>
+          Free Registration
+        </span>
+        <h1>Create Account</h1>
+        <p>Join PlayWithPDFs for free access to fast, private, and secure PDF tools.</p>
+      </div>
+
+      <form class="auth-form" method="POST" action="{{ url_for('auth.register', next=request.args.get('next')) }}" id="registerForm">
+        <input type="hidden" name="next" value="{{ request.args.get('next') or '' }}" />
+        <!-- FULL NAME -->
+        <div class="auth-field">
+          <label class="auth-label" for="name">Full Name</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon">
+              <i data-lucide="user"></i>
+            </span>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              class="auth-input"
+              placeholder="e.g. Alex Johnson"
+              value="{{ name or '' }}"
+              required
+              minlength="2"
+              autocomplete="name"
+              autofocus
+            />
+          </div>
+        </div>
+
+        <!-- EMAIL -->
+        <div class="auth-field">
+          <label class="auth-label" for="email">Email Address</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon">
+              <i data-lucide="mail"></i>
+            </span>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="auth-input"
+              placeholder="you@example.com"
+              value="{{ email or '' }}"
+              required
+              autocomplete="email"
+            />
+          </div>
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="auth-field">
+          <label class="auth-label" for="password">Password (min 6 characters)</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon">
+              <i data-lucide="lock"></i>
+            </span>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="auth-input"
+              placeholder="••••••••"
+              required
+              minlength="6"
+              autocomplete="new-password"
+            />
+            <button type="button" class="auth-toggle-pwd" id="togglePasswordBtn" title="Show or hide password" aria-label="Toggle password visibility">
+              <i data-lucide="eye" id="togglePasswordIcon"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- CONFIRM PASSWORD -->
+        <div class="auth-field">
+          <label class="auth-label" for="confirm_password">Confirm Password</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon">
+              <i data-lucide="check-circle-2"></i>
+            </span>
+            <input
+              type="password"
+              id="confirm_password"
+              name="confirm_password"
+              class="auth-input"
+              placeholder="••••••••"
+              required
+              minlength="6"
+              autocomplete="new-password"
+            />
+          </div>
+        </div>
+
+        <!-- SUBMIT -->
+        <button type="submit" class="auth-submit-btn">
+          <span>Create My Account</span>
+          <i data-lucide="user-plus"></i>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        Already have an account?
+        <a href="{{ url_for('auth.login', next=request.args.get('next')) }}">Sign in here</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // Password toggle
+    const toggleBtn = document.getElementById("togglePasswordBtn");
+    const pwdInput = document.getElementById("password");
+    const pwdConfirmInput = document.getElementById("confirm_password");
+    const pwdIcon = document.getElementById("togglePasswordIcon");
+
+    if (toggleBtn && pwdInput) {
+      toggleBtn.addEventListener("click", () => {
+        const isPassword = pwdInput.type === "password";
+        pwdInput.type = isPassword ? "text" : "password";
+        if (pwdConfirmInput) {
+          pwdConfirmInput.type = isPassword ? "text" : "password";
+        }
+        if (pwdIcon) {
+          pwdIcon.setAttribute("data-lucide", isPassword ? "eye-off" : "eye");
+          lucide.createIcons();
+        }
+      });
+    }
+
+    // Client validation for passwords matching
+    const form = document.getElementById("registerForm");
+    if (form) {
+      form.addEventListener("submit", (e) => {
+        if (pwdInput.value !== pwdConfirmInput.value) {
+          e.preventDefault();
+          alert("Passwords do not match. Please re-enter identical passwords.");
+          pwdConfirmInput.focus();
+        }
+      });
+    }
+
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  });
+</script>
+{% endblock %}

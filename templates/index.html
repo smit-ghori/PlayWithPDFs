@@ -19,6 +19,17 @@ extra_css %}
     </p>
   </div>
 
+  {% if not current_user %}
+  <div class="home-guest-banner">
+    <div class="home-guest-banner__icon">
+      <i data-lucide="sparkles"></i>
+    </div>
+    <div class="home-guest-banner__text">
+      <strong>New to PlayWithPDFs?</strong> Browse all our tools below! To process documents, please <a href="{{ url_for('auth.login') }}">log in</a> or <a href="{{ url_for('auth.register') }}">create a free account</a>.
+    </div>
+  </div>
+  {% endif %}
+
   <!-- SEARCH BAR -->
   <div class="home-search-wrapper">
     <div class="home-search-bar">

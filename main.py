@@ -40,6 +40,7 @@ from routes.pdf_to_pdfA import pdf_to_pdfA_bp
 from routes.organize_pdf import organize_pdf_bp
 from routes.about import about_bp
 from routes.contact_us import contact_us_bp
+from routes.auth import auth_bp
 from utils.file_utils import cleanup_worker
 
 app = Flask(__name__)
@@ -56,17 +57,35 @@ mail.init_app(app)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "fallback-secret")
 
 # DATABASE & ADMIN CONFIG
-raw_url = os.environ.get("DATABASE_URL")
-if not raw_url:
-    raw_url = "sqlite:///playwithpdfs.db"
-elif raw_url.startswith("postgres://"):
-    raw_url = raw_url.replace("postgres://", "postgresql+psycopg://", 1)
-elif raw_url.startswith("postgresql://") and not raw_url.startswith("postgresql+"):
-    raw_url = raw_url.replace("postgresql://", "postgresql+psycopg://", 1)
+raw_url = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_CONNECTION_KEY")
+is_postgres = False
+
+if raw_url and not raw_url.startswith("sqlite"):
+    if raw_url.startswith("postgres://"):
+        raw_url = raw_url.replace("postgres://", "postgresql+psycopg://", 1)
+    elif raw_url.startswith("postgresql://") and not raw_url.startswith("postgresql+"):
+        raw_url = raw_url.replace("postgresql://", "postgresql+psycopg://", 1)
+
+    # Test if PostgreSQL is reachable before initializing SQLAlchemy
+    from sqlalchemy import create_engine, text
+    try:
+        test_engine = create_engine(raw_url, connect_args={"connect_timeout": 4})
+        with test_engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        test_engine.dispose()
+        is_postgres = True
+        print("[+] Successfully connected to PostgreSQL database.")
+    except Exception as db_err:
+        print(f"[!] PostgreSQL connection notice: {db_err}")
+        print("[!] Falling back to local SQLite database (sqlite:///playwithpdfs.db) to ensure all tools function without interruption.")
+        raw_url = "sqlite:///playwithpdfs.db"
+        is_postgres = False
+else:
+    raw_url = raw_url or "sqlite:///playwithpdfs.db"
 
 app.config["SQLALCHEMY_DATABASE_URI"] = raw_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-if not raw_url.startswith("sqlite"):
+if is_postgres:
     app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
         "pool_pre_ping": True,     # hosted Postgres drops idle connections
         "pool_recycle": 280,
@@ -114,14 +133,18 @@ app.register_blueprint(pdf_to_pdfA_bp)
 app.register_blueprint(about_bp)
 app.register_blueprint(organize_pdf_bp)
 app.register_blueprint(contact_us_bp)
+app.register_blueprint(auth_bp)
 
 # TRACKING & TOOL MANAGEMENT
 init_tracking(app)
 
 with app.app_context():
     import models  # noqa: F401  (registers tables)
-    db.create_all()
-    seed_tools(app)
+    try:
+        db.create_all()
+        seed_tools(app)
+    except Exception as init_err:
+        print(f"[!] Warning during DB table setup: {init_err}")
 
 
 # CLI COMMAND TO CREATE ADMIN

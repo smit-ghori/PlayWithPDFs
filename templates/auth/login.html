@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block main_title %}Log In — PlayWithPDFs{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+{% endblock %}
+
+{% block main_content %}
+<section class="auth-page">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <span class="auth-badge">
+          <i data-lucide="shield-check"></i>
+          Secure Access
+        </span>
+        <h1>Welcome Back</h1>
+        <p>Log in to your PlayWithPDFs account to access your tools and preferences.</p>
+      </div>
+
+      <form class="auth-form" method="POST" action="{{ url_for('auth.login', next=request.args.get('next')) }}">
+        <input type="hidden" name="next" value="{{ request.args.get('next') or '' }}" />
+        <!-- EMAIL -->
+        <div class="auth-field">
+          <label class="auth-label" for="email">Email Address</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon">
+              <i data-lucide="mail"></i>
+            </span>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="auth-input"
+              placeholder="you@example.com"
+              value="{{ email or '' }}"
+              required
+              autocomplete="email"
+              autofocus
+            />
+          </div>
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="auth-field">
+          <div class="auth-label">
+            <label for="password">Password</label>
+          </div>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon">
+              <i data-lucide="lock"></i>
+            </span>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="auth-input"
+              placeholder="••••••••"
+              required
+              autocomplete="current-password"
+            />
+            <button type="button" class="auth-toggle-pwd" id="togglePasswordBtn" title="Show or hide password" aria-label="Toggle password visibility">
+              <i data-lucide="eye" id="togglePasswordIcon"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- REMEMBER ME -->
+        <div class="auth-options">
+          <label class="auth-checkbox-label">
+            <input type="checkbox" name="remember" checked />
+            <span>Keep me logged in</span>
+          </label>
+        </div>
+
+        <!-- SUBMIT -->
+        <button type="submit" class="auth-submit-btn">
+          <span>Sign In</span>
+          <i data-lucide="arrow-right"></i>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        Don't have an account yet?
+        <a href="{{ url_for('auth.register', next=request.args.get('next')) }}">Create an account</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // Password toggle
+    const toggleBtn = document.getElementById("togglePasswordBtn");
+    const pwdInput = document.getElementById("password");
+    const pwdIcon = document.getElementById("togglePasswordIcon");
+
+    if (toggleBtn && pwdInput) {
+      toggleBtn.addEventListener("click", () => {
+        const isPassword = pwdInput.type === "password";
+        pwdInput.type = isPassword ? "text" : "password";
+        if (pwdIcon) {
+          pwdIcon.setAttribute("data-lucide", isPassword ? "eye-off" : "eye");
+          lucide.createIcons();
+        }
+      });
+    }
+
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  });
+</script>
+{% endblock %}

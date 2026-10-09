@@ -615,3 +615,67 @@
     line-height: 1.7;
   }
 }
+
+/* ========================================= */
+/* GUEST WELCOME BANNER */
+/* ========================================= */
+
+.home-guest-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 760px;
+  margin-bottom: 24px;
+  padding: 14px 20px;
+  background: linear-gradient(
+      135deg,
+      rgba(14, 165, 233, 0.12),
+      rgba(59, 130, 246, 0.06)
+    ),
+    rgba(8, 16, 29, 0.8);
+  border: 1px solid rgba(125, 211, 252, 0.28);
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(2, 6, 23, 0.35);
+  animation: flashIn 0.3s ease;
+}
+
+.home-guest-banner__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(14, 165, 233, 0.18);
+  border: 1px solid rgba(125, 211, 252, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7dd3fc;
+  flex-shrink: 0;
+}
+
+.home-guest-banner__icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.home-guest-banner__text {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: rgba(230, 238, 248, 0.88);
+}
+
+.home-guest-banner__text strong {
+  color: #f8fbff;
+  font-weight: 600;
+}
+
+.home-guest-banner__text a {
+  color: #38bdf8;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+
+.home-guest-banner__text a:hover {
+  color: #7dd3fc;
+}

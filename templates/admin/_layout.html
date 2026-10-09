@@ -15,16 +15,23 @@
     <a href="{{ url_for('admin.tools') }}" class="{{ 'on' if '/tools' in p }}">Tools</a>
     <a href="{{ url_for('admin.events') }}" class="{{ 'on' if '/events' in p }}">Activity</a>
     <a href="{{ url_for('admin.messages') }}" class="{{ 'on' if '/messages' in p }}">Messages</a>
+    {% if admin_user and admin_user.role == 'admin' %}
     <a href="{{ url_for('admin.team') }}" class="{{ 'on' if '/team' in p }}">Team</a>
+    {% else %}
+    <a href="{{ url_for('admin.team') }}" class="{{ 'on' if '/team' in p }}" title="Administrator Only">Team <span style="font-size:10px;opacity:0.75;padding:1px 4px;border:1px solid #8d9a95;border-radius:3px;margin-left:4px;">Admin</span></a>
+    {% endif %}
     <a href="{{ url_for('admin.profile') }}" class="{{ 'on' if '/profile' in p }}">Account</a>
     <div class="foot">
       {{ admin_user.email if admin_user }}<br>
+      {% if admin_user %}
+        <span style="display:inline-block;padding:1px 6px;font-size:10.5px;border-radius:3px;background:{{ '#0f5c52' if admin_user.role == 'admin' else '#4b5563' }};color:#fff;margin:3px 0;text-transform:capitalize;">{{ admin_user.role }}</span><br>
+      {% endif %}
       <a href="{{ url_for('admin.profile') }}">Account</a> · <a href="{{ url_for('admin.logout') }}">Sign out</a>
     </div>
   </nav>
   <main>
-    {% with msgs = get_flashed_messages() %}
-      {% for m in msgs %}<div class="flash">{{ m }}</div>{% endfor %}
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% for cat, m in msgs %}<div class="flash {{ cat }}">{{ m }}</div>{% endfor %}
     {% endwith %}
     {% block body %}{% endblock %}
   </main>

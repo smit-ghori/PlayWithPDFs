@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 from functools import wraps
 
 from flask import (Blueprint, render_template, request, redirect, url_for,
-                   session, flash, Response, abort, current_app)
+                   session, flash, Response, abort, current_app, jsonify)
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from flask_mail import Message
 from sqlalchemy import func, desc
@@ -44,10 +44,25 @@ def editor_required(view):
     @wraps(view)
     @login_required
     def wrapper(*a, **kw):
-        if current_admin().role != "admin":
-            abort(403)
+        user = current_admin()
+        if not user or user.role != "admin":
+            msg = "Access Denied: You are signed in as a Viewer and are not permitted to access or modify this section. Only Administrators have permission."
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest" or "application/json" in request.headers.get("Accept", ""):
+                return jsonify({"error": msg, "forbidden": True}), 403
+            flash(msg, "error")
+            return redirect(request.referrer or url_for("admin.dashboard"))
         return view(*a, **kw)
     return wrapper
+
+
+@admin_bp.app_errorhandler(403)
+def forbidden_error(e):
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest" or "application/json" in request.headers.get("Accept", ""):
+        return jsonify({
+            "error": "You are signed in as a Viewer and are not permitted to perform this action.",
+            "forbidden": True
+        }), 403
+    return render_template("admin/403.html"), 403
 
 
 @admin_bp.app_context_processor

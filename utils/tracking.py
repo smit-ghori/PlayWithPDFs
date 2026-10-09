@@ -7,12 +7,12 @@ before_request / after_request and uses the blueprint name as the tool name.
 import time
 import hashlib
 import os
-from flask import request, g, render_template, jsonify, flash, redirect
+from flask import request, g, render_template, jsonify, flash, redirect, session, url_for
 from extensions import db
-from models import ToolEvent, ToolConfig
+from models import ToolEvent, ToolConfig, User
 
 # Blueprints that are not tools and should not be tracked or blocked.
-SKIP = {"admin", "home", "about", "static", None}
+SKIP = {"admin", "home", "about", "static", "auth", "contact_us", None}
 
 _flag_cache = {"at": 0.0, "data": {}}
 _FLAG_TTL = 20  # seconds
@@ -62,6 +62,40 @@ def init_tracking(app):
         tool = request.blueprint
         if tool in SKIP:
             return None
+
+        # -------------------------------------------------------------
+        # Enforce user authentication for all operational PDF tools
+        # -------------------------------------------------------------
+        user_id = session.get("user_id")
+        user = None
+        if user_id:
+            try:
+                user = User.query.get(user_id)
+            except Exception:
+                user = None
+
+        if not user or not user.is_active:
+            if user_id and not user:
+                # User id in session is invalid or user was removed
+                session.pop("user_id", None)
+            elif user and not user.is_active:
+                session.pop("user_id", None)
+                flash("Your account has been deactivated. Please contact support.", "error")
+                return redirect(url_for("auth.login"))
+
+            msg = "Please log in or create a free account to use this tool."
+            next_target = request.full_path if request.query_string else request.path
+
+            # Return JSON 401 if requested via AJAX or API fetch
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest" or "application/json" in request.headers.get("Accept", ""):
+                return jsonify({
+                    "error": msg,
+                    "login_required": True,
+                    "redirect": url_for("auth.login", next=next_target)
+                }), 401
+
+            flash(msg, "warning")
+            return redirect(url_for("auth.login", next=next_target))
 
         cfg = get_flags().get(tool)
         if cfg and not cfg["enabled"]:
@@ -122,6 +156,9 @@ def init_tracking(app):
 
     @app.errorhandler(Exception)
     def _log_error(e):
+        from werkzeug.exceptions import HTTPException
+        if isinstance(e, HTTPException):
+            return e
         try:
             db.session.rollback()
             db.session.add(ToolEvent(
