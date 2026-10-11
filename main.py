@@ -41,6 +41,7 @@ from routes.organize_pdf import organize_pdf_bp
 from routes.about import about_bp
 from routes.contact_us import contact_us_bp
 from routes.auth import auth_bp
+from routes.chat import chat_bp
 from utils.file_utils import cleanup_worker
 
 app = Flask(__name__)
@@ -134,6 +135,7 @@ app.register_blueprint(about_bp)
 app.register_blueprint(organize_pdf_bp)
 app.register_blueprint(contact_us_bp)
 app.register_blueprint(auth_bp)
+app.register_blueprint(chat_bp)
 
 # TRACKING & TOOL MANAGEMENT
 init_tracking(app)
@@ -142,6 +144,17 @@ with app.app_context():
     import models  # noqa: F401  (registers tables)
     try:
         db.create_all()
+
+        # Safe self-healing check: ensure department column exists on users table
+        from sqlalchemy import inspect, text
+        inspector = inspect(db.engine)
+        if "users" in inspector.get_table_names():
+            columns = [c["name"] for c in inspector.get_columns("users")]
+            if "department" not in columns:
+                db.session.execute(text("ALTER TABLE users ADD COLUMN department VARCHAR(80) DEFAULT 'General / Other' NOT NULL"))
+                db.session.commit()
+                print("[+] Auto-migrated 'users' table: added 'department' column.")
+
         seed_tools(app)
     except Exception as init_err:
         print(f"[!] Warning during DB table setup: {init_err}")

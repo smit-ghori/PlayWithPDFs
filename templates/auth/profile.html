@@ -26,7 +26,12 @@
         <div class="profile-info">
           <h3>{{ user.name }}</h3>
           <p>{{ user.email }}</p>
-          <p style="margin-top: 4px; font-size: 12px; opacity: 0.7;">
+          <div style="margin-top: 6px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <span style="display:inline-block; padding: 2px 8px; font-size: 11px; font-weight: 600; border-radius: 4px; background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.3);">
+              <i data-lucide="briefcase" style="width:11px; height:11px; display:inline-block; vertical-align:middle; margin-right:3px;"></i>{{ user.department or 'General / Other' }}
+            </span>
+          </div>
+          <p style="margin-top: 6px; font-size: 12px; opacity: 0.7;">
             Member since: {{ user.created_at.strftime('%B %d, %Y') if user.created_at else 'Recently' }}
           </p>
         </div>
@@ -47,6 +52,18 @@
           <div class="auth-input-wrapper">
             <span class="auth-input-icon"><i data-lucide="mail"></i></span>
             <input type="email" id="email" class="auth-input" value="{{ user.email }}" readonly disabled style="opacity: 0.65; cursor: not-allowed;" />
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" for="department">Department</label>
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon"><i data-lucide="briefcase"></i></span>
+            <select id="department" name="department" class="auth-input" style="cursor: pointer; appearance: auto;">
+              {% for dept in departments %}
+              <option value="{{ dept }}" {% if user.department == dept %}selected{% endif %}>{{ dept }}</option>
+              {% endfor %}
+            </select>
           </div>
         </div>
 

@@ -93,7 +93,36 @@ def run_migration(target_url):
                 db.session.rollback()
                 print(f"[!] Note on admin users migration: {e}")
 
-            # 2. Tool configs
+            # 2. End-Users
+            try:
+                existing_users = models.User.query.count()
+                if existing_users == 0:
+                    # check if department column exists in sqlite
+                    s_cur.execute("PRAGMA table_info(users)")
+                    cols = [row[1] for row in s_cur.fetchall()]
+                    if "department" in cols:
+                        s_cur.execute("SELECT name, email, department, password_hash, is_active FROM users")
+                        users_data = s_cur.fetchall()
+                        for name, email, dept, pwd, active in users_data:
+                            u = models.User(
+                                name=name, email=email, department=dept or "General / Other", password_hash=pwd, is_active=bool(active)
+                            )
+                            db.session.add(u)
+                    else:
+                        s_cur.execute("SELECT name, email, password_hash, is_active FROM users")
+                        users_data = s_cur.fetchall()
+                        for name, email, pwd, active in users_data:
+                            u = models.User(
+                                name=name, email=email, department="General / Other", password_hash=pwd, is_active=bool(active)
+                            )
+                            db.session.add(u)
+                    db.session.commit()
+                    print(f"[+] Migrated {len(users_data)} end-user(s) with departments from SQLite.")
+            except Exception as e:
+                db.session.rollback()
+                print(f"[!] Note on end-users migration: {e}")
+
+            # 3. Tool configs
             seed_count = seed_tools(app)
             print(f"[+] Seeded {seed_count} tool configuration(s).")
 

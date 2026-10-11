@@ -16,7 +16,8 @@ from flask_mail import Message
 from sqlalchemy import func, desc
 
 from extensions import db, mail
-from models import AdminUser, ToolConfig, ToolEvent, ContactMessage, AuditLog, record_audit, utcnow
+from models import (AdminUser, User, ToolConfig, ToolEvent, ContactMessage,
+                    AuditLog, ChatMessage, Announcement, DEPARTMENTS, record_audit, utcnow)
 from utils.tracking import invalidate_flags, seed_tools
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -559,3 +560,245 @@ def profile():
         return redirect(url_for("admin.profile"))
 
     return render_template("admin/profile.html", user=user)
+
+
+# ---------------------------------------------------------------- end-user management
+
+@admin_bp.route("/users")
+@login_required
+def users_list():
+    dept_filter = request.args.get("department", "").strip()
+    search = request.args.get("q", "").strip()
+
+    query = User.query
+    if dept_filter and dept_filter != "ALL":
+        query = query.filter(User.department == dept_filter)
+    if search:
+        query = query.filter(
+            (User.name.ilike(f"%{search}%")) | (User.email.ilike(f"%{search}%"))
+        )
+
+    users = query.order_by(desc(User.created_at)).all()
+
+    # Department statistics
+    dept_stats = {}
+    for d in DEPARTMENTS:
+        dept_stats[d] = User.query.filter_by(department=d).count()
+    total_users = User.query.count()
+
+    return render_template(
+        "admin/users.html",
+        users=users,
+        departments=DEPARTMENTS,
+        selected_dept=dept_filter,
+        search=search,
+        dept_stats=dept_stats,
+        total_users=total_users,
+    )
+
+
+@admin_bp.route("/users/<int:uid>/update", methods=["POST"])
+@editor_required
+def user_modify(uid):
+    user = User.query.get_or_404(uid)
+    new_dept = request.form.get("department", "").strip()
+    new_name = request.form.get("name", "").strip()
+    new_active = request.form.get("is_active") == "1"
+    new_password = request.form.get("password", "").strip()
+
+    if new_dept in DEPARTMENTS:
+        user.department = new_dept
+    if new_name:
+        user.name = new_name
+    user.is_active = new_active
+
+    if new_password:
+        if len(new_password) < 6:
+            flash("New password must be at least 6 characters.", "error")
+            return redirect(url_for("admin.users_list"))
+        user.set_password(new_password)
+        record_audit(current_admin(), "user.reset_password", user.email, "Admin reset end-user password")
+        flash(f"Updated {user.email} and set new password.")
+    else:
+        flash(f"Updated {user.email}.")
+
+    db.session.commit()
+    record_audit(current_admin(), "user.update", user.email, f"dept={user.department}, active={user.is_active}")
+    return redirect(url_for("admin.users_list"))
+
+
+@admin_bp.route("/users/<int:uid>/delete", methods=["POST"])
+@editor_required
+def user_remove(uid):
+    user = User.query.get_or_404(uid)
+    email = user.email
+    db.session.delete(user)
+    db.session.commit()
+    record_audit(current_admin(), "user.delete", email)
+    flash(f"Deleted user {email}.")
+    return redirect(url_for("admin.users_list"))
+
+
+# ---------------------------------------------------------------- support chat
+
+@admin_bp.route("/chat")
+@login_required
+def chat_dashboard():
+    all_users = User.query.order_by(desc(User.created_at)).all()
+    user_threads = []
+    for u in all_users:
+        last_msg = ChatMessage.query.filter_by(user_id=u.id).order_by(desc(ChatMessage.created_at)).first()
+        unread_count = ChatMessage.query.filter_by(user_id=u.id, sender_type="user", is_read=False).count()
+        user_threads.append({
+            "user": u,
+            "last_message": last_msg,
+            "unread_count": unread_count,
+        })
+
+    user_threads.sort(
+        key=lambda x: (
+            x["unread_count"] > 0,
+            x["last_message"].created_at if x["last_message"] else x["user"].created_at
+        ),
+        reverse=True
+    )
+
+    selected_uid = request.args.get("user_id", type=int)
+    if not selected_uid and user_threads:
+        selected_uid = user_threads[0]["user"].id
+
+    return render_template(
+        "admin/chat.html",
+        threads=user_threads,
+        selected_uid=selected_uid,
+    )
+
+
+@admin_bp.route("/chat/api/thread/<int:uid>", methods=["GET"])
+@login_required
+def chat_get_thread(uid):
+    user = User.query.get_or_404(uid)
+    messages = (
+        ChatMessage.query.filter_by(user_id=user.id)
+        .order_by(ChatMessage.created_at.asc())
+        .all()
+    )
+    has_unread = False
+    for m in messages:
+        if m.sender_type == "user" and not m.is_read:
+            m.is_read = True
+            has_unread = True
+    if has_unread:
+        db.session.commit()
+
+    return jsonify({
+        "success": True,
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "department": user.department,
+            "is_active": user.is_active,
+        },
+        "messages": [m.to_dict() for m in messages],
+    })
+
+
+@admin_bp.route("/chat/api/reply/<int:uid>", methods=["POST"])
+@login_required
+def chat_reply_thread(uid):
+    user = User.query.get_or_404(uid)
+    admin = current_admin()
+    data = request.get_json(silent=True) or request.form
+    text = (data.get("message") or "").strip()
+
+    if not text:
+        return jsonify({"error": "Message cannot be empty."}), 400
+
+    msg = ChatMessage(
+        user_id=user.id,
+        sender_type="admin",
+        admin_id=admin.id,
+        message=text,
+        is_read=False,
+    )
+    db.session.add(msg)
+    db.session.commit()
+
+    return jsonify({
+        "success": True,
+        "message": msg.to_dict(),
+    })
+
+
+@admin_bp.route("/chat/api/unread-total", methods=["GET"])
+@login_required
+def chat_unread_total():
+    count = ChatMessage.query.filter_by(sender_type="user", is_read=False).count()
+    return jsonify({"count": count})
+
+
+# ---------------------------------------------------------------- announcements
+
+@admin_bp.route("/announcements")
+@login_required
+def announcements_list():
+    items = Announcement.query.order_by(desc(Announcement.created_at)).all()
+    return render_template(
+        "admin/announcements.html",
+        announcements=items,
+        departments=DEPARTMENTS,
+    )
+
+
+@admin_bp.route("/announcements/create", methods=["POST"])
+@editor_required
+def announcement_create():
+    admin = current_admin()
+    title = request.form.get("title", "").strip()
+    content = request.form.get("content", "").strip()
+    target_dept = request.form.get("target_department", "ALL").strip()
+
+    if not title or not content:
+        flash("Title and content are required.", "error")
+        return redirect(url_for("admin.announcements_list"))
+
+    if target_dept != "ALL" and target_dept not in DEPARTMENTS:
+        target_dept = "ALL"
+
+    ann = Announcement(
+        title=title,
+        content=content,
+        target_department=target_dept,
+        admin_id=admin.id,
+        is_active=True,
+    )
+    db.session.add(ann)
+    db.session.commit()
+    record_audit(admin, "announcement.create", title, f"target={target_dept}")
+    flash(f"Announcement '{title}' published successfully.")
+    return redirect(url_for("admin.announcements_list"))
+
+
+@admin_bp.route("/announcements/<int:aid>/toggle", methods=["POST"])
+@editor_required
+def announcement_toggle(aid):
+    ann = Announcement.query.get_or_404(aid)
+    ann.is_active = not ann.is_active
+    db.session.commit()
+    state = "activated" if ann.is_active else "deactivated"
+    record_audit(current_admin(), "announcement.toggle", ann.title, f"state={state}")
+    flash(f"Announcement '{ann.title}' {state}.")
+    return redirect(url_for("admin.announcements_list"))
+
+
+@admin_bp.route("/announcements/<int:aid>/delete", methods=["POST"])
+@editor_required
+def announcement_delete(aid):
+    ann = Announcement.query.get_or_404(aid)
+    title = ann.title
+    db.session.delete(ann)
+    db.session.commit()
+    record_audit(current_admin(), "announcement.delete", title)
+    flash(f"Deleted announcement '{title}'.")
+    return redirect(url_for("admin.announcements_list"))

@@ -28,6 +28,19 @@ class AdminUser(db.Model):
         return check_password_hash(self.password_hash, raw)
 
 
+DEPARTMENTS = [
+    "Engineering & IT",
+    "Operations",
+    "Finance & Accounting",
+    "Human Resources (HR)",
+    "Marketing & Sales",
+    "Legal & Compliance",
+    "Product & Design",
+    "Customer Support",
+    "General / Other",
+]
+
+
 class User(db.Model):
     """End-user account for PlayWithPDFs web application."""
     __tablename__ = "users"
@@ -35,6 +48,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(190), unique=True, nullable=False, index=True)
     name = db.Column(db.String(120), nullable=False)
+    department = db.Column(db.String(80), nullable=False, default="General / Other", index=True)
     password_hash = db.Column(db.String(255), nullable=False)
     is_active = db.Column(db.Boolean, default=True)
     last_login_at = db.Column(db.DateTime(timezone=True))
@@ -117,3 +131,65 @@ def record_audit(admin, action, target=None, detail=None):
         action=action, target=target, detail=detail,
     ))
     db.session.commit()
+
+
+class ChatMessage(db.Model):
+    """Direct chat messages between a specific user and the admin support team."""
+    __tablename__ = "chat_messages"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    sender_type = db.Column(db.String(20), nullable=False, index=True)  # 'user' | 'admin'
+    admin_id = db.Column(db.Integer, db.ForeignKey("admin_users.id"), nullable=True)
+    message = db.Column(db.Text, nullable=False)
+    is_read = db.Column(db.Boolean, default=False, nullable=False, index=True)
+    created_at = db.Column(db.DateTime(timezone=True), default=utcnow, index=True)
+
+    user = db.relationship("User", backref=db.backref("messages", lazy="dynamic", cascade="all, delete-orphan"))
+    admin = db.relationship("AdminUser", backref=db.backref("sent_replies", lazy="dynamic"))
+
+    def to_dict(self):
+        admin_name = None
+        if self.admin:
+            admin_name = self.admin.name or self.admin.email
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "sender_type": self.sender_type,
+            "sender_name": admin_name if self.sender_type == "admin" else (self.user.name if self.user else "User"),
+            "admin_id": self.admin_id,
+            "message": self.message,
+            "is_read": self.is_read,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "formatted_time": self.created_at.strftime("%b %d, %I:%M %p") if self.created_at else "",
+        }
+
+
+class Announcement(db.Model):
+    """Broadcast announcements from admins, targeted department-wise or to all."""
+    __tablename__ = "announcements"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    target_department = db.Column(db.String(80), default="ALL", nullable=False, index=True)  # 'ALL' or department name
+    admin_id = db.Column(db.Integer, db.ForeignKey("admin_users.id"), nullable=True)
+    is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)
+    created_at = db.Column(db.DateTime(timezone=True), default=utcnow, index=True)
+
+    admin = db.relationship("AdminUser", backref=db.backref("announcements", lazy="dynamic"))
+
+    def to_dict(self):
+        admin_name = None
+        if self.admin:
+            admin_name = self.admin.name or self.admin.email
+        return {
+            "id": self.id,
+            "title": self.title,
+            "content": self.content,
+            "target_department": self.target_department,
+            "admin_name": admin_name or "Administration",
+            "is_active": self.is_active,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "formatted_time": self.created_at.strftime("%b %d, %Y %I:%M %p") if self.created_at else "",
+        }

@@ -1,12 +1,30 @@
-function showLoader() {
+let loaderTimeout = null;
+
+function showLoader(maxTimeoutMs = 12000) {
     const overlay = document.getElementById("loader-overlay");
     if (overlay) overlay.style.display = "flex";
+
+    if (loaderTimeout) clearTimeout(loaderTimeout);
+    // Auto fail-safe: never allow the loader to spin indefinitely
+    loaderTimeout = setTimeout(() => {
+        hideLoader();
+    }, maxTimeoutMs);
 }
+window.showLoader = showLoader;
 
 function hideLoader() {
     const overlay = document.getElementById("loader-overlay");
     if (overlay) overlay.style.display = "none";
+    if (loaderTimeout) {
+        clearTimeout(loaderTimeout);
+        loaderTimeout = null;
+    }
 }
+window.hideLoader = hideLoader;
+
+// Immediately ensure loader is dismissed on page load or when restored from history/bfcache
+window.addEventListener("pageshow", hideLoader);
+window.addEventListener("load", hideLoader);
 
 /**
  * Convert a fetch response containing a file into a downloaded link.
@@ -105,10 +123,31 @@ function showFlashMessagesFromHtml(html) {
 document.addEventListener("DOMContentLoaded", () => {
     // show loader on regular form submit and validate file limits
     document.querySelectorAll("form:not(.ajax-upload-form)").forEach((form) => {
-        if (form.dataset.noLoader === "true") {
+        if (
+            form.dataset.noLoader === "true" ||
+            form.classList.contains("no-loader") ||
+            form.id === "pwpChatForm" ||
+            form.id === "chatReplyForm" ||
+            form.closest(".pwp-chat-widget")
+        ) {
             return;
         }
         form.addEventListener("submit", (e) => {
+            if (e.defaultPrevented) {
+                return;
+            }
+            if (
+                form.dataset.noLoader === "true" ||
+                form.classList.contains("no-loader") ||
+                form.id === "pwpChatForm" ||
+                form.id === "chatReplyForm" ||
+                form.closest(".pwp-chat-widget")
+            ) {
+                return;
+            }
+            if (typeof form.checkValidity === "function" && !form.checkValidity()) {
+                return;
+            }
             const maxFiles = window.TOOL_CONFIG?.max_files;
             if (maxFiles) {
                 let totalFiles = 0;

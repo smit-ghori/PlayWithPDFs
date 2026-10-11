@@ -12,9 +12,12 @@
     <h1>PlayWithPDFs<span>Operations</span></h1>
     {% set p = request.path %}
     <a href="{{ url_for('admin.dashboard') }}" class="{{ 'on' if p == '/admin/' }}">Overview</a>
+    <a href="{{ url_for('admin.users_list') }}" class="{{ 'on' if '/users' in p }}">Users</a>
+    <a href="{{ url_for('admin.chat_dashboard') }}" class="{{ 'on' if '/chat' in p }}">Support Chat</a>
+    <a href="{{ url_for('admin.announcements_list') }}" class="{{ 'on' if '/announcements' in p }}">Announcements</a>
     <a href="{{ url_for('admin.tools') }}" class="{{ 'on' if '/tools' in p }}">Tools</a>
     <a href="{{ url_for('admin.events') }}" class="{{ 'on' if '/events' in p }}">Activity</a>
-    <a href="{{ url_for('admin.messages') }}" class="{{ 'on' if '/messages' in p }}">Messages</a>
+    <a href="{{ url_for('admin.messages') }}" class="{{ 'on' if '/messages' in p }}">Contact Inquiries</a>
     {% if admin_user and admin_user.role == 'admin' %}
     <a href="{{ url_for('admin.team') }}" class="{{ 'on' if '/team' in p }}">Team</a>
     {% else %}

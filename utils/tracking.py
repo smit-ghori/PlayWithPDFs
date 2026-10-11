@@ -12,7 +12,7 @@ from extensions import db
 from models import ToolEvent, ToolConfig, User
 
 # Blueprints that are not tools and should not be tracked or blocked.
-SKIP = {"admin", "home", "about", "static", "auth", "contact_us", None}
+SKIP = {"admin", "home", "about", "static", "auth", "contact_us", "chat", None}
 
 _flag_cache = {"at": 0.0, "data": {}}
 _FLAG_TTL = 20  # seconds

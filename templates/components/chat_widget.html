@@ -1,0 +1,913 @@
+<!-- PLAYWITHPDFS FLOATING SUPPORT & ANNOUNCEMENTS CHATBOT WIDGET -->
+<style>
+  .pwp-chat-widget {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 99999;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  }
+
+  .pwp-chat-trigger {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0d9488 0%, #059669 100%);
+    box-shadow: 0 8px 24px rgba(13, 148, 136, 0.4), 0 2px 6px rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+    outline: none;
+    position: relative;
+  }
+
+  .pwp-chat-trigger:hover {
+    transform: scale(1.08);
+    box-shadow: 0 10px 28px rgba(13, 148, 136, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .pwp-chat-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 11px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    border: 2px solid #0f172a;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.6);
+    animation: pwpBadgePulse 2s infinite;
+    z-index: 10;
+  }
+
+  @keyframes pwpBadgePulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { transform: scale(1.08); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  }
+
+  /* NOTIFICATION SPEECH PREVIEW BUBBLE */
+  .pwp-msg-preview-bubble {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    width: 290px;
+    max-width: calc(100vw - 48px);
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    border: 1px solid rgba(45, 212, 191, 0.5);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 16px rgba(45, 212, 191, 0.2);
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: none;
+    cursor: pointer;
+    animation: pwpBubbleBounce 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 9999;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .pwp-msg-preview-bubble:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7), 0 0 22px rgba(45, 212, 191, 0.35);
+  }
+
+  .pwp-msg-preview-bubble.announcement-theme {
+    border-color: rgba(245, 158, 11, 0.65);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65), 0 0 20px rgba(245, 158, 11, 0.28);
+  }
+
+  .pwp-msg-preview-bubble.announcement-theme:hover {
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.75), 0 0 26px rgba(245, 158, 11, 0.4);
+  }
+
+  .pwp-msg-preview-bubble.announcement-theme .pwp-preview-sender {
+    color: #fbbf24;
+  }
+
+  .pwp-msg-preview-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    right: 22px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #1e293b;
+  }
+
+  @keyframes pwpBubbleBounce {
+    0% { opacity: 0; transform: translateY(12px) scale(0.92); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .pwp-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+  }
+
+  .pwp-preview-sender {
+    font-size: 12px;
+    font-weight: 700;
+    color: #2dd4bf;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .pwp-preview-close {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 2px 5px;
+    font-size: 13px;
+    line-height: 1;
+    border-radius: 4px;
+  }
+
+  .pwp-preview-close:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .pwp-preview-text {
+    font-size: 12.5px;
+    color: #e2e8f0;
+    margin: 0;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+  }
+
+  .pwp-preview-cta {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .pwp-chat-modal {
+    display: none;
+    position: absolute;
+    bottom: 74px;
+    right: 0;
+    width: 380px;
+    max-width: calc(100vw - 32px);
+    height: 540px;
+    max-height: calc(100vh - 120px);
+    background: #0f172a;
+    border: 1px solid rgba(51, 65, 85, 0.8);
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    flex-direction: column;
+    overflow: hidden;
+    animation: pwpChatIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes pwpChatIn {
+    from { opacity: 0; transform: translateY(14px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .pwp-chat-header {
+    background: linear-gradient(135deg, #111e1c 0%, #0d2924 100%);
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(45, 80, 72, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .pwp-chat-title-group h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .pwp-chat-title-group p {
+    margin: 3px 0 0;
+    font-size: 11.5px;
+    color: #94a3b8;
+  }
+
+  .pwp-chat-close-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .pwp-chat-close-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f1f5f9;
+  }
+
+  .pwp-chat-nav-tabs {
+    display: flex;
+    background: #090f1d;
+    border-bottom: 1px solid rgba(51, 65, 85, 0.6);
+  }
+
+  .pwp-tab-btn {
+    flex: 1;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+
+  .pwp-tab-btn.active {
+    color: #2dd4bf;
+    border-bottom-color: #2dd4bf;
+    background: rgba(45, 212, 191, 0.05);
+  }
+
+  .pwp-tab-content {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .pwp-tab-content.active {
+    display: flex;
+  }
+
+  /* CHAT MESSAGES BODY */
+  .pwp-chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #0a0f1d;
+  }
+
+  .pwp-msg-bubble-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pwp-msg-bubble-group.user {
+    align-items: flex-end;
+  }
+
+  .pwp-msg-bubble-group.admin {
+    align-items: flex-start;
+  }
+
+  .pwp-msg-author {
+    font-size: 11px;
+    color: #64748b;
+    margin-bottom: 3px;
+    padding: 0 4px;
+  }
+
+  .pwp-msg-bubble {
+    max-width: 82%;
+    padding: 9px 13px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.45;
+    word-break: break-word;
+  }
+
+  .pwp-msg-bubble.user {
+    background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+    color: #ffffff;
+    border-bottom-right-radius: 3px;
+  }
+
+  .pwp-msg-bubble.admin {
+    background: #1e293b;
+    color: #f1f5f9;
+    border: 1px solid rgba(71, 85, 105, 0.5);
+    border-bottom-left-radius: 3px;
+  }
+
+  /* CHAT INPUT AREA */
+  .pwp-chat-input-bar {
+    padding: 12px 14px;
+    background: #0f172a;
+    border-top: 1px solid rgba(51, 65, 85, 0.6);
+    display: flex;
+    gap: 8px;
+  }
+
+  .pwp-chat-input-bar input {
+    flex: 1;
+    background: #1e293b;
+    border: 1px solid rgba(71, 85, 105, 0.6);
+    border-radius: 8px;
+    padding: 9px 13px;
+    color: #f8fafc;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .pwp-chat-input-bar input:focus {
+    border-color: #2dd4bf;
+  }
+
+  .pwp-chat-send-btn {
+    background: #0d9488;
+    border: none;
+    border-radius: 8px;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .pwp-chat-send-btn:hover {
+    background: #0f766e;
+  }
+
+  /* ANNOUNCEMENTS TAB */
+  .pwp-announcements-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #0a0f1d;
+  }
+
+  .pwp-announcement-card {
+    background: #1e293b;
+    border: 1px solid rgba(51, 65, 85, 0.7);
+    border-radius: 10px;
+    padding: 14px;
+    transition: border-color 0.2s;
+  }
+
+  .pwp-announcement-card:hover {
+    border-color: rgba(45, 212, 191, 0.4);
+  }
+
+  .pwp-announcement-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .pwp-announcement-title {
+    font-weight: 700;
+    font-size: 13.5px;
+    color: #f8fafc;
+    margin: 0;
+  }
+
+  .pwp-badge-tag {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+
+  .pwp-badge-all {
+    background: rgba(34, 197, 94, 0.2);
+    color: #86efac;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+
+  .pwp-badge-dept {
+    background: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+  }
+
+  .pwp-announcement-body {
+    font-size: 12.5px;
+    color: #cbd5e1;
+    line-height: 1.45;
+    margin: 0 0 8px;
+  }
+
+  .pwp-announcement-footer {
+    font-size: 11px;
+    color: #64748b;
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+
+<div class="pwp-chat-widget" id="pwpChatWidget">
+  <!-- NOTIFICATION SPEECH BUBBLE -->
+  <div class="pwp-msg-preview-bubble" id="pwpMsgPreviewBubble" onclick="openChatFromBubble(event)" title="Click to view">
+    <div class="pwp-preview-header">
+      <span class="pwp-preview-sender" id="pwpPreviewSenderWrap">
+        <i data-lucide="message-circle" id="pwpPreviewIcon" style="width: 14px; height: 14px; color: #2dd4bf;"></i>
+        <span id="pwpPreviewSenderName">Admin Message</span>
+      </span>
+      <button type="button" class="pwp-preview-close" onclick="dismissPreviewBubble(event)" title="Dismiss">✕</button>
+    </div>
+    <div id="pwpPreviewTitle" style="display: none; font-size: 13px; font-weight: 700; color: #f8fafc; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></div>
+    <p class="pwp-preview-text" id="pwpPreviewText">You have a new message from our administration.</p>
+    <div class="pwp-preview-cta">
+      <span id="pwpPreviewCtaText" style="color: #2dd4bf; font-weight: 600;">Click to open &rarr;</span>
+      <span id="pwpPreviewTime" style="font-size: 10.5px; opacity: 0.8;">Just now</span>
+    </div>
+  </div>
+
+  <!-- FLOATING TRIGGER BUTTON -->
+  <button class="pwp-chat-trigger" id="pwpChatTrigger" onclick="togglePwpChat()" title="Open Support & Announcements">
+    <span id="pwpChatIconOpen"><i data-lucide="message-square" style="width: 24px; height: 24px;"></i></span>
+    <span id="pwpChatIconClose" style="display: none;"><i data-lucide="x" style="width: 24px; height: 24px;"></i></span>
+    <span class="pwp-chat-badge" id="pwpUnreadBadge">0</span>
+  </button>
+
+  <!-- CHAT / ANNOUNCEMENTS POPUP MODAL -->
+  <div class="pwp-chat-modal" id="pwpChatModal">
+    <!-- HEADER -->
+    <div class="pwp-chat-header">
+      <div class="pwp-chat-title-group">
+        <h4>
+          <i data-lucide="sparkles" style="width: 16px; height: 16px; color: #2dd4bf;"></i>
+          Support & Bulletins
+        </h4>
+        <p id="pwpChatSubtitle">
+          {% if current_user %}
+            Signed in as <strong>{{ current_user.name }}</strong> ({{ current_user.department }})
+          {% else %}
+            PlayWithPDFs Communications
+          {% endif %}
+        </p>
+      </div>
+      <button class="pwp-chat-close-btn" onclick="togglePwpChat()" title="Close chat">
+        <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+      </button>
+    </div>
+
+    <!-- TABS -->
+    <div class="pwp-chat-nav-tabs">
+      <button class="pwp-tab-btn active" id="tabBtnChat" onclick="switchPwpTab('chat')">
+        <i data-lucide="messages-square" style="width: 14px; height: 14px;"></i>
+        Admin Chat
+      </button>
+      <button class="pwp-tab-btn" id="tabBtnAnnouncements" onclick="switchPwpTab('announcements')">
+        <i data-lucide="megaphone" style="width: 14px; height: 14px;"></i>
+        Announcements
+        <span id="pwpAnnounceDot" style="width: 7px; height: 7px; border-radius: 50%; background: #2dd4bf; display: none;"></span>
+      </button>
+    </div>
+
+    <!-- TAB 1: ADMIN CHAT -->
+    <div class="pwp-tab-content active" id="tabContentChat">
+      {% if current_user %}
+        <div class="pwp-chat-messages" id="pwpChatMessages">
+          <div style="text-align: center; color: #64748b; font-size: 12px; margin-top: 30px;">
+            Loading your conversation with administration...
+          </div>
+        </div>
+
+        <form class="pwp-chat-input-bar no-loader" id="pwpChatForm" data-no-loader="true" onsubmit="sendPwpUserMessage(event)">
+          <input type="text" id="pwpChatInput" placeholder="Message our team..." autocomplete="off" maxlength="3000" />
+          <button type="submit" class="pwp-chat-send-btn" id="pwpSendBtn" title="Send message">
+            <i data-lucide="send" style="width: 16px; height: 16px;"></i>
+          </button>
+        </form>
+      {% else %}
+        <div style="padding: 32px 24px; text-align: center; color: #cbd5e1; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+          <div style="width: 52px; height: 52px; border-radius: 50%; background: rgba(45, 212, 191, 0.1); color: #2dd4bf; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+            <i data-lucide="lock" style="width: 24px; height: 24px;"></i>
+          </div>
+          <h4 style="margin: 0 0 8px; font-size: 16px; color: #f8fafc;">User Sign-in Required</h4>
+          <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; margin: 0 0 20px;">
+            Please sign in to chat directly with our administration team. New users can select their department during registration.
+          </p>
+          <div style="display: flex; gap: 10px; width: 100%;">
+            <a href="{{ url_for('auth.login', next=request.path) }}" style="flex: 1; padding: 10px; border-radius: 8px; background: #0d9488; color: #fff; font-size: 13px; font-weight: 600; text-decoration: none; text-align: center;">Log In</a>
+            <a href="{{ url_for('auth.register', next=request.path) }}" style="flex: 1; padding: 10px; border-radius: 8px; background: #1e293b; color: #2dd4bf; border: 1px solid #2dd4bf; font-size: 13px; font-weight: 600; text-decoration: none; text-align: center;">Register</a>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- TAB 2: ANNOUNCEMENTS -->
+    <div class="pwp-tab-content" id="tabContentAnnouncements">
+      <div class="pwp-announcements-list" id="pwpAnnouncementsList">
+        <div style="text-align: center; color: #64748b; font-size: 12px; margin-top: 30px;">
+          Checking for active announcements...
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let isPwpChatOpen = false;
+  let pwpActiveTab = 'chat';
+  let pwpPollTimer = null;
+  let previewDismissedMessageId = null;
+  let previewDismissedAnnouncementId = null;
+  const isPwpLoggedIn = {{ 'true' if current_user else 'false' }};
+
+  function dismissPreviewBubble(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const bubble = document.getElementById('pwpMsgPreviewBubble');
+    if (bubble) bubble.style.display = 'none';
+
+    if (window._previewType === 'announcement' && window._latestAnnouncementId) {
+      previewDismissedAnnouncementId = window._latestAnnouncementId;
+      localStorage.setItem('pwp_last_seen_announcement_id', String(window._latestAnnouncementId));
+      const dot = document.getElementById('pwpAnnounceDot');
+      if (dot) dot.style.display = 'none';
+      checkPwpUnreadCount();
+    } else if (window._currentLatestUnreadId) {
+      previewDismissedMessageId = window._currentLatestUnreadId;
+    }
+  }
+
+  function openChatFromBubble(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const bubble = document.getElementById('pwpMsgPreviewBubble');
+    if (bubble) bubble.style.display = 'none';
+
+    const wasAnnouncement = window._previewType === 'announcement';
+
+    if (wasAnnouncement && window._latestAnnouncementId) {
+      localStorage.setItem('pwp_last_seen_announcement_id', String(window._latestAnnouncementId));
+      const dot = document.getElementById('pwpAnnounceDot');
+      if (dot) dot.style.display = 'none';
+    }
+
+    if (!isPwpChatOpen) {
+      togglePwpChat();
+    }
+
+    if (wasAnnouncement) {
+      switchPwpTab('announcements');
+    } else {
+      switchPwpTab('chat');
+    }
+  }
+
+  function togglePwpChat() {
+    isPwpChatOpen = !isPwpChatOpen;
+    const modal = document.getElementById('pwpChatModal');
+    const iconOpen = document.getElementById('pwpChatIconOpen');
+    const iconClose = document.getElementById('pwpChatIconClose');
+    const previewBubble = document.getElementById('pwpMsgPreviewBubble');
+
+    if (isPwpChatOpen) {
+      modal.style.display = 'flex';
+      iconOpen.style.display = 'none';
+      iconClose.style.display = 'block';
+      if (previewBubble) previewBubble.style.display = 'none';
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+
+      // Clear badge counter on open
+      const badge = document.getElementById('pwpUnreadBadge');
+      if (badge) badge.style.display = 'none';
+
+      // Refresh data
+      if (pwpActiveTab === 'chat' && isPwpLoggedIn) {
+        fetchPwpMessages();
+      } else if (pwpActiveTab === 'announcements') {
+        if (window._latestAnnouncementId) {
+          localStorage.setItem('pwp_last_seen_announcement_id', String(window._latestAnnouncementId));
+        }
+        const dot = document.getElementById('pwpAnnounceDot');
+        if (dot) dot.style.display = 'none';
+        fetchPwpAnnouncements();
+      }
+
+      // Start frequent polling when open
+      if (!pwpPollTimer && isPwpLoggedIn) {
+        pwpPollTimer = setInterval(() => {
+          if (isPwpChatOpen && pwpActiveTab === 'chat') {
+            fetchPwpMessages();
+          }
+        }, 4000);
+      }
+    } else {
+      modal.style.display = 'none';
+      iconOpen.style.display = 'block';
+      iconClose.style.display = 'none';
+      if (pwpPollTimer) {
+        clearInterval(pwpPollTimer);
+        pwpPollTimer = null;
+      }
+      checkPwpUnreadCount();
+    }
+  }
+
+  function switchPwpTab(tab) {
+    pwpActiveTab = tab;
+    document.getElementById('tabBtnChat').classList.toggle('active', tab === 'chat');
+    document.getElementById('tabBtnAnnouncements').classList.toggle('active', tab === 'announcements');
+    document.getElementById('tabContentChat').classList.toggle('active', tab === 'chat');
+    document.getElementById('tabContentAnnouncements').classList.toggle('active', tab === 'announcements');
+
+    if (tab === 'chat' && isPwpLoggedIn) {
+      fetchPwpMessages();
+    } else if (tab === 'announcements') {
+      if (window._latestAnnouncementId) {
+        localStorage.setItem('pwp_last_seen_announcement_id', String(window._latestAnnouncementId));
+      }
+      const dot = document.getElementById('pwpAnnounceDot');
+      if (dot) dot.style.display = 'none';
+      fetchPwpAnnouncements();
+    }
+  }
+
+  async function fetchPwpMessages() {
+    if (!isPwpLoggedIn) return;
+    try {
+      const res = await fetch('/chat/api/messages');
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!data.success) return;
+
+      const container = document.getElementById('pwpChatMessages');
+      if (!container) return;
+
+      if (!data.messages || data.messages.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; color: #64748b; font-size: 13px; margin-top: 40px; padding: 0 20px;">
+            <i data-lucide="message-circle" style="width: 32px; height: 32px; color: #2dd4bf; margin-bottom: 8px; opacity: 0.8;"></i>
+            <p style="margin: 0 0 6px; font-weight: 600; color: #cbd5e1;">How can our administration help you?</p>
+            <p style="margin: 0; font-size: 12px; color: #94a3b8;">Send us a message and an admin will respond to your department account.</p>
+          </div>
+        `;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        return;
+      }
+
+      let html = '';
+      data.messages.forEach(m => {
+        const isUser = m.sender_type === 'user';
+        html += `
+          <div class="pwp-msg-bubble-group ${isUser ? 'user' : 'admin'}">
+            <div class="pwp-msg-author">${isUser ? 'You' : (m.sender_name || 'Admin')} &bull; ${m.formatted_time}</div>
+            <div class="pwp-msg-bubble ${isUser ? 'user' : 'admin'}">
+              ${escapePwpHtml(m.message)}
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+      container.scrollTop = container.scrollHeight;
+    } catch (err) {
+      console.error('Error fetching chat messages:', err);
+    }
+  }
+
+  async function sendPwpUserMessage(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (typeof hideLoader === 'function') hideLoader();
+    const input = document.getElementById('pwpChatInput');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const btn = document.getElementById('pwpSendBtn');
+    btn.disabled = true;
+
+    try {
+      const res = await fetch('/chat/api/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      });
+      const data = await res.json();
+      if (data.success) {
+        input.value = '';
+        await fetchPwpMessages();
+      } else {
+        alert(data.error || 'Failed to send message.');
+      }
+    } catch (err) {
+      console.error('Error sending message:', err);
+    } finally {
+      btn.disabled = false;
+      input.focus();
+    }
+  }
+
+  async function fetchPwpAnnouncements() {
+    try {
+      const res = await fetch('/chat/api/announcements');
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!data.success) return;
+
+      const list = document.getElementById('pwpAnnouncementsList');
+      if (!list) return;
+
+      if (!data.announcements || data.announcements.length === 0) {
+        list.innerHTML = `
+          <div style="text-align: center; color: #64748b; font-size: 13px; margin-top: 40px;">
+            <i data-lucide="bell-off" style="width: 32px; height: 32px; color: #64748b; margin-bottom: 8px;"></i>
+            <p style="margin: 0; color: #cbd5e1;">No announcements right now.</p>
+          </div>
+        `;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        return;
+      }
+
+      let html = '';
+      data.announcements.forEach(a => {
+        const isAll = a.target_department === 'ALL';
+        html += `
+          <div class="pwp-announcement-card">
+            <div class="pwp-announcement-header">
+              <h5 class="pwp-announcement-title">${escapePwpHtml(a.title)}</h5>
+              <span class="pwp-badge-tag ${isAll ? 'pwp-badge-all' : 'pwp-badge-dept'}">
+                ${isAll ? 'All Departments' : escapePwpHtml(a.target_department)}
+              </span>
+            </div>
+            <p class="pwp-announcement-body">${escapePwpHtml(a.content)}</p>
+            <div class="pwp-announcement-footer">
+              <span>By ${escapePwpHtml(a.admin_name)}</span>
+              <span>${a.formatted_time}</span>
+            </div>
+          </div>
+        `;
+      });
+      list.innerHTML = html;
+    } catch (err) {
+      console.error('Error fetching announcements:', err);
+    }
+  }
+
+  async function checkPwpUnreadCount() {
+    try {
+      const res = await fetch('/chat/api/unread-count');
+      if (!res.ok) return;
+      const data = await res.json();
+      const badge = document.getElementById('pwpUnreadBadge');
+      const previewBubble = document.getElementById('pwpMsgPreviewBubble');
+      const announceDot = document.getElementById('pwpAnnounceDot');
+
+      // 1. Check for unread announcements
+      let hasUnreadAnnouncement = false;
+      if (data.latest_announcement && data.latest_announcement.id) {
+        const lastSeenAnnId = parseInt(localStorage.getItem('pwp_last_seen_announcement_id') || '0', 10);
+        if (data.latest_announcement.id > lastSeenAnnId) {
+          hasUnreadAnnouncement = true;
+          window._latestAnnouncementId = data.latest_announcement.id;
+        }
+      }
+
+      if (announceDot) {
+        announceDot.style.display = hasUnreadAnnouncement ? 'inline-block' : 'none';
+      }
+
+      // 2. Compute total unread count for badge on the floating trigger
+      const chatUnreadCount = data.count || 0;
+      const totalUnread = chatUnreadCount + (hasUnreadAnnouncement ? 1 : 0);
+
+      if (badge) {
+        if (totalUnread > 0) {
+          badge.textContent = totalUnread > 9 ? '9+' : totalUnread;
+          badge.style.display = 'flex';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+
+      // 3. If chat modal is already open, do not show preview bubble
+      if (isPwpChatOpen) {
+        if (previewBubble) previewBubble.style.display = 'none';
+        return;
+      }
+
+      const senderNameEl = document.getElementById('pwpPreviewSenderName');
+      const previewTitleEl = document.getElementById('pwpPreviewTitle');
+      const previewTextEl = document.getElementById('pwpPreviewText');
+      const previewTimeEl = document.getElementById('pwpPreviewTime');
+      const previewCtaTextEl = document.getElementById('pwpPreviewCtaText');
+      const previewIconEl = document.getElementById('pwpPreviewIcon');
+
+      // Condition A: Unread Direct Chat Message from Admin (Highest Priority)
+      if (chatUnreadCount > 0 && data.latest && previewDismissedMessageId !== data.latest.id) {
+        window._previewType = 'chat';
+        window._currentLatestUnreadId = data.latest.id;
+
+        if (previewBubble) {
+          previewBubble.classList.remove('announcement-theme');
+          previewBubble.style.display = 'block';
+        }
+        if (senderNameEl) senderNameEl.textContent = data.latest.sender_name || 'Admin Support';
+        if (previewTitleEl) previewTitleEl.style.display = 'none';
+        if (previewTextEl) previewTextEl.textContent = data.latest.message;
+        if (previewTimeEl) previewTimeEl.textContent = data.latest.formatted_time || 'Just now';
+        if (previewCtaTextEl) {
+          previewCtaTextEl.innerHTML = 'Click to reply &rarr;';
+          previewCtaTextEl.style.color = '#2dd4bf';
+        }
+        if (previewIconEl) {
+          previewIconEl.setAttribute('data-lucide', 'message-circle');
+          previewIconEl.style.color = '#2dd4bf';
+        }
+
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+      }
+      // Condition B: Unread Announcement from Admin
+      else if (hasUnreadAnnouncement && data.latest_announcement && previewDismissedAnnouncementId !== data.latest_announcement.id) {
+        window._previewType = 'announcement';
+
+        if (previewBubble) {
+          previewBubble.classList.add('announcement-theme');
+          previewBubble.style.display = 'block';
+        }
+        const isAll = data.latest_announcement.target_department === 'ALL';
+        const senderLabel = isAll ? 'Admin Announcement' : (data.latest_announcement.target_department + ' Notice');
+        if (senderNameEl) senderNameEl.textContent = senderLabel;
+        if (previewTitleEl) {
+          previewTitleEl.textContent = data.latest_announcement.title;
+          previewTitleEl.style.display = 'block';
+        }
+        if (previewTextEl) previewTextEl.textContent = data.latest_announcement.content;
+        if (previewTimeEl) previewTimeEl.textContent = data.latest_announcement.formatted_time || 'Recent';
+        if (previewCtaTextEl) {
+          previewCtaTextEl.innerHTML = 'Click to view announcement &rarr;';
+          previewCtaTextEl.style.color = '#fbbf24';
+        }
+        if (previewIconEl) {
+          previewIconEl.setAttribute('data-lucide', 'megaphone');
+          previewIconEl.style.color = '#fbbf24';
+        }
+
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+      }
+      else {
+        if (previewBubble) previewBubble.style.display = 'none';
+      }
+    } catch (e) {
+      console.error('Error checking unread status:', e);
+    }
+  }
+
+  function escapePwpHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  }
+
+  // Pre-load announcements indicator & check unread messages on page load
+  document.addEventListener('DOMContentLoaded', () => {
+    checkPwpUnreadCount();
+    fetchPwpAnnouncements();
+    // Background polling every 5s for fast real-time notifications
+    setInterval(checkPwpUnreadCount, 5000);
+  });
+</script>

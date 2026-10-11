@@ -7,7 +7,7 @@ import re
 from flask import (Blueprint, render_template, request, redirect,
                    url_for, session, flash, current_app)
 from extensions import db
-from models import User, utcnow
+from models import User, utcnow, DEPARTMENTS
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -65,25 +65,29 @@ def register():
     if request.method == "POST":
         name = request.form.get("name", "").strip()
         email = request.form.get("email", "").lower().strip()
+        department = request.form.get("department", "").strip()
         password = request.form.get("password", "")
         confirm_password = request.form.get("confirm_password", "")
+
+        if department not in DEPARTMENTS:
+            department = "General / Other"
 
         # Validation
         if not name or len(name) < 2:
             flash("Please enter a valid full name (at least 2 characters).", "error")
-            return render_template("auth/register.html", name=name, email=email)
+            return render_template("auth/register.html", name=name, email=email, selected_department=department, departments=DEPARTMENTS)
 
         if not email or not EMAIL_REGEX.match(email):
             flash("Please enter a valid email address.", "error")
-            return render_template("auth/register.html", name=name, email=email)
+            return render_template("auth/register.html", name=name, email=email, selected_department=department, departments=DEPARTMENTS)
 
         if len(password) < 6:
             flash("Password must be at least 6 characters long.", "error")
-            return render_template("auth/register.html", name=name, email=email)
+            return render_template("auth/register.html", name=name, email=email, selected_department=department, departments=DEPARTMENTS)
 
         if password != confirm_password:
             flash("Passwords do not match. Please verify and try again.", "error")
-            return render_template("auth/register.html", name=name, email=email)
+            return render_template("auth/register.html", name=name, email=email, selected_department=department, departments=DEPARTMENTS)
 
         # Check existing account
         existing_user = User.query.filter_by(email=email).first()
@@ -92,7 +96,7 @@ def register():
             return redirect(url_for("auth.login", email=email))
 
         try:
-            new_user = User(name=name, email=email, is_active=True)
+            new_user = User(name=name, email=email, department=department, is_active=True)
             new_user.set_password(password)
             new_user.last_login_at = utcnow()
             db.session.add(new_user)
@@ -102,7 +106,7 @@ def register():
             session.permanent = True
             session["user_id"] = new_user.id
 
-            flash(f"Welcome to PlayWithPDFs, {new_user.name}! Your account has been created.", "success")
+            flash(f"Welcome to PlayWithPDFs, {new_user.name}! Your account has been created under {department}.", "success")
             next_url = request.args.get("next") or request.form.get("next")
             if is_safe_url(next_url):
                 return redirect(next_url)
@@ -111,9 +115,9 @@ def register():
             db.session.rollback()
             current_app.logger.error(f"Error registering user {email}: {e}")
             flash("An error occurred during registration. Please try again.", "error")
-            return render_template("auth/register.html", name=name, email=email)
+            return render_template("auth/register.html", name=name, email=email, selected_department=department, departments=DEPARTMENTS)
 
-    return render_template("auth/register.html")
+    return render_template("auth/register.html", departments=DEPARTMENTS)
 
 
 # =============================================================================
@@ -178,29 +182,32 @@ def profile():
 
     if request.method == "POST":
         new_name = request.form.get("name", "").strip()
+        new_dept = request.form.get("department", "").strip()
         current_password = request.form.get("current_password", "")
         new_password = request.form.get("new_password", "").strip()
         confirm_password = request.form.get("confirm_password", "").strip()
 
         if not new_name or len(new_name) < 2:
             flash("Full name must be at least 2 characters.", "error")
-            return render_template("auth/profile.html", user=user)
+            return render_template("auth/profile.html", user=user, departments=DEPARTMENTS)
 
         user.name = new_name
+        if new_dept in DEPARTMENTS:
+            user.department = new_dept
 
         # Password update requested
         if current_password or new_password or confirm_password:
             if not user.check_password(current_password):
                 flash("Your current password is incorrect.", "error")
-                return render_template("auth/profile.html", user=user)
+                return render_template("auth/profile.html", user=user, departments=DEPARTMENTS)
 
             if len(new_password) < 6:
                 flash("New password must be at least 6 characters long.", "error")
-                return render_template("auth/profile.html", user=user)
+                return render_template("auth/profile.html", user=user, departments=DEPARTMENTS)
 
             if new_password != confirm_password:
                 flash("New passwords do not match.", "error")
-                return render_template("auth/profile.html", user=user)
+                return render_template("auth/profile.html", user=user, departments=DEPARTMENTS)
 
             user.set_password(new_password)
             flash("Password and profile updated successfully!", "success")
@@ -215,4 +222,4 @@ def profile():
             current_app.logger.error(f"Error updating profile: {e}")
             flash("An error occurred while saving your changes.", "error")
 
-    return render_template("auth/profile.html", user=user)
+    return render_template("auth/profile.html", user=user, departments=DEPARTMENTS)
