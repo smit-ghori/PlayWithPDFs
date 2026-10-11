@@ -122,14 +122,16 @@ def run_migration(target_url):
                 db.session.rollback()
                 print(f"[!] Note on end-users migration: {e}")
 
-            # 3. Tool configs
+            # 3. Tool configs & Departments
+            models.seed_departments()
             seed_count = seed_tools(app)
-            print(f"[+] Seeded {seed_count} tool configuration(s).")
+            print(f"[+] Seeded {seed_count} tool configuration(s) and organization departments.")
 
             s_conn.close()
         else:
+            models.seed_departments()
             seed_count = seed_tools(app)
-            print(f"[+] Seeded {seed_count} tool configuration(s).")
+            print(f"[+] Seeded {seed_count} tool configuration(s) and organization departments.")
 
     print("\n[✔] Database setup and migration completed successfully!")
 

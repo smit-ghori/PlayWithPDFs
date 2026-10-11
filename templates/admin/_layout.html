@@ -13,9 +13,11 @@
     {% set p = request.path %}
     <a href="{{ url_for('admin.dashboard') }}" class="{{ 'on' if p == '/admin/' }}">Overview</a>
     <a href="{{ url_for('admin.users_list') }}" class="{{ 'on' if '/users' in p }}">Users</a>
+    <a href="{{ url_for('admin.departments_list') }}" class="{{ 'on' if '/departments' in p }}">Departments</a>
     <a href="{{ url_for('admin.chat_dashboard') }}" class="{{ 'on' if '/chat' in p }}">Support Chat</a>
     <a href="{{ url_for('admin.announcements_list') }}" class="{{ 'on' if '/announcements' in p }}">Announcements</a>
-    <a href="{{ url_for('admin.tools') }}" class="{{ 'on' if '/tools' in p }}">Tools</a>
+    <a href="{{ url_for('admin.tools') }}" class="{{ 'on' if ('/tools' in p and not '/tools/permissions' in p) }}">Tools</a>
+    <a href="{{ url_for('admin.tools_permissions_matrix') }}" class="{{ 'on' if '/tools/permissions' in p }}">Tool Access</a>
     <a href="{{ url_for('admin.events') }}" class="{{ 'on' if '/events' in p }}">Activity</a>
     <a href="{{ url_for('admin.messages') }}" class="{{ 'on' if '/messages' in p }}">Contact Inquiries</a>
     {% if admin_user and admin_user.role == 'admin' %}

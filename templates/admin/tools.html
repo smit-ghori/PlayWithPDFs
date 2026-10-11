@@ -9,6 +9,9 @@
       <button class="btn">Find new tools</button>
       <label style="margin:0;">Sync registered blueprints</label>
     </form>
+    <a href="{{ url_for('admin.tools_permissions_matrix') }}" class="btn" style="display:inline-flex;align-items:center;gap:6px;background:#0f5c52;color:#fff;margin-left:8px;text-decoration:none;">
+      Access Matrix &rarr;
+    </a>
   </div>
 
   <div class="tools-toolbar-right">
@@ -44,7 +47,7 @@
 
 <table>
   <thead>
-    <tr><th>Tool</th><th>Status</th><th class="num">Runs (30d)</th><th>Max files</th><th>Max MB</th><th>Note shown when paused</th><th></th></tr>
+    <tr><th>Tool</th><th>Status</th><th class="num">Runs (30d)</th><th>Max files</th><th>Max MB</th><th>Note shown when paused</th><th>Access Control</th><th></th></tr>
   </thead>
   <tbody id="toolsTableBody">
   {% for r in rows %}
@@ -63,11 +66,16 @@
       <td><input type="number" name="max_files" value="{{ r.max_files }}"></td>
       <td><input type="number" name="max_file_mb" value="{{ r.max_file_mb }}"></td>
       <td><input type="text" name="note" value="{{ r.maintenance_note or '' }}" size="24"></td>
+      <td>
+        <a href="{{ url_for('admin.tool_granular_permissions', tool=r.tool) }}" class="btn" style="font-size:11.5px;padding:4px 8px;background:#1e293b;border:1px solid #334155;color:#2dd4bf;text-decoration:none;display:inline-block;" title="Configure Department & User Access">
+          Dept / User &rarr;
+        </a>
+      </td>
       <td><button class="btn">Save</button></td>
     </form>
   </tr>
   {% else %}
-  <tr class="no-tools-row"><td colspan="7">No tools yet. Choose "Find new tools".</td></tr>
+  <tr class="no-tools-row"><td colspan="8">No tools yet. Choose "Find new tools".</td></tr>
   {% endfor %}
 
   <tr id="noResultsRow" style="display:none;">

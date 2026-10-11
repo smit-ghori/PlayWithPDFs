@@ -193,3 +193,90 @@ class Announcement(db.Model):
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "formatted_time": self.created_at.strftime("%b %d, %Y %I:%M %p") if self.created_at else "",
         }
+
+
+class Department(db.Model):
+    """Departments available for user registration and role-based access control."""
+    __tablename__ = "departments"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True, nullable=False, index=True)
+    description = db.Column(db.String(255), nullable=True)
+    is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)
+    created_at = db.Column(db.DateTime(timezone=True), default=utcnow, index=True)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "is_active": self.is_active,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class ToolPermission(db.Model):
+    """
+    Overrides tool access per Department or per User.
+    target_type: 'department' | 'user'
+    target_id: department name (string) OR str(user.id)
+    tool: blueprint name (e.g. 'merge', 'edit_pdf', etc.)
+    is_enabled: boolean (True = allowed/granted, False = disabled/blocked)
+    """
+    __tablename__ = "tool_permissions"
+
+    id = db.Column(db.Integer, primary_key=True)
+    tool = db.Column(db.String(80), nullable=False, index=True)
+    target_type = db.Column(db.String(20), nullable=False, index=True)  # 'department' | 'user'
+    target_id = db.Column(db.String(100), nullable=False, index=True)   # department name or str(user_id)
+    is_enabled = db.Column(db.Boolean, default=True, nullable=False)
+    note = db.Column(db.String(255), nullable=True)
+    created_at = db.Column(db.DateTime(timezone=True), default=utcnow)
+    updated_at = db.Column(db.DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+    __table_args__ = (
+        db.UniqueConstraint("tool", "target_type", "target_id", name="uq_tool_target"),
+    )
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "tool": self.tool,
+            "target_type": self.target_type,
+            "target_id": self.target_id,
+            "is_enabled": self.is_enabled,
+            "note": self.note,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+def get_department_names():
+    """Return all active department names from DB, with fallback to default list."""
+    try:
+        depts = Department.query.filter_by(is_active=True).order_by(Department.name.asc()).all()
+        if depts:
+            return [d.name for d in depts]
+    except Exception:
+        pass
+    return list(DEPARTMENTS)
+
+
+def seed_departments():
+    """Ensure default departments are populated in the database."""
+    try:
+        existing = {d.name for d in Department.query.all()}
+        added = False
+        for dept_name in DEPARTMENTS:
+            if dept_name not in existing:
+                db.session.add(Department(
+                    name=dept_name,
+                    description=f"{dept_name} organization unit",
+                    is_active=True,
+                ))
+                added = True
+        if added:
+            db.session.commit()
+            print("[+] Seeded initial departments into database.")
+    except Exception as e:
+        db.session.rollback()
+        print(f"[!] Notice during departments seed: {e}")

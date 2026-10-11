@@ -9,7 +9,7 @@ import hashlib
 import os
 from flask import request, g, render_template, jsonify, flash, redirect, session, url_for
 from extensions import db
-from models import ToolEvent, ToolConfig, User
+from models import ToolEvent, ToolConfig, User, ToolPermission
 
 # Blueprints that are not tools and should not be tracked or blocked.
 SKIP = {"admin", "home", "about", "static", "auth", "contact_us", "chat", None}
@@ -44,6 +44,59 @@ def get_flags():
 
 def invalidate_flags():
     _flag_cache["at"] = 0.0
+
+
+def _resolve_tool_access(tool, user, cfg):
+    """
+    Check if a tool is accessible according to the 3-tier hierarchy:
+    1. User level override (highest priority)
+    2. Department level override (middle priority)
+    3. Global tool setting (base level)
+    Returns (is_allowed: bool, note: str or None)
+    """
+    tool_title = tool.replace("_", " ").title()
+
+    # 1. User-level override
+    if user:
+        try:
+            user_perm = ToolPermission.query.filter_by(
+                tool=tool,
+                target_type="user",
+                target_id=str(user.id)
+            ).first()
+            if user_perm is not None:
+                if not user_perm.is_enabled:
+                    note = user_perm.note or f"Access to {tool_title} has been disabled specifically for your account by administration."
+                    return False, note
+                else:
+                    # Explicit user grant overrides department/global restriction
+                    return True, None
+        except Exception:
+            pass
+
+    # 2. Department-level override
+    if user and user.department:
+        try:
+            dept_perm = ToolPermission.query.filter_by(
+                tool=tool,
+                target_type="department",
+                target_id=user.department
+            ).first()
+            if dept_perm is not None:
+                if not dept_perm.is_enabled:
+                    note = dept_perm.note or f"Access to {tool_title} has been restricted for your department ({user.department}) by administration."
+                    return False, note
+                else:
+                    return True, None
+        except Exception:
+            pass
+
+    # 3. Global tool kill switch
+    if cfg and not cfg.get("enabled", True):
+        note = cfg.get("note") or f"{tool_title} is temporarily paused for maintenance."
+        return False, note
+
+    return True, None
 
 
 def init_tracking(app):
@@ -98,14 +151,14 @@ def init_tracking(app):
             return redirect(url_for("auth.login", next=next_target))
 
         cfg = get_flags().get(tool)
-        if cfg and not cfg["enabled"]:
-            note = cfg["note"] or "This tool is temporarily unavailable."
+        is_allowed, block_note = _resolve_tool_access(tool, user, cfg)
+        if not is_allowed:
             if request.headers.get("X-Requested-With") == "XMLHttpRequest" or "application/json" in request.headers.get("Accept", ""):
-                return jsonify({"error": note, "tool": tool, "disabled": True}), 503
+                return jsonify({"error": block_note, "tool": tool, "disabled": True}), 403
             return render_template(
                 "admin/tool_disabled.html",
-                tool=tool, note=note,
-            ), 503
+                tool=tool, note=block_note,
+            ), 403
 
         if request.method == "POST" and cfg:
             max_limit = cfg.get("max_files") or 999
@@ -178,11 +231,15 @@ def init_tracking(app):
 def seed_tools(app):
     """Create a ToolConfig row for every registered blueprint."""
     created = 0
-    for name in app.blueprints:
-        if name in SKIP:
-            continue
-        if not ToolConfig.query.filter_by(tool=name).first():
+    try:
+        existing = {r.tool for r in ToolConfig.query.all()}
+        for name in app.blueprints:
+            if name in SKIP or name in existing:
+                continue
             db.session.add(ToolConfig(tool=name, label=name.replace("_", " ").title()))
             created += 1
-    db.session.commit()
+        if created > 0:
+            db.session.commit()
+    except Exception as e:
+        db.session.rollback()
     return created

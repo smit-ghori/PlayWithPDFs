@@ -17,7 +17,8 @@ from sqlalchemy import func, desc
 
 from extensions import db, mail
 from models import (AdminUser, User, ToolConfig, ToolEvent, ContactMessage,
-                    AuditLog, ChatMessage, Announcement, DEPARTMENTS, record_audit, utcnow)
+                    AuditLog, ChatMessage, Announcement, Department, ToolPermission,
+                    get_department_names, seed_departments, DEPARTMENTS, record_audit, utcnow)
 from utils.tracking import invalidate_flags, seed_tools
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -349,6 +350,144 @@ def tool_update(tool):
     return redirect(url_for("admin.tools", q=q if q else None, status=status_filter if status_filter else None))
 
 
+# ---------------------------------------------------------------- tool access control (department & user)
+
+@admin_bp.route("/tools/permissions")
+@login_required
+def tools_permissions_matrix():
+    tools = ToolConfig.query.order_by(ToolConfig.tool.asc()).all()
+    departments = Department.query.filter_by(is_active=True).order_by(Department.name.asc()).all()
+    
+    # Map department permissions: {(tool, dept_name): perm_object}
+    all_dept_perms = ToolPermission.query.filter_by(target_type="department").all()
+    dept_perms_map = {(p.tool, p.target_id): p for p in all_dept_perms}
+
+    # User overrides
+    user_perms = ToolPermission.query.filter_by(target_type="user").order_by(desc(ToolPermission.updated_at)).all()
+    user_map = {str(u.id): u for u in User.query.all()}
+
+    return render_template(
+        "admin/tools_permissions_matrix.html",
+        tools=tools,
+        departments=departments,
+        dept_perms_map=dept_perms_map,
+        user_perms=user_perms,
+        user_map=user_map,
+    )
+
+
+@admin_bp.route("/tools/<tool>/permissions", methods=["GET"])
+@login_required
+def tool_granular_permissions(tool):
+    tool_cfg = ToolConfig.query.filter_by(tool=tool).first_or_404()
+    departments = Department.query.filter_by(is_active=True).order_by(Department.name.asc()).all()
+    all_users = User.query.order_by(User.name.asc()).all()
+
+    # Department permissions for this tool
+    dept_perms = {p.target_id: p for p in ToolPermission.query.filter_by(tool=tool, target_type="department").all()}
+
+    # User overrides for this tool
+    user_perms = ToolPermission.query.filter_by(tool=tool, target_type="user").order_by(desc(ToolPermission.updated_at)).all()
+    user_map = {str(u.id): u for u in all_users}
+
+    return render_template(
+        "admin/tool_permissions.html",
+        tool=tool_cfg,
+        departments=departments,
+        dept_perms=dept_perms,
+        user_perms=user_perms,
+        users=all_users,
+        user_map=user_map,
+    )
+
+
+@admin_bp.route("/tools/<tool>/permissions/dept-toggle", methods=["POST"])
+@editor_required
+def tool_dept_toggle(tool):
+    dept_name = request.form.get("department", "").strip()
+    state = request.form.get("state", "").strip()  # 'inherit' | 'enabled' | 'disabled'
+    note = request.form.get("note", "").strip()
+
+    perm = ToolPermission.query.filter_by(tool=tool, target_type="department", target_id=dept_name).first()
+
+    if state == "inherit":
+        if perm:
+            db.session.delete(perm)
+            db.session.commit()
+            flash(f"Reset {tool} for department '{dept_name}' to inherit global setting.")
+    elif state in ("enabled", "disabled"):
+        is_en = (state == "enabled")
+        if not perm:
+            perm = ToolPermission(
+                tool=tool,
+                target_type="department",
+                target_id=dept_name,
+                is_enabled=is_en,
+                note=note or None,
+            )
+            db.session.add(perm)
+        else:
+            perm.is_enabled = is_en
+            if note:
+                perm.note = note
+        db.session.commit()
+        flash(f"Department '{dept_name}' is now {'ENABLED' if is_en else 'DISABLED'} for {tool}.")
+
+    invalidate_flags()
+    record_audit(current_admin(), "tool.dept_permission", tool, f"dept={dept_name}, state={state}")
+    return redirect(request.referrer or url_for('admin.tool_granular_permissions', tool=tool))
+
+
+@admin_bp.route("/tools/<tool>/permissions/user-override", methods=["POST"])
+@editor_required
+def tool_user_override(tool):
+    user_id = request.form.get("user_id", "").strip()
+    is_enabled = request.form.get("is_enabled") == "1"
+    note = request.form.get("note", "").strip()
+
+    if not user_id:
+        flash("Please select a user.", "error")
+        return redirect(request.referrer or url_for('admin.tool_granular_permissions', tool=tool))
+
+    user = User.query.get_or_404(int(user_id))
+    perm = ToolPermission.query.filter_by(tool=tool, target_type="user", target_id=str(user.id)).first()
+
+    if not perm:
+        perm = ToolPermission(
+            tool=tool,
+            target_type="user",
+            target_id=str(user.id),
+            is_enabled=is_enabled,
+            note=note or None,
+        )
+        db.session.add(perm)
+    else:
+        perm.is_enabled = is_enabled
+        if note:
+            perm.note = note
+
+    db.session.commit()
+    invalidate_flags()
+    status_label = "ENABLED (Allowed)" if is_enabled else "DISABLED (Restricted)"
+    record_audit(current_admin(), "tool.user_override", tool, f"user={user.email}, status={status_label}")
+    flash(f"Tool {tool} has been set to {status_label} for {user.name} ({user.email}).")
+    return redirect(request.referrer or url_for('admin.tool_granular_permissions', tool=tool))
+
+
+@admin_bp.route("/tools/permissions/delete/<int:pid>", methods=["POST"])
+@editor_required
+def tool_permission_delete(pid):
+    perm = ToolPermission.query.get_or_404(pid)
+    tool = perm.tool
+    target = f"{perm.target_type}:{perm.target_id}"
+    db.session.delete(perm)
+    db.session.commit()
+    invalidate_flags()
+    record_audit(current_admin(), "tool.permission_deleted", tool, target)
+    flash(f"Removed custom override for {target}.")
+    return redirect(request.referrer or url_for('admin.tools'))
+
+
 # ---------------------------------------------------------------- events
 
 @admin_bp.route("/events")
@@ -569,6 +708,7 @@ def profile():
 def users_list():
     dept_filter = request.args.get("department", "").strip()
     search = request.args.get("q", "").strip()
+    available_depts = get_department_names()
 
     query = User.query
     if dept_filter and dept_filter != "ALL":
@@ -582,18 +722,25 @@ def users_list():
 
     # Department statistics
     dept_stats = {}
-    for d in DEPARTMENTS:
+    for d in available_depts:
         dept_stats[d] = User.query.filter_by(department=d).count()
     total_users = User.query.count()
+
+    # User-specific tool overrides count
+    user_overrides_counts = {}
+    all_user_perms = ToolPermission.query.filter_by(target_type="user").all()
+    for p in all_user_perms:
+        user_overrides_counts[p.target_id] = user_overrides_counts.get(p.target_id, 0) + 1
 
     return render_template(
         "admin/users.html",
         users=users,
-        departments=DEPARTMENTS,
+        departments=available_depts,
         selected_dept=dept_filter,
         search=search,
         dept_stats=dept_stats,
         total_users=total_users,
+        user_overrides_counts=user_overrides_counts,
     )
 
 
@@ -606,7 +753,8 @@ def user_modify(uid):
     new_active = request.form.get("is_active") == "1"
     new_password = request.form.get("password", "").strip()
 
-    if new_dept in DEPARTMENTS:
+    available_depts = get_department_names()
+    if new_dept in available_depts:
         user.department = new_dept
     if new_name:
         user.name = new_name
@@ -632,11 +780,115 @@ def user_modify(uid):
 def user_remove(uid):
     user = User.query.get_or_404(uid)
     email = user.email
+    # Remove user-level tool permissions
+    ToolPermission.query.filter_by(target_type="user", target_id=str(user.id)).delete()
     db.session.delete(user)
     db.session.commit()
     record_audit(current_admin(), "user.delete", email)
     flash(f"Deleted user {email}.")
     return redirect(url_for("admin.users_list"))
+
+
+# ---------------------------------------------------------------- department management
+
+@admin_bp.route("/departments")
+@login_required
+def departments_list():
+    depts = Department.query.order_by(Department.name.asc()).all()
+    user_counts = {}
+    for d in depts:
+        user_counts[d.name] = User.query.filter_by(department=d.name).count()
+
+    total_depts = len(depts)
+    total_users = User.query.count()
+
+    # Department tool restrictions summary
+    dept_restrictions = {}
+    for p in ToolPermission.query.filter_by(target_type="department", is_enabled=False).all():
+        dept_restrictions[p.target_id] = dept_restrictions.get(p.target_id, 0) + 1
+
+    return render_template(
+        "admin/departments.html",
+        departments=depts,
+        user_counts=user_counts,
+        total_depts=total_depts,
+        total_users=total_users,
+        dept_restrictions=dept_restrictions,
+    )
+
+
+@admin_bp.route("/departments/create", methods=["POST"])
+@editor_required
+def department_create():
+    name = request.form.get("name", "").strip()
+    description = request.form.get("description", "").strip()
+
+    if not name or len(name) < 2:
+        flash("Department name must be at least 2 characters.", "error")
+        return redirect(url_for("admin.departments_list"))
+
+    existing = Department.query.filter(func.lower(Department.name) == func.lower(name)).first()
+    if existing:
+        flash(f"Department '{name}' already exists.", "error")
+        return redirect(url_for("admin.departments_list"))
+
+    dept = Department(name=name, description=description, is_active=True)
+    db.session.add(dept)
+    db.session.commit()
+    record_audit(current_admin(), "department.create", name, description)
+    flash(f"Department '{name}' added successfully.")
+    return redirect(url_for("admin.departments_list"))
+
+
+@admin_bp.route("/departments/<int:did>/update", methods=["POST"])
+@editor_required
+def department_update(did):
+    dept = Department.query.get_or_404(did)
+    old_name = dept.name
+    new_name = request.form.get("name", "").strip()
+    new_desc = request.form.get("description", "").strip()
+    new_active = request.form.get("is_active") == "1"
+
+    if not new_name or len(new_name) < 2:
+        flash("Department name must be at least 2 characters.", "error")
+        return redirect(url_for("admin.departments_list"))
+
+    if new_name.lower() != old_name.lower():
+        existing = Department.query.filter(func.lower(Department.name) == func.lower(new_name), Department.id != did).first()
+        if existing:
+            flash(f"A department named '{new_name}' already exists.", "error")
+            return redirect(url_for("admin.departments_list"))
+
+        # Reassign users and tool permissions to the new department name
+        User.query.filter_by(department=old_name).update({"department": new_name})
+        ToolPermission.query.filter_by(target_type="department", target_id=old_name).update({"target_id": new_name})
+        Announcement.query.filter_by(target_department=old_name).update({"target_department": new_name})
+
+    dept.name = new_name
+    dept.description = new_desc
+    dept.is_active = new_active
+    db.session.commit()
+    record_audit(current_admin(), "department.update", new_name, f"old_name={old_name}, active={new_active}")
+    flash(f"Department '{new_name}' updated successfully.")
+    return redirect(url_for("admin.departments_list"))
+
+
+@admin_bp.route("/departments/<int:did>/delete", methods=["POST"])
+@editor_required
+def department_delete(did):
+    dept = Department.query.get_or_404(did)
+    name = dept.name
+    user_count = User.query.filter_by(department=name).count()
+    if user_count > 0:
+        User.query.filter_by(department=name).update({"department": "General / Other"})
+
+    # Clean up associated department permissions
+    ToolPermission.query.filter_by(target_type="department", target_id=name).delete()
+    db.session.delete(dept)
+    db.session.commit()
+    record_audit(current_admin(), "department.delete", name, f"reassigned_{user_count}_users")
+    flash(f"Department '{name}' deleted. {user_count} users moved to General / Other.")
+    return redirect(url_for("admin.departments_list"))
 
 
 # ---------------------------------------------------------------- support chat
@@ -747,7 +999,7 @@ def announcements_list():
     return render_template(
         "admin/announcements.html",
         announcements=items,
-        departments=DEPARTMENTS,
+        departments=get_department_names(),
     )
 
 
@@ -758,12 +1010,13 @@ def announcement_create():
     title = request.form.get("title", "").strip()
     content = request.form.get("content", "").strip()
     target_dept = request.form.get("target_department", "ALL").strip()
+    available_depts = get_department_names()
 
     if not title or not content:
         flash("Title and content are required.", "error")
         return redirect(url_for("admin.announcements_list"))
 
-    if target_dept != "ALL" and target_dept not in DEPARTMENTS:
+    if target_dept != "ALL" and target_dept not in available_depts:
         target_dept = "ALL"
 
     ann = Announcement(

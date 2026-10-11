@@ -5,17 +5,17 @@
 <p class="sub">Publish official notices. Broadcast to all users or target specific departments.</p>
 
 <!-- CREATE ANNOUNCEMENT FORM -->
-<div style="background: #111e1c; border: 1px solid #1e3632; border-radius: 8px; padding: 20px; margin-bottom: 26px;">
-  <h3 style="margin-top: 0; margin-bottom: 14px; font-size: 15px; color: #e6f0ed;">Create New Announcement</h3>
+<div style="background: var(--card); border: 1px solid var(--rule); border-radius: 4px; padding: 20px; margin-bottom: 26px;">
+  <h3 style="margin-top: 0; margin-bottom: 14px; font-size: 15px; color: var(--ink);">Create New Announcement</h3>
   <form method="post" action="{{ url_for('admin.announcement_create') }}">
     <div style="display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 14px;">
       <div style="flex: 2; min-width: 250px;">
-        <label style="display: block; font-size: 12px; color: #8da39e; margin-bottom: 6px;">Announcement Title</label>
-        <input type="text" name="title" placeholder="e.g. Scheduled System Maintenance or HR Policy Update" required style="width: 100%; padding: 8px 12px; font-size: 13.5px;">
+        <label style="display: block; font-size: 12.5px; color: var(--muted); margin-bottom: 6px;">Announcement Title</label>
+        <input type="text" name="title" placeholder="e.g. Scheduled System Maintenance or HR Policy Update" required style="width: 100%; padding: 8px 12px; font-size: 13.5px; border: 1px solid var(--rule); background: #fff; color: var(--ink);">
       </div>
       <div style="flex: 1; min-width: 200px;">
-        <label style="display: block; font-size: 12px; color: #8da39e; margin-bottom: 6px;">Target Audience</label>
-        <select name="target_department" style="width: 100%; padding: 8px 12px; font-size: 13.5px; border-radius: 5px;">
+        <label style="display: block; font-size: 12.5px; color: var(--muted); margin-bottom: 6px;">Target Audience</label>
+        <select name="target_department" style="width: 100%; padding: 8px 12px; font-size: 13.5px; border-radius: 3px; border: 1px solid var(--rule); background: #fff; color: var(--ink);">
           <option value="ALL">All Departments (Broadcast to Everyone)</option>
           <optgroup label="Department Specific">
             {% for d in departments %}
@@ -27,8 +27,8 @@
     </div>
     
     <div style="margin-bottom: 14px;">
-      <label style="display: block; font-size: 12px; color: #8da39e; margin-bottom: 6px;">Announcement Content</label>
-      <textarea name="content" rows="4" placeholder="Enter detailed announcement message to be displayed to users..." required style="width: 100%; padding: 10px 12px; font-size: 13.5px; font-family: inherit; line-height: 1.45;"></textarea>
+      <label style="display: block; font-size: 12.5px; color: var(--muted); margin-bottom: 6px;">Announcement Content</label>
+      <textarea name="content" rows="4" placeholder="Enter detailed announcement message to be displayed to users..." required style="width: 100%; padding: 10px 12px; font-size: 13.5px; font-family: inherit; line-height: 1.45; border: 1px solid var(--rule); background: #fff; color: var(--ink);"></textarea>
     </div>
 
     <button type="submit" class="btn primary" style="padding: 8px 22px;">Publish Announcement</button>
@@ -52,21 +52,21 @@
     {% for a in announcements %}
     <tr>
       <td style="max-width: 380px;">
-        <div style="font-weight: 600; color: #e6f0ed; font-size: 14px; margin-bottom: 4px;">{{ a.title }}</div>
-        <div style="color: #8da39e; font-size: 12.5px; line-height: 1.4;">{{ a.content }}</div>
+        <div style="font-weight: 600; color: var(--ink); font-size: 14px; margin-bottom: 4px;">{{ a.title }}</div>
+        <div style="color: var(--muted); font-size: 13px; line-height: 1.45;">{{ a.content }}</div>
       </td>
       <td>
         {% if a.target_department == 'ALL' %}
-        <span class="pill live" style="background: rgba(34, 197, 94, 0.2); color: #86efac; border: 1px solid rgba(34, 197, 94, 0.4);">
+        <span class="pill live">
           All Departments
         </span>
         {% else %}
-        <span class="pill" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.4);">
+        <span class="pill" style="color: var(--teal); border-color: #bcd8bf; background: #eaf3f1;">
           {{ a.target_department }}
         </span>
         {% endif %}
       </td>
-      <td style="font-size: 12.5px; color: #8da39e;">
+      <td style="font-size: 13px; color: var(--muted);">
         {{ a.admin.name or a.admin.email if a.admin else 'Administration' }}
       </td>
       <td class="mono" style="font-size: 12px; white-space: nowrap;">
@@ -90,7 +90,7 @@
     </tr>
     {% else %}
     <tr>
-      <td colspan="6" style="text-align: center; padding: 28px; color: #8da39e;">
+      <td colspan="6" style="text-align: center; padding: 28px; color: var(--muted);">
         No announcements have been published yet.
       </td>
     </tr>

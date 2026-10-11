@@ -3,6 +3,7 @@ services:
     name: pdf-tools
     runtime: docker
     dockerfilePath: ./Dockerfile
+    healthCheckPath: /admin/login
 
     envVars:
       - key: SECRET_KEY

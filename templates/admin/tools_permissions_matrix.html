@@ -1,0 +1,110 @@
+{% extends "admin/_layout.html" %}
+{% block title %}Tool Access Matrix{% endblock %}
+{% block body %}
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+  <div>
+    <h2 style="margin: 0;">Tool Access Control Matrix</h2>
+    <p class="sub" style="margin-top: 4px;">Comprehensive overview of operational permissions across departments and users.</p>
+  </div>
+  <div style="display: flex; gap: 10px;">
+    <a href="{{ url_for('admin.departments_list') }}" class="btn" style="text-decoration: none;">
+      Manage Departments &rarr;
+    </a>
+    <a href="{{ url_for('admin.tools') }}" class="btn" style="text-decoration: none;">
+      Tool Settings &rarr;
+    </a>
+  </div>
+</div>
+
+<!-- LEGEND BANNER -->
+<div style="background: var(--card); border: 1px solid var(--rule); border-radius: 4px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: var(--ink); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+  <div style="display: flex; align-items: center; gap: 18px; flex-wrap: wrap;">
+    <span style="font-weight: 600; color: var(--muted); text-transform: uppercase; font-size: 11.5px; letter-spacing: 0.3px;">Status Legend:</span>
+    <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink);">
+      <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--green);"></span>
+      <span>Live / Allowed</span>
+    </span>
+    <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink);">
+      <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--rust);"></span>
+      <span>Restricted (Blocked)</span>
+    </span>
+    <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink);">
+      <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #94a3b8;"></span>
+      <span>Global Paused</span>
+    </span>
+  </div>
+  <div>
+    <input type="text" id="matrixSearch" placeholder="Filter tools..." oninput="filterMatrix(this.value)" style="padding: 6px 12px; font-size: 13px; width: 200px; border: 1px solid var(--rule); border-radius: 3px; background: #fff; color: var(--ink);">
+  </div>
+</div>
+
+<div style="overflow-x: auto; background: var(--card); border: 1px solid var(--rule); border-radius: 4px; margin-bottom: 26px;">
+  <table style="width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 0; border: none; background: var(--card);">
+    <thead>
+      <tr style="background: #f4f6f5; border-bottom: 1px solid var(--rule);">
+        <th style="padding: 12px 14px; text-align: left; min-width: 170px; color: var(--muted); font-size: 12.5px; font-weight: 600;">Tool Name</th>
+        <th style="padding: 12px 10px; text-align: center; width: 100px; color: var(--muted); font-size: 12.5px; font-weight: 600;">Global</th>
+        {% for d in departments %}
+        <th style="padding: 12px 10px; text-align: center; min-width: 110px; font-size: 12px; color: var(--muted); font-weight: 600;" title="{{ d.name }}">
+          {{ d.name }}
+        </th>
+        {% endfor %}
+        <th style="padding: 12px 14px; text-align: right; width: 110px; color: var(--muted); font-size: 12.5px; font-weight: 600;">Configure</th>
+      </tr>
+    </thead>
+    <tbody id="matrixTableBody">
+      {% for t in tools %}
+      <tr class="matrix-tool-row" data-tool="{{ t.tool|lower }} {{ t.label|lower }}" style="border-bottom: 1px solid var(--rule);">
+        <td style="padding: 10px 14px;">
+          <strong style="color: var(--ink); font-weight: 600; font-size: 13.5px;">{{ t.label }}</strong><br>
+          <code style="font-size: 11.5px; color: var(--muted);">{{ t.tool }}</code>
+        </td>
+        <td style="text-align: center; padding: 10px;">
+          <span class="pill {{ 'live' if t.enabled else 'off' }}" style="font-size: 11px; padding: 2px 7px;">
+            {{ 'Live' if t.enabled else 'Paused' }}
+          </span>
+        </td>
+        {% for d in departments %}
+        {% set perm = dept_perms_map.get((t.tool, d.name)) %}
+        <td style="text-align: center; padding: 10px;">
+          {% if perm is not none %}
+            {% if perm.is_enabled %}
+              <span style="color: var(--green); font-weight: 700; font-size: 15px;" title="{{ d.name }}: Explicitly Allowed">✓</span>
+            {% else %}
+              <span style="color: var(--rust); font-weight: 700; font-size: 15px;" title="{{ d.name }}: Blocked">✕</span>
+            {% endif %}
+          {% else %}
+            {% if t.enabled %}
+              <span style="color: var(--green); opacity: 0.7; font-size: 14px;" title="Inherit Global (Live)">•</span>
+            {% else %}
+              <span style="color: var(--muted); font-size: 13px;" title="Inherit Global (Paused)">—</span>
+            {% endif %}
+          {% endif %}
+        </td>
+        {% endfor %}
+        <td style="text-align: right; padding: 10px 14px; white-space: nowrap;">
+          <a href="{{ url_for('admin.tool_granular_permissions', tool=t.tool) }}" class="btn" style="font-size: 11.5px; padding: 4px 8px; text-decoration: none;">
+            Edit &rarr;
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  function filterMatrix(query) {
+    const q = query.toLowerCase().trim();
+    const rows = document.querySelectorAll('.matrix-tool-row');
+    rows.forEach(r => {
+      const text = r.getAttribute('data-tool');
+      if (!q || text.includes(q)) {
+        r.style.display = '';
+      } else {
+        r.style.display = 'none';
+      }
+    });
+  }
+</script>
+{% endblock %}

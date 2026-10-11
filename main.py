@@ -70,7 +70,7 @@ if raw_url and not raw_url.startswith("sqlite"):
     # Test if PostgreSQL is reachable before initializing SQLAlchemy
     from sqlalchemy import create_engine, text
     try:
-        test_engine = create_engine(raw_url, connect_args={"connect_timeout": 4})
+        test_engine = create_engine(raw_url, connect_args={"connect_timeout": 6})
         with test_engine.connect() as conn:
             conn.execute(text("SELECT 1"))
         test_engine.dispose()
@@ -94,10 +94,13 @@ if is_postgres:
         "max_overflow": 5,
     }
 app.config["MAX_CONTENT_LENGTH"] = 200 * 1024 * 1024   # hard 200 MB upload ceiling
-db.init_app(app)
 
+# Ensure instance and upload directories exist (critical for SQLite & file handlers in Docker/Render)
+os.makedirs(app.instance_path, exist_ok=True)
 UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+db.init_app(app)
 
 # register routes
 app.register_blueprint(admin_bp)
@@ -155,9 +158,18 @@ with app.app_context():
                 db.session.commit()
                 print("[+] Auto-migrated 'users' table: added 'department' column.")
 
+        # Safe self-healing check: ensure target_department exists on announcements table
+        if "announcements" in inspector.get_table_names():
+            ann_columns = [c["name"] for c in inspector.get_columns("announcements")]
+            if "target_department" not in ann_columns:
+                db.session.execute(text("ALTER TABLE announcements ADD COLUMN target_department VARCHAR(80) DEFAULT 'ALL' NOT NULL"))
+                db.session.commit()
+                print("[+] Auto-migrated 'announcements' table: added 'target_department' column.")
+
+        models.seed_departments()
         seed_tools(app)
     except Exception as init_err:
-        print(f"[!] Warning during DB table setup: {init_err}")
+        print(f"[!] Warning during DB table setup: {init_err}")  
 
 
 # CLI COMMAND TO CREATE ADMIN

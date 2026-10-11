@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(190) NOT NULL UNIQUE,
     name VARCHAR(120) NOT NULL,
+    department VARCHAR(80) NOT NULL DEFAULT 'General / Other',
     password_hash VARCHAR(255) NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
     last_login_at TIMESTAMPTZ,
@@ -32,6 +33,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE INDEX IF NOT EXISTS ix_users_email ON users (email);
+CREATE INDEX IF NOT EXISTS ix_users_department ON users (department);
 
 
 -- 2. Table: tool_configs
@@ -110,6 +112,73 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 CREATE INDEX IF NOT EXISTS ix_audit_logs_created_at ON audit_logs (created_at);
 
 
+-- 6. Table: departments
+-- Organization units for users and role-based access control.
+CREATE TABLE IF NOT EXISTS departments (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    description VARCHAR(255),
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS ix_departments_name ON departments (name);
+CREATE INDEX IF NOT EXISTS ix_departments_is_active ON departments (is_active);
+
+
+-- 7. Table: tool_permissions
+-- Hierarchical overrides per department or per user.
+CREATE TABLE IF NOT EXISTS tool_permissions (
+    id SERIAL PRIMARY KEY,
+    tool VARCHAR(80) NOT NULL,
+    target_type VARCHAR(20) NOT NULL,            -- 'department' | 'user'
+    target_id VARCHAR(100) NOT NULL,             -- department name or user id string
+    is_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    note VARCHAR(255),
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_tool_target UNIQUE (tool, target_type, target_id)
+);
+
+CREATE INDEX IF NOT EXISTS ix_tool_permissions_tool ON tool_permissions (tool);
+CREATE INDEX IF NOT EXISTS ix_tool_permissions_target_type ON tool_permissions (target_type);
+CREATE INDEX IF NOT EXISTS ix_tool_permissions_target_id ON tool_permissions (target_id);
+
+
+-- 8. Table: announcements
+-- Broadcast notices targeted to all users or specific departments.
+CREATE TABLE IF NOT EXISTS announcements (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(200) NOT NULL,
+    content TEXT NOT NULL,
+    target_department VARCHAR(80) NOT NULL DEFAULT 'ALL',
+    admin_id INTEGER REFERENCES admin_users(id) ON DELETE SET NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS ix_announcements_target_department ON announcements (target_department);
+CREATE INDEX IF NOT EXISTS ix_announcements_is_active ON announcements (is_active);
+CREATE INDEX IF NOT EXISTS ix_announcements_created_at ON announcements (created_at);
+
+
+-- 9. Table: chat_messages
+-- Support chat messages between users and administrators.
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    sender_type VARCHAR(20) NOT NULL,            -- 'user' | 'admin'
+    admin_id INTEGER REFERENCES admin_users(id) ON DELETE SET NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS ix_chat_messages_user_id ON chat_messages (user_id);
+CREATE INDEX IF NOT EXISTS ix_chat_messages_is_read ON chat_messages (is_read);
+CREATE INDEX IF NOT EXISTS ix_chat_messages_created_at ON chat_messages (created_at);
+
+
 -- =============================================================================
 -- SEED DATA: Pre-populate Tool Configurations
 -- =============================================================================
@@ -147,6 +216,23 @@ INSERT INTO tool_configs (tool, label, enabled, max_file_mb, max_files) VALUES
     ('unlock_pdf', 'Unlock Pdf', TRUE, 50, 20),
     ('word_to_pdf', 'Word To Pdf', TRUE, 50, 20)
 ON CONFLICT (tool) DO NOTHING;
+
+
+-- =============================================================================
+-- SEED DATA: Pre-populate Default Departments
+-- =============================================================================
+
+INSERT INTO departments (name, description, is_active) VALUES
+    ('Engineering & IT', 'Engineering & IT organization unit', TRUE),
+    ('Operations', 'Operations organization unit', TRUE),
+    ('Finance & Accounting', 'Finance & Accounting organization unit', TRUE),
+    ('Human Resources (HR)', 'Human Resources (HR) organization unit', TRUE),
+    ('Marketing & Sales', 'Marketing & Sales organization unit', TRUE),
+    ('Legal & Compliance', 'Legal & Compliance organization unit', TRUE),
+    ('Product & Design', 'Product & Design organization unit', TRUE),
+    ('Customer Support', 'Customer Support organization unit', TRUE),
+    ('General / Other', 'General / Other organization unit', TRUE)
+ON CONFLICT (name) DO NOTHING;
 
 
 -- =============================================================================
